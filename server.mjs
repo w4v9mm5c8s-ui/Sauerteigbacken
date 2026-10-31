@@ -26,8 +26,8 @@ if(url.pathname==='/api/health')return json(res,200,{ok:true,name:'Backen mit Sa
 if(url.pathname==='/api/config')return json(res,200,{supabaseUrl:process.env.SUPABASE_URL||'',supabaseKey:process.env.SUPABASE_PUBLISHABLE_KEY||'',aiEnabled:!!process.env.OPENAI_API_KEY});
 if(url.pathname==='/api/community'&&req.method==='GET'){if(!process.env.SUPABASE_URL)return json(res,200,{recipes:[]});const r=await fetch(process.env.SUPABASE_URL+'/rest/v1/community_recipes?status=eq.published&select=id,title,ingredients,instructions,created_at&limit=60',{headers:{apikey:process.env.SUPABASE_PUBLISHABLE_KEY}});return json(res,r.ok?200:502,r.ok?{recipes:await r.json()}:{error:'Community nicht erreichbar'})}
 if(url.pathname.startsWith('/api/')){
- if(!limit(req.socket.remoteAddress||'ip',90))return json(res,429,{error:'Zu viele Anfragen'});
  const id=await who(req);if(!id)return json(res,401,{error:'Bitte zuerst anmelden.'});
+ if(!limit('user:'+id.user.id,180))return json(res,429,{error:'Zu viele Anfragen'});
  if(url.pathname==='/api/sync'){
  if(req.method==='GET'){const r=await db('GET','app_data?user_id=eq.'+id.user.id+'&select=payload',id);return json(res,200,r[0]||{payload:null})}
  if(req.method==='PUT'){const b=await body(req,900000);if(!b.payload||typeof b.payload!=='object'||Array.isArray(b.payload))return json(res,400,{error:'Ungültige Daten'});await db('POST','app_data?on_conflict=user_id',id,{user_id:id.user.id,payload:b.payload,updated_at:new Date().toISOString()});return json(res,200,{ok:true})}}
