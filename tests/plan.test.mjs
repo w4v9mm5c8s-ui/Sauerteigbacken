@@ -1,0 +1,10 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
+import {makePlan} from '../planner.js';
+const recipes=JSON.parse(readFileSync(new URL('../recipes.json',import.meta.url),'utf8'));
+test('26 recipes and instructions available',()=>{assert.equal(recipes.length,26);assert.ok(recipes.every(r=>r.steps.length>=3&&r.flours.length))});
+test('Laugen recipes warn about protective equipment',()=>{for(const r of recipes.filter(r=>/Laugen/.test(r.title)))assert.match(r.steps.join(' '),/Schutzbrille/)});
+test('planner creates separate preheat and baking steps',()=>{const p=makePlan(recipes[0],new Date(Date.now()+5*86400000),'22:00','07:00',true);assert.ok(p);assert.ok(p.steps.some(s=>s.title==='Ofen vorheizen'));assert.ok(p.steps.some(s=>s.title==='Backphase starten'))});
+test('planner never schedules active work during sleep',()=>{const p=makePlan(recipes[0],new Date(Date.now()+5*86400000),'22:00','07:00',true);assert.ok(p);for(const s of p.steps.filter(x=>x.active)){const h=new Date(s.at).getHours();assert.ok(h>=7&&h<22,s.title+' '+h)}});
+test('planner marks uncalibrated estimates',()=>{const p=makePlan(recipes[0],new Date(Date.now()+5*86400000),'22:00','07:00',true);assert.match(p.assumptions,/Richtwerte/)});
