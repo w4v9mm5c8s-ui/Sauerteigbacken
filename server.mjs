@@ -54,3 +54,5 @@ try{if(!(await stat(file)).isFile())throw Error();const data=await readFile(file
 http.createServer((req,res)=>Promise.resolve(handle(req,res)).catch(e=>json(res,500,{error:e.message==='Zu große Anfrage'?e.message:'Serverfehler'}))).listen(port,'0.0.0.0');
 
 if(process.env.OPENAI_API_KEY){setTimeout(async()=>{try{const r=await fetch('https://api.openai.com/v1/models/'+encodeURIComponent(process.env.OPENAI_MODEL||'gpt-5-mini'),{headers:{Authorization:'Bearer '+process.env.OPENAI_API_KEY},signal:AbortSignal.timeout(10000)});console.log('AI credential check HTTP',r.status===200?'200 OK':r.status)}catch{console.log('AI credential check unavailable')}},3000)}else{console.log('AI credential not configured')}
+
+setTimeout(async()=>{try{const paths=['/api/health','/recipes.json','/index.html','/app.js','/manifest.webmanifest'];const checks=await Promise.all(paths.map(async p=>{const r=await fetch('http://127.0.0.1:'+port+p,{signal:AbortSignal.timeout(5000)});return p+':'+r.status}));console.log('Startup route check',checks.join(' '))}catch{console.log('Startup route check unavailable')}},2000)
