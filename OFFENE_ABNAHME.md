@@ -11,7 +11,8 @@ Dies ist eine veröffentlichte **Entwicklungsfassung**, keine freigegebene ferti
 - [ ] Safari/iPhone: Scrollen, Tastatur, Dateiupload, Safe Area, Navigation, installierbare PWA testen
 
 ## Fachliche und funktionale Erweiterungen
-- [ ] Kühlschrankgare korrekt als rezeptabhängige Option in der automatischen Terminplanung; keine willkürlichen Gärzeiten
+- [x] Kühlschrankgare für helles Weizen-Landbrot als alternative passive Übernachtphase ergänzt und automatisiert getestet
+- [ ] Kühlschrankgare für weitere Rezepte fachlich getrennt prüfen (Pizza, Focaccia, Bagels haben andere Abläufe); keine pauschalen Zeiten
 - [x] Einmalige Abwesenheit mit Beginn und Ende als Sperrzeit für aktive Schritte ergänzt (automatisiert getestet)
 - [ ] Wiederkehrende Abwesenheiten und mehrere Zeitfenster noch offen
 - [ ] Tatsächliche Starter-Reife anhand Temperatur, Fütterung und dokumentierter Beobachtungen kalibrieren; 9 Stunden ist bisher nur ein grober Platzhalter
