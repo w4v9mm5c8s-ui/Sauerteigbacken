@@ -40,3 +40,10 @@ Dies ist eine veröffentlichte **Entwicklungsfassung**, keine freigegebene ferti
 - [x] RLS-geschützte Community-Daten und Moderator:innen-Rollen vorbereitet
 - [x] PWA-Grundstruktur und Offline-Cache nur für öffentliche Dateien
 - [x] Supabase-Sicherheitsadvisor ohne gemeldete Befunde; keine vollständige Penetrationsprüfung
+
+## Sicherheits- und UX-Fixes (31.10.)
+- [x] Statische Dateien auf explizite Freigabeliste beschränkt; Servercode, Tests und Konfiguration nicht öffentlich auslieferbar
+- [x] 20 automatisierte Tests für Build, Planung, Rezepte und grundlegende Sicherheit bestanden
+- [x] Backplaner vorbelegt mit einem künftigen Termin; Eingaben beim Zurücknavigieren erhalten
+- [x] Laufender Backtag über Neustarts hinweg lokal gespeichert und pro angemeldetem Konto getrennt
+- [ ] Browser-E2E-Tests und tatsächliche E-Mail-Zustellung fehlen weiterhin
