@@ -12,16 +12,21 @@ Dies ist eine veröffentlichte **Entwicklungsfassung**, keine freigegebene ferti
 
 ## Fachliche und funktionale Erweiterungen
 - [ ] Kühlschrankgare korrekt als rezeptabhängige Option in der automatischen Terminplanung; keine willkürlichen Gärzeiten
-- [ ] Abwesenheiten und wiederkehrende Schlafzeiten vollständig als harte Planungsgrenzen berücksichtigen
+- [x] Einmalige Abwesenheit mit Beginn und Ende als Sperrzeit für aktive Schritte ergänzt (automatisiert getestet)
+- [ ] Wiederkehrende Abwesenheiten und mehrere Zeitfenster noch offen
 - [ ] Tatsächliche Starter-Reife anhand Temperatur, Fütterung und dokumentierter Beobachtungen kalibrieren; 9 Stunden ist bisher nur ein grober Platzhalter
 - [ ] Eigene Rezepte vollständig in Mengenrechner und Backplaner integrieren, ohne fehlende Werte zu erfinden
 - [ ] Import per Rezept-Weblink mit sicherem URL-Abruf und manueller Freigabe
 - [ ] Importierte Rezeptfotos mit realen Geräten und wechselnden Bildformaten testen
-- [ ] Community-Moderator:in nach Registrierung explizit freischalten; Prüf- und Freigabeworkflow mit zwei Konten testen
+- [x] Moderator:innenrollen und Review-UI mit RLS-geschützter Freigabe implementiert
+- [ ] Moderator:in nach Registrierung ausdrücklich freischalten und Freigabe mit zwei Konten testen
 - [ ] Alle 26 Rezeptvorlagen praktisch/fachlich validieren; keine Behauptung, sie seien testgebacken
 - [ ] Original-PDF und gesamte Screenshot-Anforderungsliste erneut abgleichen, sofern die Quelldateien verfügbar sind
 - [ ] Migration bestehender Lovable-Daten nur nach ausdrücklicher Freigabe und mit Backup
 - [ ] Backtag: echte Zeiterfassung, Timer-Interaktion und dynamische Umplanung bei Abweichungen
+- [x] Abweichender Backtermin wird vor Übernahme bestätigt
+- [x] Bäckerlauge als eigenständiger aktiver Schritt für Laugenbrezeln und Laugenstangen ergänzt
+- [x] Fütterungsverhältnis für Starter auswählbar und Mengenberechnung ergänzt
 - [ ] Offline- und Datenabgleichkonflikte bei mehreren Geräten testen
 
 ## Nachweislich eingerichtet
