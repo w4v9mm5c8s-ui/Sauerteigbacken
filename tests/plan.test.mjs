@@ -13,3 +13,5 @@ test('planner respects a one-time absence window',()=>{const wanted=new Date(Dat
 test('planner never schedules active tasks in the past',()=>{const p=makePlan(recipes[0],new Date(Date.now()+60000),'22:00','07:00',false);assert.ok(p);assert.ok(p.steps.filter(s=>s.active).every(s=>s.at>Date.now()))});
 
 test('pretzel baking plan includes separate lye handling and protective warning',()=>{const r=recipes.find(x=>x.title==='Sauerteig-Laugenbrezeln');const p=makePlan(r,new Date(Date.now()+7*86400000),'22:00','07:00',true);assert.ok(p);const lye=p.steps.find(x=>x.title==='Mit Bäckerlauge behandeln');assert.ok(lye);assert.match(lye.detail,/Schutzbrille/);const bake=p.steps.find(x=>x.title==='Backphase starten');assert.ok(lye.at<bake.at)});
+
+test('landbrot can use overnight refrigerator proof when warm plan cannot fit sleep schedule',()=>{const r=recipes.find(x=>x.id==='starter-weizen-landbrot');const p=makePlan(r,new Date(Date.now()+4*86400000),'22:00','07:00',false);assert.ok(p);assert.equal(p.cold,true);assert.ok(p.steps.some(x=>x.title==='Kühlschrankgare'))});
