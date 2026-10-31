@@ -52,3 +52,5 @@ const file=resolve(root,'.'+pathname);if(!file.startsWith(root+sep))return json(
 try{if(!(await stat(file)).isFile())throw Error();const data=await readFile(file);res.writeHead(200,{'Content-Type':mime[extname(file)]||'application/octet-stream','Cache-Control':'public, max-age=180'});res.end(req.method==='HEAD'?undefined:data)}catch{return json(res,404,{error:'Nicht gefunden'})}
 }
 http.createServer((req,res)=>Promise.resolve(handle(req,res)).catch(e=>json(res,500,{error:e.message==='Zu große Anfrage'?e.message:'Serverfehler'}))).listen(port,'0.0.0.0');
+
+if(process.env.OPENAI_API_KEY){setTimeout(async()=>{try{const r=await fetch('https://api.openai.com/v1/models/'+encodeURIComponent(process.env.OPENAI_MODEL||'gpt-5-mini'),{headers:{Authorization:'Bearer '+process.env.OPENAI_API_KEY},signal:AbortSignal.timeout(10000)});console.log('AI credential check HTTP',r.status===200?'200 OK':r.status)}catch{console.log('AI credential check unavailable')}},3000)}else{console.log('AI credential not configured')}
