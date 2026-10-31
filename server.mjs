@@ -37,11 +37,11 @@ if(url.pathname.startsWith('/api/')){
  if(!process.env.OPENAI_API_KEY)return json(res,503,{error:'Die KI ist noch nicht freigeschaltet.'});
  const b=await body(req);const image=typeof b.image==='string'&&/^data:image\/(jpeg|png|webp);base64,/.test(b.image)&&b.image.length<2100000?b.image:null;
  if(b.image&&!image)return json(res,400,{error:'Bitte ein kleineres JPG-, PNG- oder WebP-Bild wählen.'});
- if(url.pathname==='/api/recipe-extract'&&!image)return json(res,400,{error:'Bitte ein Rezeptfoto hochladen.'});
- const prompt=url.pathname==='/api/recipe-extract'?'Lies das Rezeptfoto. Gib ausschließlich gültiges JSON mit den Feldern title (Text), ingredients (Array mit name und grams oder null), steps (Array), uncertain (Array) aus. Nichts erfinden; unleserliche Stellen kennzeichnen.':String(b.question||'').slice(0,2500);
+ if(url.pathname==='/api/recipe-extract'&&!image&&!String(b.text||'').trim())return json(res,400,{error:'Bitte ein Rezeptfoto oder Rezepttext eingeben.'});
+ const prompt=url.pathname==='/api/recipe-extract'?'Lies das Rezept aus dem Foto oder Text. Gib ausschließlich gültiges JSON mit title (Text), ingredients (Array aus {name,grams}), steps (Textarray), uncertain (Textarray). Keine Zutaten oder Mengen erfinden; fehlende Werte null. Rezepttext: '+String(b.text||'').slice(0,7000):String(b.question||'').slice(0,2500);
  if(!prompt.trim())return json(res,400,{error:'Bitte Frage eingeben'});
  const result=await ai(prompt,image);
- if(url.pathname==='/api/recipe-extract'){let parsed;try{parsed=JSON.parse(result.trim())}catch{return json(res,502,{error:'Das Rezept konnte nicht sicher gelesen werden.'})}return json(res,200,{recipe:parsed,requiresReview:true})}
+ if(url.pathname==='/api/recipe-extract'){let parsed;try{parsed=JSON.parse(result.replace(/^```(?:json)?\s*/i,'').replace(/```\s*$/,'').trim())}catch{return json(res,502,{error:'Das Rezept konnte nicht sicher gelesen werden.'})}if(!parsed||typeof parsed.title!=='string'||!Array.isArray(parsed.ingredients)||!Array.isArray(parsed.steps))return json(res,502,{error:'Unvollständige Rezeptdaten. Bitte manuell eingeben.'});return json(res,200,{recipe:parsed,requiresReview:true})}
  return json(res,200,{answer:result})}
  return json(res,404,{error:'Unbekannte Funktion'});
 }
