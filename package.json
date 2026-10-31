@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "node --check server.mjs && node --check app.js",
+    "build": "node --check server.mjs && node --check app.js && node --check planner.js",
     "start": "node server.mjs"
   },
   "engines": {
