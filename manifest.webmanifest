@@ -1,0 +1,20 @@
+{
+  "id": "/",
+  "name": "Backen mit Sauerteig",
+  "short_name": "Sauerteig",
+  "description": "Rezepte und Backplanung für Sauerteig",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#faf5eb",
+  "theme_color": "#b85e40",
+  "lang": "de",
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
