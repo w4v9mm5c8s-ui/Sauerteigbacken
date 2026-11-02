@@ -1,4 +1,4 @@
-import {billingEnabled,billingConfigured,checkoutSession,portalSession,subscriptionRow,verifyStripeWebhook,applyStripeEvent} from './billing.mjs';
+import {billingEnabled,billingConfigured,checkoutSession,portalSession,subscriptionRow,publicBillingPlans,verifyStripeWebhook,applyStripeEvent} from './billing.mjs';
 import {fetchPublicRecipeUrl} from './url-import.mjs';
 import http from 'node:http';
 import {readFile,stat} from 'node:fs/promises';
@@ -41,6 +41,9 @@ if(url.pathname.startsWith('/api/')){
  if(url.pathname==='/api/billing/status'&&req.method==='GET'){
  if(!billingConfigured())return json(res,200,{enabled:false,plus:false,status:'unavailable'});
  const row=await subscriptionRow(id.user.id);return json(res,200,{enabled:billingEnabled(),plus:!!row&&['active','trialing'].includes(row.status),status:row?.status||'inactive',periodEnd:row?.current_period_end||null});
+}
+if(url.pathname==='/api/billing/plans'&&req.method==='GET'){
+ try{return json(res,200,await publicBillingPlans())}catch{return json(res,200,{enabled:false,plans:[]})}
 }
 if(url.pathname==='/api/billing/checkout'&&req.method==='POST'){
  if(!limit('billing-checkout:'+id.user.id,5))return json(res,429,{error:'Bitte später erneut versuchen'});
