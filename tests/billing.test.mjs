@@ -1,14 +1,15 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {createHmac} from 'node:crypto';
-import {billingConfigured,billingEnabled,verifyStripeWebhook,subscriptionFromEvent,checkoutSession,validConsumerPrice} from '../billing.mjs';
+import {billingConfigured,billingEnabled,verifyStripeWebhook,subscriptionFromEvent,checkoutSession,validConsumerPrice,approvedPremium} from '../billing.mjs';
 import {billingView} from '../billing-ui.js';
 
 test('payments remain disabled until all credentials and explicit approval are present',()=>{
- const env={STRIPE_SECRET_KEY:'sk_test_example',STRIPE_WEBHOOK_SECRET:'whsec_example',STRIPE_PRICE_MONTHLY:'price_123',STRIPE_PRICE_YEARLY:'price_456',SUPABASE_SERVICE_ROLE_KEY:'service',SUPABASE_URL:'https://example.supabase.co'};
+ const env={STRIPE_SECRET_KEY:'sk_test_example',STRIPE_WEBHOOK_SECRET:'whsec_example',STRIPE_PRICE_MONTHLY:'price_123',STRIPE_PRICE_YEARLY:'price_456',STRIPE_PRODUCT_ID:'prod_test',SUPABASE_SERVICE_ROLE_KEY:'service',SUPABASE_URL:'https://example.supabase.co'};
  assert.equal(billingConfigured(env),true);assert.equal(billingEnabled(env),false);
  assert.equal(billingEnabled({...env,BILLING_ENABLED:'true'}),true);
  assert.equal(billingConfigured({...env,STRIPE_WEBHOOK_SECRET:''}),false);
+ assert.equal(billingConfigured({...env,STRIPE_PRODUCT_ID:''}),false);
 });
 test('Stripe webhook validates signature and rejects tampering, replay and missing headers',()=>{
  const secret='whsec_test',raw=Buffer.from('{"id":"evt_test"}'),now=1783000000;
@@ -44,4 +45,20 @@ test('Stripe portal stays available to existing subscribers after new checkout i
 test('subscription updates use atomic database RPC rather than read-then-write',async()=>{
  const source=(await import('node:fs')).readFileSync(new URL('../billing.mjs',import.meta.url),'utf8');
  assert.match(source,/rpc\/apply_sourdough_subscription_event/);
+});
+
+test('a subscription only unlocks Plus when status AND configured price both match',()=>{
+ const env={STRIPE_PRICE_MONTHLY:'price_approved_month',STRIPE_PRICE_YEARLY:'price_approved_year'};
+ assert.equal(approvedPremium({status:'active',price_id:'price_approved_month'},env),true);
+ assert.equal(approvedPremium({status:'trialing',price_id:'price_approved_year'},env),true);
+ assert.equal(approvedPremium({status:'active',price_id:'price_other_app'},env),false);
+ assert.equal(approvedPremium({status:'past_due',price_id:'price_approved_month'},env),false);
+ assert.equal(approvedPremium({status:'canceled',price_id:'price_approved_month'},env),false);
+ assert.equal(approvedPremium({status:'active',price_id:null},env),false);
+});
+test('checkout price must belong to the expected Stripe product',()=>{
+ const price={active:true,currency:'eur',type:'recurring',recurring:{interval:'month'},unit_amount:490,tax_behavior:'inclusive',product:'prod_sauerteig'};
+ assert.equal(validConsumerPrice(price,'month','prod_sauerteig'),true);
+ assert.equal(validConsumerPrice(price,'month','prod_other_app'),false);
+ assert.equal(validConsumerPrice({...price,tax_behavior:'unspecified'},'month','prod_sauerteig'),false);
 });
