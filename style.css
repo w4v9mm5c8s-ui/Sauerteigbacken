@@ -27,3 +27,5 @@ nav button.active{background:transparent;color:#b5552f}
 .action-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
 .action-grid button{min-height:64px;border-radius:19px}
 @media(min-width:680px){.hub-actions{grid-template-columns:repeat(2,minmax(0,1fr))}.hub-tile.featured{grid-column:span 2}}
+
+.home-hero{display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:110px}.home-hero h2{font-size:1.45rem;max-width:230px;margin:12px 0}.hero-bread{font-size:5rem;color:#a85a35;opacity:.5;line-height:1}.home-hero .eyebrow{font-size:.65rem}.hub-actions{margin:14px 0}.action-grid{margin:18px 0}.action-grid button{font-size:.87rem;font-weight:600;background:#fffdf8;border-radius:17px}
