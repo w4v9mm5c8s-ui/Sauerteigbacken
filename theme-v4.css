@@ -134,3 +134,20 @@ body[data-page="start"] main,body:not([data-page="start"]) main{
  .home-artwork{right:-75px}
 }
 @media(prefers-reduced-motion:reduce){.home-feature{transition:none}}
+
+/* Quiet hand-drawn accents from the approved watercolor composition */
+.home-brand h1 .brand-heart{display:inline-block;vertical-align:top;margin:-8px 0 0 3px;
+ width:30px;height:30px;stroke:#b77a79;transform:rotate(-12deg)}
+.home-brand h1 em::after{content:"";display:block;width:84px;height:5px;margin:5px 0 0 29px;
+ border-top:2px solid #b77779;border-radius:55%;transform:rotate(-5deg);opacity:.82}
+.home-feature-label::after{content:"";display:block;width:43px;max-width:66%;height:6px;margin:6px 0 0 6px;
+ border-top:2px solid #be8280;border-radius:54%;transform:rotate(-4deg);opacity:.8}
+.home-feature::before{content:"";position:absolute;z-index:0;inset:3px;pointer-events:none;border-radius:inherit;
+ background:radial-gradient(ellipse at 17% 87%,#f1d4c4a1 0,transparent 54%);
+ opacity:.24}
+.home-feature-art,.home-feature-label{position:relative;z-index:1}
+@media(max-width:380px){
+ .home-brand h1 .brand-heart{width:25px;height:25px;margin-top:-5px}
+ .home-brand h1 em::after{width:73px;margin-left:20px}
+ .home-feature-label::after{width:33px;margin-top:4px}
+}
