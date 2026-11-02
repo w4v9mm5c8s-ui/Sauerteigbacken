@@ -8,8 +8,8 @@ export function bakeCalendar(record){
  for(let i=0;i<record.steps.length;i++){
   const step=record.steps[i],start=Number(step.at);
   if(!Number.isFinite(start))continue;
-  const title=icsEscape(step.title),detail=icsEscape(step.detail||'Backschritt');
-  lines.push('BEGIN:VEVENT','UID:'+id+'-'+i+'@sauerteig-buddy','DTSTAMP:'+now,'DTSTART:'+stamp(start),'DTEND:'+stamp(start+Math.max(5,Number(step.duration)||10)*60000),'SUMMARY:'+icsEscape('Sauerteig: '+title),'DESCRIPTION:'+detail);
+  const title=String(step.title||''),detail=String(step.detail||'Backschritt');
+  lines.push('BEGIN:VEVENT','UID:'+id+'-'+i+'@sauerteig-buddy','DTSTAMP:'+now,'DTSTART:'+stamp(start),'DTEND:'+stamp(start+Math.max(5,Number(step.duration)||10)*60000),'SUMMARY:'+icsEscape('Sauerteig: '+title),'DESCRIPTION:'+icsEscape(detail));
   if(step.active)lines.push('BEGIN:VALARM','TRIGGER:-PT10M','ACTION:DISPLAY','DESCRIPTION:'+icsEscape('Bald: '+title),'END:VALARM');
   lines.push('END:VEVENT');
  }
