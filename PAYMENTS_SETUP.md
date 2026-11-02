@@ -45,3 +45,16 @@ Die Stripe-Integration ist technisch vorbereitet, aber **standardmäßig ausgesc
 - [ ] Domain festlegen und URLs bei Umzug aktualisieren
 
 Quellen: https://docs.stripe.com/payments/checkout , https://docs.stripe.com/billing/subscriptions/webhooks , https://docs.stripe.com/customer-management/configure-portal
+
+## Stand 02.11.2026 – Stripe-Sandbox verbunden
+- [x] Stripe-Sandbox-Konto verbunden, ohne Live-Zahlungen
+- [x] Entwurf des Produkts `Sauerteig Plus` in Stripe vorhanden (inaktiv, noch keine Preise)
+- [x] Server-API für Checkout, Portal, Status und signierte Webhooks implementiert
+- [x] Abostatus mit serverseitiger Preis-ID-Prüfung und atomarem Datenbank-Update
+- [x] Freischaltung auf Render ausdrücklich auf `BILLING_ENABLED=false` gesetzt
+- [x] Vor dem Checkout müssen aktive EUR-Preise mit inklusiver Steuer vorliegen; Preise werden in der App angezeigt
+- [ ] Monats- und Jahrespreise vom Produktverantwortlichen bestätigen lassen
+- [ ] Stripe-Preise, Webhook-Endpunkt und Kundenportal im Testmodus konfigurieren
+- [ ] Render-Schlüssel sicher hinterlegen und echte Sandbox-Zahlung, Verlängerung, Kündigung und Fehlzahlung prüfen
+- [ ] Plus-Leistungen und Nutzungsgrenzen verbindlich beschließen; keine bestehenden Gratis-Funktionen sperren
+- [ ] Rechtliche Angaben und Live-Zahlungsfreigabe abnehmen
