@@ -127,3 +127,11 @@ details>label{margin-top:12px}
 #planResult .step p{margin:6px 0 0}
 #planResult .steps{max-height:none}
 @media(max-width:375px){.hero-watercolor{width:40%;height:130px}.home-hero h2{font-size:1.42rem}.home-hero{min-height:135px}}
+
+.bake-photo{display:block;width:100%;max-width:420px;height:auto;max-height:380px;object-fit:contain;border-radius:18px;border:1px solid #ead9d6;margin:12px 0}
+.photo-preview:empty{display:none}
+.community-recipe{border:1px solid var(--line);border-radius:17px;padding:12px 15px;margin:12px 0;background:#fffdfb}
+.community-recipe button{margin:5px 5px 5px 0}
+.card a{color:var(--rose-deep);text-decoration:underline;text-underline-offset:3px}
+.starter-entry>summary{font-size:1.1rem}
+progress{accent-color:var(--rose)}
