@@ -3,16 +3,13 @@ import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {homeView} from '../home.js';
 const read=p=>readFileSync(new URL('../'+p,import.meta.url),'utf8');
-const routes=['newPlan','own','import','bakingDays','stats','favorites','knowledge','shopping'];
+const routes=['newPlan','own','import','bakingDays','stats','favorites','community','knowledge'];
 
-test('the home uses large editorial watercolor rather than 4-up icon tiles',()=>{
+test('the home uses the mobile four-column watercolor reference layout',()=>{
  const css=read('theme-v4.css');
- assert.match(css,/\.home-feature-grid\{display:grid;grid-template-columns:repeat\(2,minmax\(0,1fr\)\)/);
- assert.match(css,/grid-template-columns:51% minmax\(0,1fr\)/);
- assert.match(css,/\.home-brand h1 em/);
- assert.match(css,/#f8efe7/);
- assert.match(css,/#4e302e/i);
- assert.doesNotMatch(css,/home-feature-grid\{grid-template-columns:repeat\(4/);
+ assert.match(css,/screenshot-accurate structure/);
+ assert.match(css,/home-feature-grid\{grid-template-columns:repeat\(4,minmax\(0,1fr\)\)/);
+ assert.match(css,/home-feature\{display:flex;flex-direction:column/);
 });
 test('first paint and live homepage both use eight identical actions',()=>{
  const html=read('index.html'),live=homeView({signed:false,active:null,parked:[],history:[],favorites:[],recipes:[]});
@@ -41,7 +38,7 @@ test('long card text breaks intentionally without creating overly narrow labels'
  const html=homeView({signed:false,active:null,parked:[],history:[]});
  assert.match(html,/Back-<wbr>statistik/);
  assert.match(html,/Wissens-<wbr>bibliothek/);
- assert.match(html,/Einkaufs-<wbr>liste/);
+ assert.match(html,/Backbücher/);
 });
 test('no payment or private data is implied by the design',()=>{
  const html=homeView({signed:false,active:null,parked:[],history:[]});

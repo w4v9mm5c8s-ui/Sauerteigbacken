@@ -3,12 +3,12 @@ import {icon} from './icons.js';
 const tiles=[
  ['Neues Brot planen','newPlan','/art-calendar.svg'],
  ['Meine Rezepte','own','/art-books.svg'],
- ['Rezept importieren','import','/art-tools.svg'],
- ['Meine Backtage','bakingDays','/art-loaf.svg'],
+ ['Rezept importieren','import','/art-scale.svg'],
+ ['Meine Backtage','bakingDays','/art-basket.svg'],
  ['Backstatistik','stats','/art-chart.svg'],
  ['Favoriten','favorites','/art-heart.svg'],
- ['Wissensbibliothek','knowledge','/art-books.svg'],
- ['Einkaufsliste','shopping','/art-shopping.svg']
+ ['Backbücher','community','/art-books.svg'],
+ ['Wissensbibliothek','knowledge','/art-tools.svg']
 ];
 
 const displayTitle=label=>({'Backstatistik':'Back-<wbr>statistik','Wissensbibliothek':'Wissens-<wbr>bibliothek','Einkaufsliste':'Einkaufs-<wbr>liste'}[label]||label);
@@ -18,11 +18,25 @@ const stars=x=>Number.isFinite(Number(x))&&Number(x)>0?'★'.repeat(Math.min(5,M
 export function homeView({signed=false,active=null,parked=[],history=[],favorites=[],recipes=[],escape=e=>String(e)}){
  const activeCount=(active?1:0)+parked.length;
  const hero='<section class="home-masthead"><div class="home-brand"><h1>Backen mit <svg class="brand-heart" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 45 45" width="35" height="35" fill="none" stroke="#b67a79" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M23 37C8 26 2 16 8 8q7-8 15 6 10-17 18-9 7 10-18 32z"/><path d="M24 38q-2-10 1-19" opacity=".42"/></svg><em>Sauerteig</em></h1><p>Dein Begleiter für natürliches Brotbacken.</p></div><div class="home-artwork"><img src="/art-hero.svg" width="950" height="455" alt="" decoding="async" fetchpriority="high"></div></section>';
- const live=active?'<section class="home-current"><div class="home-current-picture"><img src="/art-loaf.svg" alt=""></div><div class="home-current-copy"><span class="home-current-label">'+icon('calendar',18)+' Dein Backtag</span><h2>'+escape(active.title)+'</h2><p>Schritt '+(Math.min(active.steps?.length||1,(active.index||0)+1))+' von '+(active.steps?.length||1)+(activeCount>1?' · '+activeCount+' Backtage parallel':'')+'</p></div><button data-act="backtag" class="home-current-button" aria-label="Backtag öffnen">'+icon('arrow',21)+' <span>Zum Backtag</span></button></section>':'';
+
+ const upcomingRecords=[...(active?[{bake:active,action:'backtag'}]:[]),...parked.map((bake,i)=>({bake,action:'switchBake:'+i}))].slice(0,2);
+ const remainingLabel=value=>{
+  const time=new Date(value).getTime();if(!Number.isFinite(time))return '';
+  const mins=Math.ceil((time-Date.now())/60000);if(mins<=0)return 'jetzt fällig';
+  if(mins>=1440)return 'noch '+Math.floor(mins/1440)+' T '+Math.floor((mins%1440)/60)+' h';
+  return mins>=60?'noch '+Math.floor(mins/60)+' h'+(mins%60?' '+(mins%60)+' min':''):'noch '+mins+' min';
+ };
+ const live=upcomingRecords.length?'<section class="home-upcoming"><div class="home-section-heading"><h2>Deine nächsten Backtage</h2><button data-act="bakingDays">Alle anzeigen '+icon('arrow',18)+'</button></div><div class="home-upcoming-grid">'+upcomingRecords.map(({bake,action},i)=>{
+  const steps=Array.isArray(bake.steps)?bake.steps:[],at=Math.max(0,Number(bake.index)||0);
+  const next=steps.slice(at).find(step=>step&&step.active!==false&&Number.isFinite(new Date(step.at).getTime()));
+  const summary=(next?.title||'Dein Backtag')+(next?.at?' · '+remainingLabel(next.at):'');
+  const pct=steps.length?Math.max(6,Math.min(100,Math.round(at/steps.length*100))):0;
+  return '<button class="home-upcoming-card" data-act="'+action+'"><span class="home-upcoming-picture"><img src="'+(i%2?'/art-basket.svg':'/art-starter.svg')+'" alt="" loading="lazy"></span><span class="home-upcoming-copy"><strong>'+escape(bake.title||'Backtag')+'</strong><small>'+escape(summary)+'</small><span class="home-upcoming-track" aria-hidden="true"><span style="width:'+pct+'%"></span></span><span class="sr-only">Schritt '+Math.min(steps.length,at+1)+' von '+steps.length+'</span></span></button>';
+ }).join('')+'</div>'+(activeCount>1?'<span class="sr-only">'+activeCount+' Backtage parallel</span>':'')+'</section>':'';
  const grid='<section class="home-feature-grid" aria-label="Backen mit Sauerteig Funktionen">'+tiles.map(([label,route,art])=>'<button class="home-feature" data-act="'+route+'"><span class="home-feature-art"><img src="'+art+'" alt="" loading="lazy" decoding="async" width="240" height="200"></span><span class="home-feature-label">'+displayTitle(label)+'</span></button>').join('')+'</section>';
  const recent=signed&&history.length?'<section class="home-recent"><div class="home-section-heading"><h2>Zuletzt gebacken</h2><button data-act="history">Alle anzeigen '+icon('arrow',18)+'</button></div><div class="home-recent-grid">'+history.slice(-3).reverse().map((h,i)=>'<button class="home-recent-card" data-act="history"><div class="home-recent-art"><img src="'+(i===2?'/art-basket.svg':'/art-loaf.svg')+'" alt="" loading="lazy"></div><strong>'+escape(h.title||'Backtag')+'</strong><small class="home-stars">'+(stars(h.rating)||'Noch nicht bewertet')+'</small><small>'+escape(dateLabel(h))+'</small></button>').join('')+'</div></section>':'';
  const buddy=signed?'<button class="home-buddy" data-act="buddy"><img src="/art-buddy.svg" alt="" loading="lazy" width="150" height="135"><span><strong>Sauerteig-Buddy</strong><small>Dein KI-Assistent für Rezepte, Planung und Backfragen</small></span><span class="home-buddy-arrow">'+icon('arrow',22)+'</span></button>':'';
- return hero+live+grid+recent+buddy;
+ return hero+grid+live+recent+buddy;
 }
 
 export function upcomingBakeTasks(active=null,parked=[]){
