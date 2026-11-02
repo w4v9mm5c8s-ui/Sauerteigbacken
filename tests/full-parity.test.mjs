@@ -1,3 +1,4 @@
+import {actualBakeDurations} from '../bake-metrics.js';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
@@ -30,4 +31,11 @@ test('baking photos are private and never stored in public URLs',()=>{
 test('user can pause and resume timers',()=>{
  const code=readFileSync(new URL('../app.js',import.meta.url),'utf8');
  for(const action of ['timerPause','timerResume','timerPreset','keepAwake'])assert.ok(code.includes(action));
+});
+
+test('actual fermentation durations are based on logged timestamps, not estimates',()=>{
+ const steps=[{title:'Teig mischen'},{title:'Formen'},{title:'Backphase starten'}];
+ const logs={0:{completedAt:'2026-11-02T08:00:00Z'},1:{completedAt:'2026-11-02T12:00:00Z'},2:{completedAt:'2026-11-02T14:00:00Z'}};
+ assert.deepEqual(actualBakeDurations(steps,logs),{stockHours:4,proofHours:2});
+ assert.equal(actualBakeDurations(steps,{}).stockHours,null);
 });
