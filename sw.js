@@ -1,5 +1,20 @@
-const CACHE='sauerteig-public-v18';const ASSETS=['/','/index.html','/style.css','/theme.css','/theme-v3.css','/app.js','/backup.js','/planner.js','/backtag.js','/home.js','/recipe-gallery.js','/calendar.js','/hub.js','/icons.js','/stats.js','/calculators.js','/knowledge.js','/pantry.js','/billing-ui.js','/own-recipes.js','/recipes.json','/knowledge-data.json','/planning-ui.js','/flour-table.js','/flour-table.json','/resources.js','/resources.json','/source-conflicts.json','/community-ui.js','/historical.js','/bake-metrics.js','/historical-recipes.json','/photos.js','/own-recipe-parser.js','/starter-tracking.js','/onboarding.js','/art-pretzel.svg','/art-heart.svg','/art-chart.svg','/art-hero.svg','/art-books.svg','/art-scale.svg','/art-calendar.svg','/art-buddy.svg','/art-loaf.svg','/art-starter.svg','/art-tools.svg','/art-basket.svg','/art-wheat.svg','/manifest.webmanifest','/icon.svg'];
+const CACHE='sauerteig-public-v19';const ASSETS=['/','/index.html','/style.css','/theme.css','/theme-v3.css','/app.js','/backup.js','/planner.js','/backtag.js','/home.js','/recipe-gallery.js','/calendar.js','/hub.js','/icons.js','/stats.js','/calculators.js','/knowledge.js','/pantry.js','/billing-ui.js','/own-recipes.js','/recipes.json','/knowledge-data.json','/planning-ui.js','/flour-table.js','/flour-table.json','/resources.js','/resources.json','/source-conflicts.json','/community-ui.js','/historical.js','/bake-metrics.js','/historical-recipes.json','/photos.js','/own-recipe-parser.js','/starter-tracking.js','/onboarding.js','/art-pretzel.svg','/art-heart.svg','/art-chart.svg','/art-hero.svg','/art-books.svg','/art-scale.svg','/art-calendar.svg','/art-buddy.svg','/art-loaf.svg','/art-starter.svg','/art-tools.svg','/art-basket.svg','/art-wheat.svg','/manifest.webmanifest','/icon.svg'];
 const publicPaths=new Set(ASSETS);
+async function isRealAsset(path,response){
+ if(!response.ok)return false;
+ const type=(response.headers.get('content-type')||'').toLowerCase();
+ if(path==='/'||path==='/index.html'){
+  if(!type.includes('text/html'))return false;
+  return (await response.clone().text()).includes('<main id="main">');
+ }
+ if(/\.svg$/.test(path))return type.includes('image/svg+xml');
+ if(/\.css$/.test(path))return type.includes('text/css');
+ if(/\.js$/.test(path))return type.includes('javascript');
+ if(/\.json$/.test(path))return type.includes('json');
+ if(/\.webmanifest$/.test(path))return type.includes('manifest')||type.includes('json');
+ return true;
+}
+
 self.addEventListener('install',event=>{
  event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(ASSETS)).then(()=>self.skipWaiting()));
 });
@@ -16,12 +31,12 @@ self.addEventListener('fetch',event=>{
   const cache=await caches.open(CACHE),cached=await cache.match(key);
   if(cached){
    // Return the local SVG-based app instantly, while waking the free Render server in the background.
-   event.waitUntil(fetch(request,{cache:'no-store'}).then(response=>response.ok?cache.put(key,response.clone()):undefined).catch(()=>{}));
+   event.waitUntil(fetch(request,{cache:'no-store'}).then(async response=>(await isRealAsset(url.pathname,response))?cache.put(key,response.clone()):undefined).catch(()=>{}));
    return cached;
   }
   try{
    const response=await fetch(request);
-   if(response.ok)event.waitUntil(cache.put(key,response.clone()).catch(()=>{}));
+   if(await isRealAsset(url.pathname,response))event.waitUntil(cache.put(key,response.clone()).catch(()=>{}));
    return response;
   }catch{
    return new Response('Keine Verbindung. Öffne die App erneut, sobald das Netzwerk verfügbar ist.',{status:503,headers:{'Content-Type':'text/plain; charset=utf-8'}});
