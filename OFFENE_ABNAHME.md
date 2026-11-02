@@ -62,3 +62,13 @@ Dies ist eine veröffentlichte **Entwicklungsfassung**, keine freigegebene ferti
 - [x] Zusätzliche automatische Regressionstests für Wochenzeiten und mehrere Sperrfenster ergänzt.
 - [ ] Fachliche Gär- und Starterprognosen weiterhin anhand echter Backdaten prüfen; ohne solche Daten keine garantierten Zeitpläne.
 - [ ] Echte iPhone-/Safari-End-to-End-Tests, E-Mail-Zustellung, Push bei geschlossener App, Live-KI-Fotoanalyse und rechtliche Freigabe weiterhin offen.
+
+## 02.11.2026 – Stripe-Zahlungen (technisch vorbereitet)
+- [x] Stripe Checkout für Monats-/Jahresabos, Kundenportal und serverseitige Statusprüfung integriert
+- [x] Webhook-Signaturprüfung, Abgleich der Subscription-Ereignisse und RLS-geschützte Abo-Tabelle eingerichtet
+- [x] Bezahlung bleibt standardmäßig deaktiviert, bestehende kostenlose Funktionen bleiben frei
+- [x] Setup- und Sicherheitsanleitung in PAYMENTS_SETUP.md dokumentiert
+- [ ] Stripe-Geschäftskonto, Preise, Schlüssel, Webhook und Testzahlungen einrichten
+- [ ] Monetarisierung und Nutzungsgrenzen der Premium-Funktionen ausdrücklich festlegen; serverseitige Entitlements erst dann durchsetzen
+- [ ] Steuer-/Rechtsprüfung, AGB/Datenschutz/Impressum und Widerruf/Kündigung prüfen
+- [ ] Echte Testzahlungen, Portal, Rechnungen und Zahlungsfehler auf dem iPhone prüfen
