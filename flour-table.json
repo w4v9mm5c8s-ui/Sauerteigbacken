@@ -1,0 +1,245 @@
+[
+  {
+    "name": "Weizenmehl Type 405",
+    "hydration": 62,
+    "water500": 310,
+    "starter500": 160,
+    "starterType": "weizen",
+    "stockFactor": 105,
+    "proofFactor": 102
+  },
+  {
+    "name": "Weizenmehl Type 550",
+    "hydration": 64,
+    "water500": 320,
+    "starter500": 170,
+    "starterType": "weizen",
+    "stockFactor": 100,
+    "proofFactor": 100
+  },
+  {
+    "name": "Gelbweizenmehl Type 550",
+    "hydration": 64,
+    "water500": 320,
+    "starter500": 170,
+    "starterType": "weizen",
+    "stockFactor": 100,
+    "proofFactor": 100
+  },
+  {
+    "name": "Weizenmehl Type 812",
+    "hydration": 66,
+    "water500": 330,
+    "starter500": 170,
+    "starterType": "weizen",
+    "stockFactor": 98,
+    "proofFactor": 99
+  },
+  {
+    "name": "Weizenmehl Type 1050",
+    "hydration": 70,
+    "water500": 350,
+    "starter500": 180,
+    "starterType": "weizen",
+    "stockFactor": 95,
+    "proofFactor": 97
+  },
+  {
+    "name": "Weizenmehl Type 1600",
+    "hydration": 82,
+    "water500": 410,
+    "starter500": 200,
+    "starterType": "weizen",
+    "stockFactor": 85,
+    "proofFactor": 92
+  },
+  {
+    "name": "Weizenvollkornmehl",
+    "hydration": 82,
+    "water500": 410,
+    "starter500": 200,
+    "starterType": "weizen",
+    "stockFactor": 85,
+    "proofFactor": 92
+  },
+  {
+    "name": "Weizenmehl Type 00",
+    "hydration": 58,
+    "water500": 290,
+    "starter500": 150,
+    "starterType": "weizen",
+    "stockFactor": 110,
+    "proofFactor": 105
+  },
+  {
+    "name": "Manitobamehl",
+    "hydration": 72,
+    "water500": 360,
+    "starter500": 180,
+    "starterType": "weizen",
+    "stockFactor": 95,
+    "proofFactor": 97
+  },
+  {
+    "name": "Weizenruchmehl",
+    "hydration": 75,
+    "water500": 375,
+    "starter500": 190,
+    "starterType": "weizen",
+    "stockFactor": 90,
+    "proofFactor": 95
+  },
+  {
+    "name": "Grahammehl",
+    "hydration": 88,
+    "water500": 440,
+    "starter500": 220,
+    "starterType": "weizen",
+    "stockFactor": 80,
+    "proofFactor": 90
+  },
+  {
+    "name": "Dinkelmehl Type 630",
+    "hydration": 64,
+    "water500": 320,
+    "starter500": 160,
+    "starterType": "weizen",
+    "stockFactor": 105,
+    "proofFactor": 102
+  },
+  {
+    "name": "Dinkelmehl Type 1050",
+    "hydration": 70,
+    "water500": 350,
+    "starter500": 180,
+    "starterType": "weizen",
+    "stockFactor": 95,
+    "proofFactor": 97
+  },
+  {
+    "name": "Dinkelvollkornmehl",
+    "hydration": 82,
+    "water500": 410,
+    "starter500": 200,
+    "starterType": "weizen",
+    "stockFactor": 85,
+    "proofFactor": 92
+  },
+  {
+    "name": "Dinkelruchmehl",
+    "hydration": 75,
+    "water500": 375,
+    "starter500": 190,
+    "starterType": "weizen",
+    "stockFactor": 88,
+    "proofFactor": 94
+  },
+  {
+    "name": "Roggenmehl Type 815",
+    "hydration": 80,
+    "water500": 400,
+    "starter500": 200,
+    "starterType": "roggen",
+    "stockFactor": 85,
+    "proofFactor": 92
+  },
+  {
+    "name": "Roggenmehl Type 997",
+    "hydration": 85,
+    "water500": 425,
+    "starter500": 210,
+    "starterType": "roggen",
+    "stockFactor": 82,
+    "proofFactor": 91
+  },
+  {
+    "name": "Roggenmehl Type 1150",
+    "hydration": 88,
+    "water500": 440,
+    "starter500": 220,
+    "starterType": "roggen",
+    "stockFactor": 80,
+    "proofFactor": 90
+  },
+  {
+    "name": "Roggenvollkornmehl",
+    "hydration": 100,
+    "water500": 500,
+    "starter500": 250,
+    "starterType": "roggen",
+    "stockFactor": 75,
+    "proofFactor": 88
+  },
+  {
+    "name": "Roggenruchmehl",
+    "hydration": 90,
+    "water500": 450,
+    "starter500": 220,
+    "starterType": "roggen",
+    "stockFactor": 78,
+    "proofFactor": 89
+  },
+  {
+    "name": "Emmer hell",
+    "hydration": 70,
+    "water500": 350,
+    "starter500": 180,
+    "starterType": "weizen",
+    "stockFactor": 95,
+    "proofFactor": 97
+  },
+  {
+    "name": "Emmer",
+    "hydration": 78,
+    "water500": 390,
+    "starter500": 200,
+    "starterType": "weizen",
+    "stockFactor": 85,
+    "proofFactor": 92
+  },
+  {
+    "name": "Emmervollkornmehl",
+    "hydration": 82,
+    "water500": 410,
+    "starter500": 200,
+    "starterType": "weizen",
+    "stockFactor": 85,
+    "proofFactor": 92
+  },
+  {
+    "name": "Einkorn hell",
+    "hydration": 70,
+    "water500": 350,
+    "starter500": 180,
+    "starterType": "weizen",
+    "stockFactor": 95,
+    "proofFactor": 97
+  },
+  {
+    "name": "Einkornvollkornmehl",
+    "hydration": 82,
+    "water500": 410,
+    "starter500": 200,
+    "starterType": "weizen",
+    "stockFactor": 85,
+    "proofFactor": 92
+  },
+  {
+    "name": "Kamut hell",
+    "hydration": 70,
+    "water500": 350,
+    "starter500": 180,
+    "starterType": "weizen",
+    "stockFactor": 95,
+    "proofFactor": 97
+  },
+  {
+    "name": "Kamutvollkornmehl",
+    "hydration": 82,
+    "water500": 410,
+    "starter500": 200,
+    "starterType": "weizen",
+    "stockFactor": 85,
+    "proofFactor": 92
+  }
+]
