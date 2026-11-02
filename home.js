@@ -24,7 +24,23 @@ export function homeView({signed=false,active=null,parked=[],history=[],favorite
  return hero+live+grid+recent+buddy;
 }
 
+export function upcomingBakeTasks(active=null,parked=[]){
+ const bakes=[...(active?[{record:active,action:'backtag'}]:[]),...parked.map((record,i)=>({record,action:'switchBake:'+i}))];
+ return bakes.map(({record,action})=>{
+  const start=Math.max(0,Math.min(record.steps?.length||0,Math.trunc(Number(record.index)||0)));
+  const step=(record.steps||[]).slice(start).find(item=>item&&item.active!==false&&Number.isFinite(new Date(item.at).getTime()));
+  return step?{title:record.title,task:step.title,at:new Date(step.at).getTime(),action}:null;
+ }).filter(Boolean).sort((a,b)=>a.at-b.at);
+}
 export function bakingDaysView({active=null,parked=[],escape=e=>String(e)}){
  const n=(active?1:0)+parked.length;
- return '<section class="card"><h2>Meine Backtage</h2>'+(!n?'<p class="muted">Aktuell läuft noch kein Backtag.</p><button class="primary" data-act="newPlan">Neuen Backtag planen</button>':(active?'<button class="item" data-act="backtag"><strong>'+escape(active.title)+'</strong><span class="muted">Aktiv · Schritt '+((active.index||0)+1)+' von '+active.steps.length+'</span></button>':'')+parked.map((b,i)=>'<button class="item" data-act="switchBake:'+i+'"><strong>'+escape(b.title)+'</strong><span class="muted">Schritt '+((b.index||0)+1)+' von '+(b.steps?.length||0)+'</span></button>').join('')+'<button data-act="newPlan">Weiteren Backtag planen</button>')+'</section>';
+ if(!n)return '<section class="card"><h2>Meine Backtage</h2><p class="muted">Aktuell läuft noch kein Backtag.</p><button class="primary" data-act="newPlan">Neuen Backtag planen</button></section>';
+ const tasks=upcomingBakeTasks(active,parked).slice(0,5);
+ const upcoming=tasks.length?'<div class="baking-day-next"><h3>Nächste Arbeitsschritte</h3>'+tasks.map(item=>{
+  const stamp=new Date(item.at).toLocaleString('de-DE',{weekday:'short',day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});
+  return '<button class="baking-day-task" data-act="'+item.action+'"><span><strong>'+escape(item.task)+'</strong><small>'+escape(item.title)+'</small></span><time>'+escape(stamp)+'</time></button>';
+ }).join('')+'</div>':'';
+ const ongoing=(active?'<button class="item" data-act="backtag"><strong>'+escape(active.title)+'</strong><span class="muted">Aktiv · Schritt '+((active.index||0)+1)+' von '+active.steps.length+'</span></button>':'');
+ const parkedBakes=parked.map((b,i)=>'<button class="item" data-act="switchBake:'+i+'"><strong>'+escape(b.title)+'</strong><span class="muted">Schritt '+((b.index||0)+1)+' von '+(b.steps?.length||0)+'</span></button>').join('');
+ return '<section class="card"><h2>Meine Backtage</h2><p class="muted">'+n+' laufende Backtage</p>'+upcoming+ongoing+parkedBakes+'<button data-act="newPlan">Weiteren Backtag planen</button></section>';
 }
