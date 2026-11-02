@@ -7,7 +7,7 @@ for(const viewport of [{width:375,height:812},{width:390,height:844},{width:430,
  const page=await context.newPage();page.on('pageerror',e=>failures.push(viewport.width+' JavaScript: '+e.message));
  await page.goto('http://127.0.0.1:3000',{waitUntil:'networkidle'});
  await page.waitForSelector('.home-hero');
- if(!await page.locator('.hero-watercolor').isVisible())failures.push('Watercolor missing '+viewport.width);
+ if(!await page.locator('.home-hero').isVisible())failures.push('Homepage hero missing '+viewport.width);
  await page.locator('[data-tab="hub"]').click();
  await page.getByRole('button',{name:/Rezeptbibliothek/}).first().click();
  await page.locator('[data-act^="recipe:"]').first().click();
