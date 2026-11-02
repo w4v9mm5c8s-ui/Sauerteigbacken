@@ -21,3 +21,14 @@ Ziel: eigenständige App in Rosé/Beige mit echten Funktionen im Stil der zuvor 
 - Ein echter iPhone-Safari-Screenshotvergleich ist weiterhin offen. CSS-Regressionstests beweisen keine pixelgenaue Darstellung.
 - Timer-Push bei geschlossener App, reale E-Mail-/KI-End-to-End-Prüfung und vollständige fachliche Backplanabnahme bleiben separat offen.
 - Manueller Browser-Smoketest liegt in `tests/browser-smoke.mjs`, wurde für das neue Design aktualisiert. Kein automatischer GitHub-Actions-Mailworkflow wird wieder eingeschaltet.
+
+## Erweiterung nach visueller Abnahme
+- Neue Aquarellmotive: `art-heart.svg` für Favoriten und `art-chart.svg` für Statistik. Beide als lokale, eigenständig gezeichnete SVGs.
+- Alle acht Startkacheln nutzen jetzt Aquarelle statt gemischter Standardsymbole.
+- Zusätzlich illustrierte Kopfbereiche in Backstatistik, Community-Backbuch, Favoriten, Backhistorie, Einkaufsliste, eigene Rezepte und Vorräte.
+- Überlagerte Liniensymbole in illustrierter Backen-Navigation per `.hub-icon.has-art` ausgeblendet.
+- Sichtbare iOS-Fokuszustände und größerer Scrollabstand oberhalb der fixierten Navigation.
+- Validierter persönlicher JSON-Backup-Import: maximale Dateigröße, Datentypprüfung und explizite Bestätigung vor dem Überschreiben; Cloud-Abgleich kann danach asynchron erfolgen.
+- Die extern geladenen Schriftarten Fraunces und Outfit sind in der Content Security Policy freigeschaltet. Vor öffentlicher Produktfreigabe müssen diese Schriftabrufe datenschutzrechtlich geprüft oder lokal bereitgestellt werden.
+- Zusätzliche Tests für Motive, ausgelieferte Assets, illustrierte Bereiche und den Backup-Import.
+- Ein echter iPhone-Safari- und Pixeltest ist weiterhin nicht als durchgeführt bestätigt; aus `npm test` folgt keine visuelle Abnahme.
