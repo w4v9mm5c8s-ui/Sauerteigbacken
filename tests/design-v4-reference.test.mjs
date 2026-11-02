@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {homeView} from '../home.js';
 const read=p=>readFileSync(new URL('../'+p,import.meta.url),'utf8');
-const routes=['newPlan','own','import','bakingDays','stats','favorites','community','knowledge'];
+const routes=['newPlan','recipes','import','bakingDays','stats','favorites','community','knowledge'];
 
 test('the home uses the mobile four-column watercolor reference layout',()=>{
  const css=read('theme-v4.css');

@@ -2,7 +2,12 @@ import {icon} from './icons.js';
 export function recipePhotoPath(r){
  const title=String(r?.title||'').toLocaleLowerCase('de-DE');
  const category=String(r?.category||'').toLocaleLowerCase('de-DE');
- if(/brezel|laugen|bagel/.test(title))return '/art-pretzel.svg';
+ if(/brezel|laugen/.test(title))return '/design/photo-brezeln.png';
+ if(/bagel/.test(title))return '/design/photo-bagels.png';
+ if(/baguette/.test(title))return '/design/photo-baguette.png';
+ if(/focaccia/.test(title))return '/design/photo-focaccia.png';
+ if(/pizza/.test(title))return '/design/photo-pizza.png';
+ if(/zimtschneck/.test(title))return '/design/photo-zimtschnecken.png';
  if(/kasten|toast/.test(title))return '/design/photo-kasten.png';
  if(/vollkorn|saat|kern|nuss|leinsamen|mohn|sonnenblum/.test(title))return '/design/photo-vollkorn.png';
  if(/roggen|bauern|misch|vinschgauer/.test(title))return '/design/photo-bauernbrot.png';
@@ -13,8 +18,14 @@ export function recipePhotoPath(r){
 }
 function artwork(r){return recipePhotoPath(r)}
 
-export function recipeCards(recipes,escape=x=>String(x),action='recipe'){
- return recipes.map(r=>'<button class="recipe-gallery-item" data-act="'+action+':'+escape(r.id)+'"><span class="recipe-gallery-picture"><img src="'+artwork(r)+'" alt="KI-generiertes Beispielbild" loading="lazy" decoding="async"></span><span class="recipe-gallery-content"><strong>'+escape(r.title)+'</strong><small>'+escape(r.category||'Sauerteig')+' · '+escape(r.yieldLabel||'Rezept')+'</small></span><span class="recipe-gallery-arrow">'+icon('arrow',19)+'</span></button>').join('')||'<p class="muted">Keine passenden Rezepte.</p>';
+export function recipeCards(recipes,escape=x=>String(x),action='recipe',favorites=[]){
+ const savedIds=Array.isArray(favorites)?favorites:[];
+ return recipes.map(r=>{
+  const id=escape(r.id),saved=savedIds.includes(r.id);
+  const actionButton='<button type="button" class="recipe-gallery-main" data-act="'+action+':'+id+'"><span class="recipe-gallery-picture"><img src="'+recipePhotoPath(r)+'" alt="KI-generiertes Beispielbild" loading="lazy" decoding="async"></span><span class="recipe-gallery-content"><strong>'+escape(r.title)+'</strong><small>'+escape(r.category||'Sauerteig')+' · '+escape(r.yieldLabel||'Rezept')+'</small></span>'+(action==='recipe'?'':'<span class="recipe-gallery-arrow">'+icon('arrow',19)+'</span>')+'</button>';
+  const favorite=action==='recipe'?'<button type="button" class="recipe-gallery-fav '+(saved?'is-favorite':'')+'" data-act="favorite:'+id+'" aria-label="'+(saved?'Aus Favoriten entfernen':'Zu Favoriten hinzufügen')+'" aria-pressed="'+saved+'">'+icon('heart',20)+'</button>':'';
+  return '<article class="recipe-gallery-item">'+actionButton+favorite+'</article>';
+ }).join('')||'<p class="muted">Keine passenden Rezepte.</p>';
 }
 
 export function recipePicker(recipes,escape=x=>String(x)){return '<section class="card"><span class="hero-kicker">NEUER BACKTAG</span><h2>Was möchtest du backen?</h2><p class="muted">Wähle zuerst ein Rezept. Danach legst du Menge und Backzeit fest.</p><label for="pickRecipeSearch">Rezept suchen</label><input id="pickRecipeSearch" placeholder="Brot, Brötchen, Brezeln …"><div id="pickRecipeResults" class="recipe-gallery">'+recipeCards(recipes,escape,'selectForPlan')+'</div></section>'}

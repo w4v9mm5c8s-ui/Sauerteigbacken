@@ -1,8 +1,9 @@
 import {icon} from './icons.js';
+import {recipePhotoPath} from './recipe-gallery.js';
 
 const tiles=[
  ['Neues Brot planen','newPlan','/design/tile-plan.png'],
- ['Meine Rezepte','own','/design/tile-recipes.png'],
+ ['Meine Rezepte','recipes','/design/tile-recipes.png'],
  ['Rezept importieren','import','/design/tile-import.png'],
  ['Meine Backtage','bakingDays','/design/tile-backtage.png'],
  ['Backstatistik','stats','/design/tile-statistik.png'],
@@ -34,7 +35,7 @@ export function homeView({signed=false,active=null,parked=[],history=[],favorite
   return '<button class="home-upcoming-card" data-act="'+action+'"><span class="home-upcoming-picture"><img src="'+(i%2?'/design/tile-backtage.png':'/design/tile-import.png')+'" alt="" loading="lazy"></span><span class="home-upcoming-copy"><strong>'+escape(bake.title||'Backtag')+'</strong><small>'+escape(summary)+'</small><span class="home-upcoming-track" aria-hidden="true"><span style="width:'+pct+'%"></span></span><span class="sr-only">Schritt '+Math.min(steps.length,at+1)+' von '+steps.length+'</span></span></button>';
  }).join('')+'</div>'+(activeCount>1?'<span class="sr-only">'+activeCount+' Backtage parallel</span>':'')+'</section>':'';
  const grid='<section class="home-feature-grid" aria-label="Backen mit Sauerteig Funktionen">'+tiles.map(([label,route,art])=>'<button class="home-feature" data-act="'+route+'"><span class="home-feature-art"><img src="'+art+'" alt="" loading="lazy" decoding="async" width="240" height="200"></span><span class="home-feature-label">'+displayTitle(label)+'</span></button>').join('')+'</section>';
- const recent=signed&&history.length?'<section class="home-recent"><div class="home-section-heading"><h2>Zuletzt gebacken</h2><button data-act="history">Alle anzeigen '+icon('arrow',18)+'</button></div><div class="home-recent-grid">'+history.slice(-3).reverse().map((h,i)=>'<button class="home-recent-card" data-act="history"><div class="home-recent-art"><img src="'+(['/design/photo-landbrot.png','/design/photo-vollkorn.png','/design/photo-bauernbrot.png'][i%3])+'" alt="" loading="lazy"></div><strong>'+escape(h.title||'Backtag')+'</strong><small class="home-stars">'+(stars(h.rating)||'Noch nicht bewertet')+'</small><small>'+escape(dateLabel(h))+'</small></button>').join('')+'</div></section>':'';
+ const recent=signed&&history.length?'<section class="home-recent"><div class="home-section-heading"><h2>Zuletzt gebacken</h2><button data-act="history">Alle anzeigen '+icon('arrow',18)+'</button></div><div class="home-recent-grid">'+history.slice(-3).reverse().map((h,i)=>'<button class="home-recent-card" data-act="history"><div class="home-recent-art"><img src="'+recipePhotoPath(h)+'" alt="KI-generiertes Beispielbild" loading="lazy"></div><strong>'+escape(h.title||'Backtag')+'</strong><small class="home-stars">'+(stars(h.rating)||'Noch nicht bewertet')+'</small><small>'+escape(dateLabel(h))+'</small></button>').join('')+'</div></section>':'';
  const buddy=signed?'<button class="home-buddy" data-act="buddy"><img src="/design/tile-recipes.png" alt="" loading="lazy" width="150" height="135"><span><strong>Sauerteig-Buddy</strong><small>Dein KI-Assistent für Rezepte, Planung und Backfragen</small></span><span class="home-buddy-arrow">'+icon('arrow',22)+'</span></button>':'';
  return hero+grid+live+recent+buddy;
 }
