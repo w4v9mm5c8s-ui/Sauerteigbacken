@@ -68,3 +68,5 @@ Quellen: https://docs.stripe.com/payments/checkout , https://docs.stripe.com/bil
 - Preise vor Live-Verkauf bestätigen; Test-IDs später durch Live-IDs ersetzen.
 
 - Stripe-Sandbox-Webhook bleibt bis zur vollständigen Server-Konfiguration deaktiviert, damit keine unnötigen Fehlzustellungs-E-Mails entstehen.
+
+- Optionale tägliche KI-Kontingente sind datenbankseitig vorbereitet. Sie bleiben mit `AI_DAILY_QUOTA_ENABLED=false` deaktiviert, bis Umfang und Freikontingente beschlossen sind.
