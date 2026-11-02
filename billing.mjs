@@ -93,8 +93,35 @@ export function subscriptionFromEvent(event,env=process.env){
  current_period_end:s.items?.data?.[0]?.current_period_end?new Date(s.items.data[0].current_period_end*1000).toISOString():null,
  last_event_created:event.created||0,updated_at:new Date().toISOString()};
 }
+export function auxiliarySubscriptionId(event){
+ const obj=event?.data?.object??{};
+ let id=null;
+ if(event?.type==='checkout.session.completed'&&obj.mode==='subscription'){
+  id=obj.subscription;
+ }else if(['invoice.paid','invoice.payment_failed'].includes(event?.type)){
+  id=obj.subscription||obj.parent?.subscription_details?.subscription;
+ }
+ if(typeof id==='object')id=id?.id;
+ return typeof id==='string'&&/^sub_[A-Za-z0-9]+$/.test(id)?id:null;
+}
+export async function resolveBillingEvent(event,env=process.env){
+ if(['customer.subscription.created','customer.subscription.updated','customer.subscription.deleted'].includes(event?.type))return event;
+ const subId=auxiliarySubscriptionId(event);
+ if(!subId)return null;
+ if(!env.STRIPE_SECRET_KEY)throw Error('Stripe ist nicht konfiguriert');
+ const res=await fetch('https://api.stripe.com/v1/subscriptions/'+encodeURIComponent(subId),{
+  headers:{Authorization:'Bearer '+env.STRIPE_SECRET_KEY},
+  signal:AbortSignal.timeout(10000)
+ });
+ if(!res.ok)throw Error('Stripe-Abostatus derzeit nicht abrufbar');
+ const subscription=await res.json();
+ if(subscription?.id!==subId||subscription?.object!=='subscription')throw Error('Ungültiger Stripe-Abostatus');
+ return {type:'customer.subscription.updated',created:event.created,data:{object:subscription}};
+}
 export async function applyStripeEvent(event,env=process.env){
- const record=subscriptionFromEvent(event,env);if(!record)return {ignored:true};
+ const resolved=await resolveBillingEvent(event,env);
+ const record=resolved?subscriptionFromEvent(resolved,env):null;
+ if(!record)return {ignored:true};
  const response=await fetch(env.SUPABASE_URL+'/rest/v1/rpc/apply_sourdough_subscription_event',{
   method:'POST',
   headers:{apikey:env.SUPABASE_SERVICE_ROLE_KEY,Authorization:'Bearer '+env.SUPABASE_SERVICE_ROLE_KEY,'Content-Type':'application/json'},
