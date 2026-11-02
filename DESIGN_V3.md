@@ -43,3 +43,16 @@ Ziel: eigenständige App in Rosé/Beige mit echten Funktionen im Stil der zuvor 
 - [x] PWA-Cacheversion aktualisiert und HTML mit no-store ausgeliefert, damit alte Ladeansichten nicht im Browser hängen bleiben.
 - [ ] Die in früheren Nachrichten gezeigten Referenzgrafiken liegen als JPEG/PNG/WebP vor, nicht als originale SVG-Dateien. Für eine **exakte** 1:1-Übernahme der Originalvektoren fehlen die SVG-Quelldateien; aus Rasterbildern wird bewusst kein verlustbehaftetes SVG vorgetäuscht.
 - [ ] Echte optische Abnahme auf iPhone/Safari bleibt offen. Der iOS-eigene systembedingte Startbildschirm liegt außerhalb der App und kann durch das Entfernen von HTML-Ladetext nicht garantiert vollständig unterbunden werden.
+
+## 02.11.2026 – Vollständiger neuer Entwurf v4 anhand der zuletzt bestätigten Aquarellreferenz
+- [x] Vorherige winzige Vierer-Kacheln auf der iPhone-Startseite **entfernt** und in zwei Spalten mit breiten horizontalen Bild/Text-Karten ersetzt.
+- [x] Acht Kacheln wie in der neuesten Vorlage: Neues Brot planen, Meine Rezepte, Rezept importieren, Meine Backtage, Backstatistik, Favoriten, Wissensbibliothek und Einkaufsliste. Rechner bleibt unter Backen.
+- [x] Kopfzeile „Backen mit Sauerteig“ mit handgezeichnetem SVG-Herz, warmer Aquarellkomposition und kurzer Beschreibung.
+- [x] Farbwelt auf warmes Papierbeige, Cremeweiß, gebräuntes Brot, Braun und zurückhaltendes Altrosé umgestellt, statt großer rosafarbener Flächen.
+- [x] Neues v4-Stylesheet als oberstes visuelles Designsystem nach den alten Styles eingebunden. Responsive iPhone- und Tablet-Karten sowie passende Backen-Hub-Karten.
+- [x] Brot, Kalender, Bücher, Knetmaschine, Brotlaibe, Statistikklemmbrett, Favoritenherz, Ähren, Starterglas, Buddy, Küchenwaage, Brezel, Einkaufsliste und PWA-Icon als eigenständig **neu gezeichnete native SVG-Vektoren** mit warmen Verläufen, feinen Konturen, Papier- und Aquarellfiltern.
+- [x] Erstansicht in `index.html` und dynamische Startseite haben dieselben Kachelziele. Alle SVGs bleiben echte `.svg`-Dateien, ohne PNG/WebP-Einbettungen.
+- [x] Besonders lange deutsche Kartentitel mit bewussten Zeilenumbrüchen und Ausweichumbruch für schmale iPhones.
+- [x] Neues Motiv `art-shopping.svg` im Einkaufsbereich und Offline-Cache; Cacheversion erhöht.
+- [ ] SVGs sind stilistisch neu gezeichnet und **keine identischen Kopien der hochgeladenen Aquarell-Kunst oder des generierten Mockups**. Die Referenzen lagen nur als Rasterbilder vor.
+- [ ] Visueller Screenshotvergleich auf einem echten iPhone ist nicht automatisiert durchgeführt.
