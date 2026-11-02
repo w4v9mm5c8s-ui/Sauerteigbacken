@@ -1,3 +1,4 @@
+import {bakeCalendar} from './calendar.js';
 import {billingView} from './billing-ui.js';
 import {actualBakeDurations} from './bake-metrics.js';
 import {historicalView} from './historical.js';
@@ -77,6 +78,7 @@ if(a==='pantryAdd'){const name=$('#pantryName').value.trim(),amount=Number($('#p
 if(a.startsWith('pantryDelete:')){const d=local();d.pantry=d.pantry||[];d.pantry.splice(Number(a.split(':')[1]),1);save(d);render();return}
 if(a.startsWith('historyPhoto:')){const [,index,step]=a.split(':'),path=local().history[Number(index)]?.stepLogs?.[step]?.photoPath;if(!path)throw Error('Foto nicht gefunden');const url=await signedBakePhoto(cfg,token,path);if(!url)throw Error('Foto derzeit nicht abrufbar');const el=document.getElementById('historyPhotoPreview'+index),img=document.createElement('img');img.src=url;img.alt='Backfoto';img.className='bake-photo';el.replaceChildren(img);return}
 if(a==='statsExport'){const blob=new Blob([statsCsv(local().history)],{type:'text/csv;charset=utf-8'}),url=URL.createObjectURL(blob),link=document.createElement('a');link.href=url;link.download='sauerteig-backstatistik.csv';link.click();setTimeout(()=>URL.revokeObjectURL(url),1000);return}
+if(a==='exportCalendar'){const record=getActive();if(!record)throw Error('Kein Backtag vorhanden');const blob=new Blob([bakeCalendar(record)],{type:'text/calendar;charset=utf-8'});const url=URL.createObjectURL(blob),link=document.createElement('a');link.href=url;link.download='sauerteig-backplan.ics';link.click();setTimeout(()=>URL.revokeObjectURL(url),5000);note('Kalenderdatei erstellt');return}
 if(a==='printRecipe'){window.print();return}
 if(a==='calcDough'){const n=id=>Number(document.getElementById(id).value);const v=calculateDough(n('calcFlour'),n('calcWater'),n('calcSalt'),n('calcStarter'),n('calcStarterHyd'));$('#calcDoughResult').innerHTML='<p class="success">Teig: '+Math.round(v.total)+' g · Hydration: '+v.hydration.toFixed(1)+' % · Salz: '+v.saltPercent.toFixed(1)+' %</p>';return}
 if(a==='calcFeed'){const p=calculateFeed(Number($('#calcFeedTotal').value),$('#calcFeedRatio').value);$('#calcFeedResult').innerHTML='<p class="success">'+p[0]+' g Anstellgut · '+p[1]+' g Mehl · '+p[2]+' g Wasser</p>';return}
