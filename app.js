@@ -9,7 +9,8 @@ import {backtagView} from './backtag.js';
 import {makePlan} from './planner.js';
 let recipes=[],current=null,tab='start',user=null,token='',refreshToken='',cfg={},scale=1,moderator=false;
 const $=s=>document.querySelector(s),escape=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const button=(label,action)=>'<button data-act="'+action+'">'+escape(label)+'</button>';
+const actionIcons={plan:'calendar',hub:'bread',recipes:'library',community:'users',shopping:'basket',knowledge:'book',starters:'flask',pantry:'wheat',buddy:'chat',own:'book',history:'history',stats:'chart',calculator:'calculator',problem:'help',import:'upload'};
+const button=(label,action)=>'<button data-act="'+action+'">'+(actionIcons[action]?icon(actionIcons[action],18)+' ':'')+escape(label)+'</button>';
 const box=s=>'<section class="card">'+s+'</section>';
 const note=t=>{const x=$('#toast');x.textContent=t;x.style.display='block';setTimeout(()=>x.style.display='none',4000)};
 async function request(url,method='GET',data,retry=true){const r=await fetch(url,{method,headers:{'Content-Type':'application/json',...(token?{Authorization:'Bearer '+token}:{})},...(data?{body:JSON.stringify(data)}:{})});const j=await r.json().catch(()=>({}));if(r.status===401&&retry&&refreshToken){await renewSession();return request(url,method,data,false)}if(!r.ok)throw Error(j.error||j.error_description||j.msg||'Fehler');return j}
