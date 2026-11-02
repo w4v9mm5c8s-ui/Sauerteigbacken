@@ -159,3 +159,18 @@ body[data-page="knowledge"] .illustrated-section img,
 body[data-page="calculator"] .illustrated-section img{max-height:130px}
 body[data-page="buddy"] .buddy-watercolor{max-height:185px;height:160px}
 body[data-page="backtag"] .timer-panel{border-radius:22px}
+
+/* Watercolor tiles use one motif only; reserve line symbols for icon-only tiles */
+body[data-page="hub"] .hub-icon.has-art .hub-line-icon{display:none}
+body[data-page="hub"] .hub-icon.has-art img{max-width:100%;max-height:92px;object-fit:contain}
+body[data-page="hub"] .hub-tile:focus-visible,
+.home-feature:focus-visible,.recipe-gallery-item:focus-visible{outline:3px solid #a96b81;outline-offset:3px}
+/* Keep the bottom navigation above iPhone home indicator, without blocking last inputs */
+body[data-page="start"] main,
+body:not([data-page="start"]) main{padding-bottom:calc(146px + env(safe-area-inset-bottom,0px))}
+body[data-page="start"] .home-masthead{isolation:isolate}
+@media(max-width:390px){
+  .home-feature{font-size:.91rem}
+  body[data-page="hub"] .hub-tile{min-height:150px}
+  body[data-page="hub"] .hub-icon{height:80px;flex-basis:80px}
+}
