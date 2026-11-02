@@ -20,13 +20,16 @@ test('new visual assets are in public allowlist and offline cache',()=>{
   assert.ok(sw.includes("'"+asset+"'"),'not cached '+asset);
  }
 });
-test('home and learning screens render watercolor artwork',()=>{
- assert.ok(read('app.js').includes('src="/art-loaf.svg"'));
- assert.ok(read('app.js').includes('src="/art-basket.svg"'));
- assert.ok(read('knowledge.js').includes('src="/art-wheat.svg"'));
- assert.ok(read('app.js').includes('src="/art-starter.svg"'));
- assert.ok(read('app.js').includes('src="/art-tools.svg"'));
+test('home and learning screens use the watercolor motifs matching the approved design',()=>{
+ const home=read('home.js'),app=read('app.js'),knowledge=read('knowledge.js'),gallery=read('recipe-gallery.js');
+ assert.ok(home.includes('src="/art-hero.svg"'));
+ assert.ok(home.includes('src="/art-buddy.svg"'));
+ assert.ok(knowledge.includes('src="/art-books.svg"'));
+ assert.ok(app.includes('src="/art-starter.svg"'));
+ assert.ok(app.includes('src="/art-buddy.svg"'));
+ assert.ok(gallery.includes('/art-pretzel.svg'));
 });
+
 test('new theme is loaded after legacy stylesheet and supports iPhone safe area',()=>{
  const html=read('index.html'),css=read('theme.css');
  assert.ok(html.indexOf('/theme.css')>html.indexOf('/style.css'));
