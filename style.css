@@ -137,3 +137,5 @@ details>label{margin-top:12px}
 progress{accent-color:var(--rose)}
 
 @media print{body{background:white;color:black;font-size:12pt}nav,header,.eyebrow,button,#toast,.hub-actions,.action-grid{display:none!important}main{padding:0;max-width:none}.card{border:0;box-shadow:none;padding:0}.step{break-inside:avoid;border:0;background:white}.muted{color:#555}input,select{border:0}details{display:block}details>*{display:block}}
+
+.quality-bar{display:grid;grid-template-columns:85px 1fr 32px;gap:12px;align-items:center;margin:10px 0;font-size:.9rem}.quality-track{height:12px;border-radius:99px;background:#f2e1e5;overflow:hidden}.quality-track>div{height:100%;border-radius:99px;background:linear-gradient(90deg,#d9a1ae,#a9697b)}
