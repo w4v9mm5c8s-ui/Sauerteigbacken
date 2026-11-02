@@ -135,3 +135,5 @@ details>label{margin-top:12px}
 .card a{color:var(--rose-deep);text-decoration:underline;text-underline-offset:3px}
 .starter-entry>summary{font-size:1.1rem}
 progress{accent-color:var(--rose)}
+
+@media print{body{background:white;color:black;font-size:12pt}nav,header,.eyebrow,button,#toast,.hub-actions,.action-grid{display:none!important}main{padding:0;max-width:none}.card{border:0;box-shadow:none;padding:0}.step{break-inside:avoid;border:0;background:white}.muted{color:#555}input,select{border:0}details{display:block}details>*{display:block}}
