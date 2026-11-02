@@ -7,7 +7,7 @@ const read=name=>readFileSync(new URL('../'+name,import.meta.url),'utf8');
 test('home screen has eight real navigation tiles with decorative watercolors',()=>{
  const html=homeView({signed:false,active:null,parked:[],history:[],favorites:[],escape:x=>String(x)});
  assert.equal((html.match(/class="home-feature"/g)||[]).length,8);
- for(const route of ['plan','own','import','bakingDays','stats','favorites','knowledge','calculator'])assert.ok(html.includes('data-act="'+route+'"'),route);
+ for(const route of ['newPlan','own','import','bakingDays','stats','favorites','knowledge','calculator'])assert.ok(html.includes('data-act="'+route+'"'),route);
  assert.match(html,/art-hero\.svg/);
  assert.doesNotMatch(html,/Zuletzt gebacken/);
  assert.doesNotMatch(html,/home-buddy/);
@@ -49,7 +49,7 @@ test('mobile grid and safe area are responsive',()=>{
 });
 test('new home resources are explicitly available and offline cached',()=>{
  const server=read('server.mjs'),sw=read('sw.js');
- for(const asset of ['/home.js','/theme-v3.css','/art-hero.svg','/art-books.svg','/art-scale.svg','/art-calendar.svg','/art-buddy.svg']){
+ for(const asset of ['/recipe-gallery.js','/art-pretzel.svg','/home.js','/theme-v3.css','/art-hero.svg','/art-books.svg','/art-scale.svg','/art-calendar.svg','/art-buddy.svg']){
   assert.ok(server.includes("'"+asset+"'"),asset+' missing allowlist');
   assert.ok(sw.includes("'"+asset+"'"),asset+' missing offline list');
  }
