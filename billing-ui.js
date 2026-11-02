@@ -8,5 +8,5 @@ export function billingView(user,status,escape){
  (active?'<p>Dein Abonnement wird von Stripe verwaltet.</p><button data-act="billingPortal">Abo und Rechnungen verwalten</button>':
  enabled?'<h3>Plus-Abo wählen</h3><p>Monatlich: <strong>'+price('monthly')+' pro Monat</strong>, inklusive Umsatzsteuer.</p><p>Jährlich: <strong>'+price('yearly')+' pro Jahr</strong>, inklusive Umsatzsteuer.</p><p class="muted">Die Zahlung erfolgt sicher über Stripe. Prüfe alle Bedingungen vor dem Abschluss.</p><button data-act="billingCheckout:monthly">Monatsabo auswählen</button><button data-act="billingCheckout:yearly">Jahresabo auswählen</button>':
  '<p class="muted">Die Zahlung ist derzeit noch nicht freigeschaltet. Du kannst die App weiterhin kostenlos verwenden.</p>')+
- '<p class="muted">Nach Aktivierung verwaltest du Zahlungsmethoden, Rechnungen und Kündigung im Stripe-Kundenportal.</p></section>';
+ (!active&&status?.hasCustomer?'<button data-act="billingPortal">Frühere Rechnungen und Zahlungsmethoden verwalten</button>':'')+'<p class="muted">Nach Aktivierung verwaltest du Zahlungsmethoden, Rechnungen und Kündigung im Stripe-Kundenportal.</p></section>';
 }
