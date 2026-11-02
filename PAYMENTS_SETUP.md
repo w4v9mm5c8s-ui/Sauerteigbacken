@@ -83,10 +83,12 @@ Quellen: https://docs.stripe.com/payments/checkout , https://docs.stripe.com/bil
 
 Stripe Payments und Stripe Billing laufen hier über **den eigenen Node-Server auf Render**,
 nicht über Lovable Payments. Der Test-Produktentwurf in Stripe heißt
-**Backen mit Sauerteig**: `prod_VYUFpenhskYOlE`. Er ist inaktiv; es gibt keine
-Monats- oder Jahrespreise und keine Live-Zahlungen.
+**Sauerteig Plus**: `prod_VYU3gEDcFeG3XR`. Es gibt inzwischen aktive
+Sandbox-Testpreise (4,90 €/Monat und 39,90 €/Jahr, inkl. Umsatzsteuer), aber
+sie sind nicht als Verkaufstarife freigegeben. Zusätzlich existiert ein
+inaktiver Entwurf `prod_VYUFpenhskYOlE` ohne Preise. Keine Live-Zahlungen.
 
-- Mit `STRIPE_PRODUCT_ID=prod_VYUFpenhskYOlE` wird zusätzlich geprüft, ob die
+- Mit `STRIPE_PRODUCT_ID=prod_VYU3gEDcFeG3XR` wird zusätzlich geprüft, ob die
   monatliche/jährliche Stripe-Preis-ID tatsächlich zu diesem Produkt gehört.
   Dies ist eine **Testkonto-ID** und muss beim Livewechsel separat ersetzt werden.
 - Neue Checkout-Abos tragen `metadata.app=sauerteig`; Abos anderer Apps werden verworfen.
@@ -95,6 +97,8 @@ Monats- oder Jahrespreise und keine Live-Zahlungen.
   `checkout.session.completed` werden auf den aktuellen Stripe-Abozustand abgeglichen.
 - Bevor Zahlungen aktiviert werden, Webhook-Ziel `/api/stripe/webhook`, Preise,
   Kontoportal, Zugangskontrolle, Renewal, Fehler, Löschung und rechtliche Texte testen.
+- Vorhandene Sandbox-Preise (nur nach ausdrücklicher Bestätigung verwenden):
+  monatlich `price_1UXNDM21ZUER5Za89OmqU6aM`, jährlich `price_1UXNDT21ZUER5Za8cIuYfsvl`.
 - Die Supabase-Funktion `public.apply_sourdough_subscription_event(jsonb)` wurde
   im Test geprüft: `anon` und `authenticated` haben **kein EXECUTE**, nur
   `service_role` (neben Datenbank-Administrator:innen).
