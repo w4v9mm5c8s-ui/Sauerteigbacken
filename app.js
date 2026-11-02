@@ -1,3 +1,4 @@
+import {parseOwnRecipe,recipeToRaw} from './own-recipe-parser.js';
 import {planningView,readPlanningForm} from './planning-ui.js';
 import {statsView,statsCsv} from './stats.js';
 import {icon} from './icons.js';
@@ -8,7 +9,7 @@ import {knowledgeView,problemsView,setKnowledgeCards,knowledgeResults} from './k
 import {ownRecipesView,normalizeExtractedRecipe} from './own-recipes.js';
 import {backtagView} from './backtag.js';
 import {makePlan} from './planner.js';
-let recipes=[],current=null,tab='start',user=null,token='',refreshToken='',cfg={},scale=1,moderator=false;
+let recipes=[],current=null,tab='start',user=null,token='',refreshToken='',cfg={},scale=1,moderator=false,editingOwn=null;
 const $=s=>document.querySelector(s),escape=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const actionIcons={plan:'calendar',hub:'bread',recipes:'library',community:'users',shopping:'basket',knowledge:'book',starters:'flask',pantry:'wheat',buddy:'chat',own:'book',history:'history',stats:'chart',calculator:'calculator',problem:'help',import:'upload'};
 const button=(label,action)=>'<button data-act="'+action+'">'+(actionIcons[action]?icon(actionIcons[action],18)+' ':'')+escape(label)+'</button>';
@@ -30,7 +31,7 @@ calculator:()=>calculatorView(),
 knowledge:()=>knowledgeView(escape),
 problem:()=>problemsView(button),
 stats:()=>statsView(local().history,escape),
-import:()=>user?ownRecipesView(local().ownRecipes||[],escape):box('Bitte anmelden, um Rezepte zu importieren.'),
+import:()=>user?ownRecipesView(local().ownRecipes||[],escape,editingOwn):box('Bitte anmelden, um Rezepte zu importieren.'),
 pantry:()=>user?pantryView(local().pantry||[],escape):box('Bitte anmelden.'),
 history:()=>box('<h2>Meine Brote</h2>'+(local().history.length?local().history.map((x,i)=>({...x,index:i})).reverse().map(x=>'<details class="bake-log"><summary>'+escape(x.title)+' · '+escape(x.date)+'</summary><div class="stats-edit"><label>Bewertung (1–5)</label><select data-log="'+x.index+'" data-field="rating"><option value="">Keine</option>'+[1,2,3,4,5].map(n=>'<option value="'+n+'" '+(Number(x.rating)===n?'selected':'')+'>'+n+'</option>').join('')+'</select>'+[['flour','Verwendetes Mehl','text'],['hydration','Hydration (%)','number'],['doughTemp','Teigtemperatur (°C)','number'],['stockHours','Stockgare (Stunden)','number'],['proofHours','Stückgare (Stunden)','number'],['totalHours','Gesamtdauer (Stunden)','number']].map(([key,label,type])=>'<label>'+label+'</label><input data-log="'+x.index+'" data-field="'+key+'" type="'+type+'" '+(type==='number'?'step="0.1" min="0"':'')+' value="'+escape(x[key]??'')+'">').join('')+'</div></details>').join(''):'<p class="muted">Noch kein Brot dokumentiert.</p>')),
 
@@ -42,7 +43,7 @@ account:()=>user?box('<h2>Angemeldet</h2><p>'+escape(user.email)+'</p>'+'<div cl
 shopping:()=>user?box('<h2>Einkaufsliste</h2><div id="shop"></div>'+button('Liste teilen','share')):box('Bitte anmelden.'),
 starters:()=>user?box('<h2>Meine Starter</h2><div id="starters"></div><label>Name</label><input id="starterName" placeholder="z. B. Wilma">'+'<label>Fütterungsverhältnis</label><select id="starterRatio"><option>1:2:2</option><option>1:1:1</option><option>1:3:3</option><option>1:5:5</option></select>'+button('Starter hinzufügen','addStarter')):box('Bitte anmelden.'),
 backtag:()=>backtagView(getActive(),escape)+(getParked().length?box('<h3>Weitere laufende Backtage</h3>'+getParked().map((b,i)=>'<button class="item" data-act="switchBake:'+i+'">'+escape(b.title)+' · Schritt '+(b.index+1)+' von '+b.steps.length+'</button>').join('')):''),
-own:()=>user?ownRecipesView(local().ownRecipes||[],escape):box('Bitte anmelden.'),
+own:()=>user?ownRecipesView(local().ownRecipes||[],escape,editingOwn):box('Bitte anmelden.'),
 moderation:()=>moderator?box('<h2>Rezeptfreigaben</h2><div id="pendingRecipes">Lädt …</div>'):box('Kein Zugriff.'),
 community:()=>user?box('<h2>Community-Rezepte</h2><div id="community">Lädt …</div><h3>Rezept einreichen</h3><input id="ctitle" placeholder="Titel"><textarea id="cingredients" placeholder="Zutaten"></textarea><textarea id="cinstructions" placeholder="Anleitung"></textarea>'+button('Zur Prüfung einreichen','submit')+(moderator?button('Rezepte prüfen','moderation'):'')):box('Bitte anmelden.')
 };
@@ -60,7 +61,7 @@ if(a==='calcFeed'){const p=calculateFeed(Number($('#calcFeedTotal').value),$('#c
 if(a==='back'){if(tab==='backtag'){const b=getActive();if(b&&b.index>0){b.index--;setActive(b);render();return}tab='plan'}else if(tab==='plan'){tab='recipes'}else if(tab==='recipes'&&current){current=null}else{tab='start'}render();return}
 if(pages[a]){tab=a;render();if(a==='shopping')shop();if(a==='starters')starters();if(a==='community')community();if(a==='moderation')loadPending();return}
 if(a==='clear'){current=null;tab='recipes';render();return}
-if(a.startsWith('recipe:')){current=recipes.find(x=>x.id===a.slice(7));scale=1;render();return}
+if(a.startsWith('recipe:')){current=[...recipes,...(local().ownRecipes||[]).map(x=>x.recipe).filter(Boolean)].find(x=>x.id===a.slice(7));if(!current)throw Error('Rezept nicht gefunden');scale=1;render();return}
 if(a==='calculate'){
  const data=readPlanningForm(current||recipes[0],id=>document.getElementById(id));
  const p=makePlan(data.recipe,data.finish,data.from,data.to,data.ready,data.preheat,data.awayFrom,data.awayTo,data.options);
@@ -82,8 +83,19 @@ if(a==='addShopping'){const d=local(),r=current;for(const x of [...r.flours.map(
 if(a.startsWith('feed:')){const st=local().starters[Number(a.slice(5))];if(!st)throw Error('Starter nicht gefunden');const total=Number(prompt('Wie viel reifen Starter brauchst du insgesamt (g)?','180'));if(!Number.isFinite(total)||total<=0)return;const parts=(st.ratio||'1:2:2').split(':').map(Number),factor=parts.reduce((a,b)=>a+b,0),seed=Math.ceil(total*parts[0]/factor),flour=Math.ceil(total*parts[1]/factor),water=Math.ceil(total*parts[2]/factor);alert('Für ca. '+(seed+flour+water)+' g Starter bei '+(st.ratio||'1:2:2')+':\n'+seed+' g Anstellgut\n'+flour+' g Mehl\n'+water+' g Wasser\nReifezeit hängt von Temperatur und Starteraktivität ab.');return}
 if(a==='approve' || a==='reject'){throw Error('Bitte Rezept auswählen')}
 if(a.startsWith('moderate:')){const parts=a.split(':');await request('/api/moderation/decision','POST',{id:parts[2],status:parts[1]==='approve'?'published':'rejected'});await loadPending();note('Entscheidung gespeichert');return}
-if(a==='ownSave'){const title=$('#ownTitle').value.trim(),ingredients=$('#ownIngredients').value.trim(),steps=$('#ownSteps').value.trim();if(title.length<3||ingredients.length<5||steps.length<5)throw Error('Bitte Titel, Zutaten und Schritte ausfüllen');const d=local();d.ownRecipes=d.ownRecipes||[];d.ownRecipes.push({title,ingredients,steps});save(d);render();note('Rezept gespeichert');return}
-if(a.startsWith('ownDelete:')){const d=local();d.ownRecipes=d.ownRecipes||[];d.ownRecipes.splice(Number(a.split(':')[1]),1);save(d);render();return}
+if(a==='ownSave'){
+ const raw={title:$('#ownTitle').value,ingredients:$('#ownIngredients').value,steps:$('#ownSteps').value,bakeTemp:$('#ownBakeTemp').value,bakeMin:$('#ownBakeMin').value,stockHours:$('#ownStock').value,proofHours:$('#ownProof').value,starterType:$('#ownStarterType').value};
+ const old=editingOwn!==null?local().ownRecipes?.[editingOwn]:null;
+ const parsed=parseOwnRecipe({...raw,id:old?.recipe?.id});
+ const d=local();d.ownRecipes=d.ownRecipes||[];
+ const entry={...raw,recipe:parsed};
+ if(editingOwn===null)d.ownRecipes.push(entry);else d.ownRecipes[editingOwn]=entry;
+ save(d);editingOwn=null;render();note('Rezept gespeichert');return
+}
+if(a.startsWith('ownEdit:')){editingOwn=Number(a.slice(8));render();return}
+if(a.startsWith('ownDuplicate:')){const d=local(),i=Number(a.slice(13));if(!d.ownRecipes?.[i])return;const copy=structuredClone(d.ownRecipes[i]);copy.title+=' (Kopie)';if(copy.recipe){copy.recipe.title=copy.title;copy.recipe.id='own-'+Date.now()}d.ownRecipes.push(copy);save(d);render();return}
+if(a.startsWith('ownPlan:')){const r=local().ownRecipes?.[Number(a.slice(8))]?.recipe;if(!r)throw Error('Bitte zuerst Rezeptangaben vervollständigen');current=r;tab='plan';render();return}
+if(a.startsWith('ownDelete:')){const d=local();d.ownRecipes=d.ownRecipes||[];d.ownRecipes.splice(Number(a.slice(10)),1);save(d);editingOwn=null;render();return}
 if(a==='ownFetchUrl'){const url=$('#ownImportUrl')?.value?.trim();if(!url)throw Error('Bitte Rezeptlink eingeben');const j=await request('/api/recipe-url','POST',{url});$('#ownImportText').value=j.text;note('Rezepttext geladen. Prüfe den Text und starte anschließend die KI-Auswertung.');return}
 if(a==='ownImport'){if(!$('#ownImportConsent').checked)throw Error('Bitte KI-Auswertung erlauben');const text=$('#ownImportText').value.trim(),image=await readImage($('#ownImportPhoto').files[0]);if(!text&&!image)throw Error('Bitte Rezepttext oder Foto auswählen');const j=await request('/api/recipe-extract','POST',{text,image});const r=normalizeExtractedRecipe(j.recipe);$('#ownTitle').value=r.title;$('#ownIngredients').value=r.ingredients;$('#ownSteps').value=r.steps;note('Rezept ausgelesen. Bitte vor dem Speichern überprüfen.');return}
 if(a==='addStarter'){const name=$('#starterName').value.trim();if(!name)throw Error('Name fehlt');const d=local();d.starters.push({name,ratio:$('#starterRatio').value});save(d);starters();return}
