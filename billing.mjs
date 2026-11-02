@@ -55,10 +55,13 @@ export async function portalSession(userId,env=process.env){
  if(!/^https:\/\/billing\.stripe\.com\//.test(result.url||''))throw Error('Ungültige Portal-Adresse');
  return {url:result.url};
 }
-export function subscriptionFromEvent(event){
+export function subscriptionFromEvent(event,env=process.env){
  if(!['customer.subscription.created','customer.subscription.updated','customer.subscription.deleted'].includes(event?.type))return null;
  const s=event.data?.object;if(!s?.id||!s.customer)return null;
  const uid=s.metadata?.user_id;
+ const priceId=s.items?.data?.[0]?.price?.id||null;
+ const approved=[env.STRIPE_PRICE_MONTHLY,env.STRIPE_PRICE_YEARLY].filter(Boolean);
+ if(!approved.length||!approved.includes(priceId))return null;
  if(!/^[0-9a-f-]{36}$/i.test(uid||''))return null;
  return {user_id:uid,stripe_customer_id:typeof s.customer==='string'?s.customer:s.customer.id,
  stripe_subscription_id:s.id,status:s.status||'inactive',price_id:s.items?.data?.[0]?.price?.id||null,
@@ -66,7 +69,7 @@ export function subscriptionFromEvent(event){
  last_event_created:event.created||0,updated_at:new Date().toISOString()};
 }
 export async function applyStripeEvent(event,env=process.env){
- const record=subscriptionFromEvent(event);if(!record)return {ignored:true};
+ const record=subscriptionFromEvent(event,env);if(!record)return {ignored:true};
  const old=await subscriptionRow(record.user_id,env);
  // A stale webhook must never restore a cancelled subscription.
  const lookup=await fetch(env.SUPABASE_URL+'/rest/v1/sourdough_subscriptions?user_id=eq.'+record.user_id+'&select=last_event_created',{headers:{apikey:env.SUPABASE_SERVICE_ROLE_KEY,Authorization:'Bearer '+env.SUPABASE_SERVICE_ROLE_KEY}});
