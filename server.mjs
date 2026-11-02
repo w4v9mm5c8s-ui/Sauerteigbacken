@@ -39,8 +39,8 @@ if(url.pathname.startsWith('/api/')){
  const id=await who(req);if(!id)return json(res,401,{error:'Bitte zuerst anmelden.'});
  if(!limit('user:'+id.user.id,180))return json(res,429,{error:'Zu viele Anfragen'});
  if(url.pathname==='/api/billing/status'&&req.method==='GET'){
- if(!billingConfigured())return json(res,200,{enabled:false,plus:false,status:'unavailable'});
- const row=await subscriptionRow(id.user.id);return json(res,200,{enabled:billingEnabled(),plus:!!row&&['active','trialing'].includes(row.status),status:row?.status||'inactive',periodEnd:row?.current_period_end||null});
+ if(!process.env.SUPABASE_SERVICE_ROLE_KEY||!process.env.SUPABASE_URL)return json(res,200,{enabled:false,plus:false,status:'unavailable',hasCustomer:false});
+ const row=await subscriptionRow(id.user.id);return json(res,200,{enabled:billingEnabled(),plus:!!row&&['active','trialing'].includes(row.status),status:row?.status||'inactive',hasCustomer:!!row?.stripe_customer_id&&!!process.env.STRIPE_SECRET_KEY,periodEnd:row?.current_period_end||null});
 }
 if(url.pathname==='/api/billing/plans'&&req.method==='GET'){
  try{return json(res,200,await publicBillingPlans())}catch{return json(res,200,{enabled:false,plans:[]})}
