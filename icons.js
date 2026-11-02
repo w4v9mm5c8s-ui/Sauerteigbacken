@@ -1,2 +1,32 @@
-const paths={home:'<path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z"/>',bread:'<path d="M5 20h14a3 3 0 0 0 3-3V9a6 6 0 0 0-6-6c-1.6 0-3 .6-4 1.7A6 6 0 0 0 2 9v8a3 3 0 0 0 3 3z"/><path d="M12 5v15"/>',chat:'<path d="M21 11.5a8.5 8.5 0 0 1-8.5 8.5 9 9 0 0 1-4-.9L3 21l1.9-5.5A9 9 0 1 1 21 11.5z"/><path d="M8 11h8M8 15h5"/>',user:'<circle cx="12" cy="8" r="4"/><path d="M4 21v-2a8 8 0 0 1 16 0v2"/>',calendar:'<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M7 3v4m10-4v4M3 10h18m-13 5h3"/>',book:'<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20V3H6.5A2.5 2.5 0 0 0 4 5.5z"/><path d="M4 19.5A2.5 2.5 0 0 0 6.5 22H20v-5"/>',library:'<rect x="4" y="3" width="5" height="18" rx="1"/><rect x="10" y="3" width="5" height="18" rx="1"/><path d="m16 4 4 16"/>',users:'<circle cx="9" cy="8" r="3"/><path d="M3 20v-2a6 6 0 0 1 12 0v2M16 5a3 3 0 0 1 0 6m2 3a5 5 0 0 1 3 5v1"/>',upload:'<path d="M12 16V3m-5 5 5-5 5 5M4 17v4h16v-4"/>',history:'<path d="M3 12a9 9 0 1 0 3-7l-3 3M3 3v5h5m4-1v5l4 2"/>',chart:'<path d="M4 20V11m6 9V4m6 16v-7m4 7H2"/>',calculator:'<rect x="4" y="2" width="16" height="20" rx="2"/><path d="M8 6h8M8 11h2m4 0h2m-8 4h2m4 0h2m-8 4h2m4 0h2"/>',help:'<circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.5 2.5 0 0 1 5 0c0 2-2.5 2.2-2.5 4m0 3h.01"/>',heart:'<path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0l-1 1-1-1a5.5 5.5 0 0 0-7.8 7.8L12 21l8.8-8.6a5.5 5.5 0 0 0 0-7.8z"/>',basket:'<path d="m5 11 3-7m11 7-3-7M3 11h18l-2 10H5zM9 15v3m6-3v3"/>',wheat:'<path d="M12 22V3m0 7c-5 0-6-4-6-4s5-1 6 4zm0 5c-5 0-6-4-6-4s5-1 6 4zm0-5c5 0 6-4 6-4s-5-1-6 4zm0 5c5 0 6-4 6-4s-5-1-6 4z"/>',arrow:'<path d="m9 18 6-6-6-6"/>',star:'<path d="m12 2 3.1 6.3 6.9 1-5 4.9 1.2 6.8-6.2-3.3-6.2 3.3 1.2-6.8-5-4.9 6.9-1z"/>',clock:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',flask:'<path d="M9 3h6m-5 0v7L4 20a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1l-6-10V3M8 15h8"/>',check:'<path d="m4 12 5 5L20 6"/>',list:'<path d="M9 6h12M9 12h12M9 18h12M3 6h.01M3 12h.01M3 18h.01"/>'};
-export function icon(name,size=22){return '<svg class="ui-icon" width="'+size+'" height="'+size+'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+(paths[name]||paths.wheat)+'</svg>'}
+const paths={
+home:'<path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z"/>',
+bread:'<path d="M3.5 15.5c0-5.7 3.7-10 8.5-10s8.5 4.3 8.5 10c0 3.1-2.7 5.5-6.2 5.5H9.7c-3.5 0-6.2-2.4-6.2-5.5Z"/><path d="M8 11.5 11 9m1 6 3.3-3.2m-5 5.4 3.4-3.3"/>',
+chat:'<path d="M20.5 11.5a8.5 8.5 0 0 1-8.5 8.5 9 9 0 0 1-4-.9L3 21l1.9-5.5A9 9 0 1 1 20.5 11.5Z"/><path d="M9 11.5h6m-6 3h4"/>',
+user:'<circle cx="12" cy="8" r="3.8"/><path d="M4.2 21v-1.7a7.8 7.8 0 0 1 15.6 0V21"/>',
+calendar:'<rect x="3" y="5" width="18" height="16" rx="2.5"/><path d="M7 3v4m10-4v4M3 10h18m-13 5h3"/>',
+book:'<path d="M12 6c-2.4-1.6-5.1-2-9-1.6v15c3.9-.5 6.6 0 9 1.6 2.4-1.6 5.1-2.1 9-1.6v-15c-3.9-.4-6.6 0-9 1.6Zm0 0v15"/>',
+library:'<path d="M4 4h4v17H4zM10 4h4v17h-4zM16 5l3.5-1 3.2 16-3.5 1z"/>',
+users:'<circle cx="9" cy="8" r="3"/><path d="M3 20v-2a6 6 0 0 1 12 0v2M16 5a3 3 0 0 1 0 6m2 3a5 5 0 0 1 3 5v1"/>',
+upload:'<path d="M12 16V3m-5 5 5-5 5 5M4 17v4h16v-4"/>',
+history:'<path d="M3 12a9 9 0 1 0 3-7L3 8M3 3v5h5m4-1v5l4 2"/>',
+chart:'<path d="M4 20V11m6 9V4m6 16v-7m4 7H2"/>',
+calculator:'<rect x="4" y="2" width="16" height="20" rx="2.5"/><path d="M8 6h8M8 11h2m4 0h2m-8 4h2m4 0h2m-8 4h2m4 0h2"/>',
+help:'<circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.5 2.5 0 0 1 5 0c0 2-2.5 2.2-2.5 4m0 3h.01"/>',
+heart:'<path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0l-1 1-1-1a5.5 5.5 0 0 0-7.8 7.8L12 21l8.8-8.6a5.5 5.5 0 0 0 0-7.8z"/>',
+basket:'<path d="m5 11 3-7m11 7-3-7M3 11h18l-2 10H5zM9 15v3m6-3v3"/>',
+wheat:'<path d="M12 22V3m0 7c-5 0-6-4-6-4s5-1 6 4Zm0 5c-5 0-6-4-6-4s5-1 6 4Zm0-5c5 0 6-4 6-4s-5-1-6 4Zm0 5c5 0 6-4 6-4s-5-1-6 4Z"/>',
+arrow:'<path d="m9 18 6-6-6-6"/>',
+'arrow-left':'<path d="m15 18-6-6 6-6M9 12h12"/>',
+star:'<path d="m12 2 3.1 6.3 6.9 1-5 4.9 1.2 6.8-6.2-3.3-6.2 3.3 1.2-6.8-5-4.9 6.9-1z"/>',
+clock:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+timer:'<circle cx="12" cy="13" r="8"/><path d="M12 13V8m-3-6h6m-3 0v3m6 2 2-2"/>',
+flask:'<path d="M9 3h6m-5 0v7L4 20a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1l-6-10V3M8 15h8"/>',
+jar:'<path d="M7 3h10l1 3-1 2v11a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2V8L6 6l1-3Z"/><path d="M7 8h10M8 13c2-1 3 1 4 0s3-1 4 0m-6 3h.01m4 1h.01"/>',
+scale:'<path d="M12 3v18M5 6h14M3 11l3-5 3 5m-6 0a3 3 0 0 0 6 0m6 0 3-5 3 5m-6 0a3 3 0 0 0 6 0M7 21h10"/>',
+sparkles:'<path d="m12 3 1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8L12 3ZM19 16l.7 2.3L22 19l-2.3.7L19 22l-.7-2.3L16 19l2.3-.7L19 16Z"/>',
+image:'<rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8" cy="8" r="1.5"/><path d="m3 17 5-5 4 4 3-3 6 6"/>',
+check:'<path d="m4 12 5 5L20 6"/>',
+list:'<path d="M9 6h12M9 12h12M9 18h12M3 6h.01M3 12h.01M3 18h.01"/>',
+baguette:'<path d="M5 19C2 16 3 10 8 6s11-4 13-1c2 4-1 10-6 13S8 22 5 19Z"/><path d="m8 10 3 3m2-7 3 3m-7 7 3 3"/>'
+};
+export function icon(name,size=22){const safe=Number.isFinite(Number(size))?Math.max(12,Math.min(96,Number(size))):22;return '<svg class="ui-icon" width="'+safe+'" height="'+safe+'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+(paths[name]||paths.wheat)+'</svg>'}
