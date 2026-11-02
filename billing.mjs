@@ -25,10 +25,34 @@ export async function subscriptionRow(userId,env=process.env){
  if(!r.ok)throw Error('Abo-Status derzeit nicht verfügbar');
  return (await r.json())[0]||null;
 }
+export async function stripePrice(priceId,env=process.env){
+ if(!/^price_[A-Za-z0-9]+$/.test(priceId||''))throw Error('Ungültiger Stripe-Preis');
+ const r=await fetch('https://api.stripe.com/v1/prices/'+encodeURIComponent(priceId),{
+  headers:{Authorization:'Bearer '+env.STRIPE_SECRET_KEY},signal:AbortSignal.timeout(10000)
+ });
+ if(!r.ok)throw Error('Stripe-Preis nicht verfügbar');
+ return r.json();
+}
+export function validConsumerPrice(price,interval){
+ return price?.active===true&&price?.currency==='eur'&&price?.type==='recurring'
+  &&price?.recurring?.interval===interval&&Number.isInteger(price.unit_amount)
+  &&price.unit_amount>0&&price.tax_behavior==='inclusive';
+}
+export async function publicBillingPlans(env=process.env){
+ if(!billingEnabled(env))return {enabled:false,plans:[]};
+ const ids=billingPrices(env),plans=[];
+ for(const [plan,id] of Object.entries(ids)){
+  const interval=plan==='monthly'?'month':'year',price=await stripePrice(id,env);
+  if(!validConsumerPrice(price,interval))return {enabled:false,plans:[],reason:'Stripe-Preise müssen aktiv, in EUR und inklusive Steuern sein'};
+  plans.push({plan,amount:price.unit_amount,currency:'EUR',interval,taxInclusive:true});
+ }
+ return {enabled:true,plans};
+}
 export async function checkoutSession(user,plan,env=process.env){
  if(!billingEnabled(env))throw Error('Bezahlfunktion noch nicht freigeschaltet');
  if(!['monthly','yearly'].includes(plan))throw Error('Ungültiger Tarif');
  const price=billingPrices(env)[plan];if(!/^price_[A-Za-z0-9]+$/.test(price))throw Error('Stripe-Preis nicht eingerichtet');
+ const checked=await stripePrice(price,env);if(!validConsumerPrice(checked,plan==='monthly'?'month':'year'))throw Error('Tarifpreis noch nicht für den Verkauf freigegeben');
  const existing=await subscriptionRow(user.id,env);
  if(existing&&['active','trialing'].includes(existing.status))throw Error('Dein Plus-Abo ist bereits aktiv. Bitte Abo verwalten.');
  const base=env.PUBLIC_BASE_URL||'https://backen-mit-sauerteig.onrender.com';
