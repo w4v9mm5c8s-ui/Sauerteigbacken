@@ -80,7 +80,9 @@ export async function portalSession(userId,env=process.env){
  const existing=await subscriptionRow(userId,env);
  if(!existing?.stripe_customer_id)throw Error('Noch kein Stripe-Kundenkonto vorhanden');
  const base=env.PUBLIC_BASE_URL||'https://backen-mit-sauerteig.onrender.com';
- const result=await stripeCall('billing_portal/sessions',{customer:existing.stripe_customer_id,return_url:base+'/'},env);
+ const portal={customer:existing.stripe_customer_id,return_url:base+'/'};
+ if(env.STRIPE_PORTAL_CONFIGURATION_ID)portal.configuration=env.STRIPE_PORTAL_CONFIGURATION_ID;
+ const result=await stripeCall('billing_portal/sessions',portal,env);
  if(!/^https:\/\/billing\.stripe\.com\//.test(result.url||''))throw Error('Ungültige Portal-Adresse');
  return {url:result.url};
 }
