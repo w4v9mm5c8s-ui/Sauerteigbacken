@@ -2,13 +2,14 @@ import {chromium} from 'playwright';
 import {mkdir} from 'node:fs/promises';
 const browser=await chromium.launch({headless:true,args:['--no-sandbox']});
 let failures=[];
+await mkdir('screenshots',{recursive:true});
 for(const viewport of [{width:375,height:812},{width:390,height:844},{width:430,height:932}]){
  const context=await browser.newContext({viewport,isMobile:true,hasTouch:true,deviceScaleFactor:2});
  const page=await context.newPage();page.on('pageerror',e=>failures.push(viewport.width+' JavaScript: '+e.message));
  await page.goto('http://127.0.0.1:3000',{waitUntil:'networkidle'});
- await page.waitForSelector('.home-hero');
- if(!await page.locator('.home-hero').isVisible())failures.push('Homepage hero missing '+viewport.width);
- const heroImage=await page.locator('.hero-watercolor').evaluate(img=>({loaded:img.complete&&img.naturalWidth>0,width:img.getBoundingClientRect().width})).catch(()=>({loaded:false,width:0}));
+ await page.waitForSelector('.home-masthead');
+ if(!await page.locator('.home-masthead').isVisible())failures.push('Homepage hero missing '+viewport.width);
+ const heroImage=await page.locator('.home-artwork img').evaluate(img=>({loaded:img.complete&&img.naturalWidth>0,width:img.getBoundingClientRect().width})).catch(()=>({loaded:false,width:0}));
  if(!heroImage.loaded||heroImage.width<60)failures.push('Watercolor hero not loaded '+viewport.width);
  if(!await page.locator('nav [data-tab="hub"] .ui-icon').isVisible())failures.push('Bottom nav SVG missing '+viewport.width);
  await page.locator('[data-tab="hub"]').click();
