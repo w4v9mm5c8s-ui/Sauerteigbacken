@@ -1,4 +1,4 @@
-import {billingEnabled,billingConfigured,checkoutSession,portalSession,subscriptionRow,publicBillingPlans,verifyStripeWebhook,applyStripeEvent} from './billing.mjs';
+import {billingEnabled,billingConfigured,checkoutSession,portalSession,subscriptionRow,publicBillingPlans,verifyStripeWebhook,applyStripeEvent,approvedPremium} from './billing.mjs';
 import {fetchPublicRecipeUrl} from './url-import.mjs';
 import http from 'node:http';
 import {readFile,stat} from 'node:fs/promises';
@@ -52,7 +52,7 @@ if(url.pathname.startsWith('/api/')){
  if(!limit('user:'+id.user.id,180))return json(res,429,{error:'Zu viele Anfragen'});
  if(url.pathname==='/api/billing/status'&&req.method==='GET'){
  if(!process.env.SUPABASE_SERVICE_ROLE_KEY||!process.env.SUPABASE_URL)return json(res,200,{enabled:false,plus:false,status:'unavailable',hasCustomer:false});
- const row=await subscriptionRow(id.user.id);return json(res,200,{enabled:billingEnabled(),plus:!!row&&['active','trialing'].includes(row.status),status:row?.status||'inactive',hasCustomer:!!row?.stripe_customer_id&&!!process.env.STRIPE_SECRET_KEY,periodEnd:row?.current_period_end||null});
+ const row=await subscriptionRow(id.user.id);return json(res,200,{enabled:billingEnabled(),plus:approvedPremium(row),status:row?.status||'inactive',hasCustomer:!!row?.stripe_customer_id&&!!process.env.STRIPE_SECRET_KEY,periodEnd:row?.current_period_end||null});
 }
 if(url.pathname==='/api/billing/plans'&&req.method==='GET'){
  try{return json(res,200,await publicBillingPlans())}catch{return json(res,200,{enabled:false,plans:[]})}
@@ -75,7 +75,7 @@ if(url.pathname==='/api/sync'){
  if(url.pathname==='/api/community'&&req.method==='POST'){const b=await body(req,20000);const title=String(b.title||'').trim(),ingredients=String(b.ingredients||'').trim(),instructions=String(b.instructions||'').trim();if(title.length<3||title.length>120||ingredients.length<5||instructions.length<5)return json(res,400,{error:'Bitte alle Felder ausfüllen'});await db('POST','community_recipes',id,{author_id:id.user.id,title,ingredients,instructions,status:'pending',author_display_name:String(b.author||'Bäcker:in').slice(0,60),flour_type:String(b.flour||'').slice(0,100)||null,bread_type:String(b.breadType||'').slice(0,100)||null,hydration:b.hydration===''||b.hydration==null?null:Number(b.hydration),difficulty:String(b.difficulty||'').slice(0,50)||null,starter_type:String(b.starterType||'').slice(0,50)||null,bake_method:String(b.bakeMethod||'').slice(0,60)||null,total_hours:b.totalHours===''||b.totalHours==null?null:Number(b.totalHours)});return json(res,201,{ok:true})}
  if(url.pathname==='/api/recipe-url'&&req.method==='POST'){if(!limit('import-url:'+id.user.id,10))return json(res,429,{error:'Zu viele Rezeptimporte'});const b=await body(req,4000);try{const found=await fetchPublicRecipeUrl(String(b.url||''));return json(res,200,found)}catch(e){return json(res,422,{error:e.message||'Link konnte nicht gelesen werden'})}}
  if(['/api/buddy','/api/recipe-extract'].includes(url.pathname)&&req.method==='POST'){
- let aiLimit=30,plus=false;if(billingEnabled()){try{const sub=await subscriptionRow(id.user.id);plus=['active','trialing'].includes(sub?.status);if(plus)aiLimit=90}catch{}}if(!limit('ai:'+id.user.id,aiLimit))return json(res,429,{error:'Dein KI-Limit für diese Stunde ist erreicht'});
+ let aiLimit=30,plus=false;if(billingEnabled()){try{const sub=await subscriptionRow(id.user.id);plus=approvedPremium(sub);if(plus)aiLimit=90}catch{}}if(!limit('ai:'+id.user.id,aiLimit))return json(res,429,{error:'Dein KI-Limit für diese Stunde ist erreicht'});
  if(!process.env.OPENAI_API_KEY)return json(res,503,{error:'Die KI ist noch nicht freigeschaltet.'});
  const b=await body(req);const image=typeof b.image==='string'&&/^data:image\/(jpeg|png|webp);base64,/.test(b.image)&&b.image.length<2100000?b.image:null;
  if(b.image&&!image)return json(res,400,{error:'Bitte ein kleineres JPG-, PNG- oder WebP-Bild wählen.'});
