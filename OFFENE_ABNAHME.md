@@ -54,3 +54,11 @@ Dies ist eine veröffentlichte **Entwicklungsfassung**, keine freigegebene ferti
 - [x] Übrig gebliebene Unicode-Symbole auf der Startseite durch einheitliche SVG-Icons ersetzt.
 - [ ] GitHub-Kontobenachrichtigungen werden separat durch die GitHub-Kontoeinstellungen verwaltet; hier nicht verändert.
 - [ ] Browser-Smoketests künftig nur nach gezieltem manuellen Start in einer geeigneten Testumgebung durchführen.
+
+## 02.11.2026 – Weitere Planungsfunktionen
+- [x] Zweites einmaliges Abwesenheitsfenster und wiederkehrende wöchentliche Abwesenheitszeiten im Backplaner ergänzt.
+- [x] Übernacht-Abwesenheiten, die in den Folgetag hineinreichen, im Zeitplan berücksichtigt.
+- [x] Neue Abwesenheitsangaben bleiben beim Zurücknavigieren erhalten.
+- [x] Zusätzliche automatische Regressionstests für Wochenzeiten und mehrere Sperrfenster ergänzt.
+- [ ] Fachliche Gär- und Starterprognosen weiterhin anhand echter Backdaten prüfen; ohne solche Daten keine garantierten Zeitpläne.
+- [ ] Echte iPhone-/Safari-End-to-End-Tests, E-Mail-Zustellung, Push bei geschlossener App, Live-KI-Fotoanalyse und rechtliche Freigabe weiterhin offen.
