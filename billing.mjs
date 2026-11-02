@@ -33,9 +33,9 @@ export async function stripePrice(priceId,env=process.env){
  if(!r.ok)throw Error('Stripe-Preis nicht verfügbar');
  return r.json();
 }
-export function validConsumerPrice(price,interval){
+export function validConsumerPrice(price,interval,expectedProductId=''){
  return price?.active===true&&price?.currency==='eur'&&price?.type==='recurring'
-  &&price?.recurring?.interval===interval&&Number.isInteger(price.unit_amount)
+  &&price?.recurring?.interval===interval&&(!expectedProductId||price?.product===expectedProductId)&&Number.isInteger(price.unit_amount)
   &&price.unit_amount>0&&price.tax_behavior==='inclusive';
 }
 export async function publicBillingPlans(env=process.env){
@@ -43,7 +43,7 @@ export async function publicBillingPlans(env=process.env){
  const ids=billingPrices(env),plans=[];
  for(const [plan,id] of Object.entries(ids)){
   const interval=plan==='monthly'?'month':'year',price=await stripePrice(id,env);
-  if(!validConsumerPrice(price,interval))return {enabled:false,plans:[],reason:'Stripe-Preise müssen aktiv, in EUR und inklusive Steuern sein'};
+  if(!validConsumerPrice(price,interval,env.STRIPE_PRODUCT_ID||''))return {enabled:false,plans:[],reason:'Stripe-Preise müssen aktiv, in EUR und inklusive Steuern sein'};
   plans.push({plan,amount:price.unit_amount,currency:'EUR',interval,taxInclusive:true});
  }
  return {enabled:true,plans};
@@ -52,7 +52,7 @@ export async function checkoutSession(user,plan,env=process.env){
  if(!billingEnabled(env))throw Error('Bezahlfunktion noch nicht freigeschaltet');
  if(!['monthly','yearly'].includes(plan))throw Error('Ungültiger Tarif');
  const price=billingPrices(env)[plan];if(!/^price_[A-Za-z0-9]+$/.test(price))throw Error('Stripe-Preis nicht eingerichtet');
- const checked=await stripePrice(price,env);if(!validConsumerPrice(checked,plan==='monthly'?'month':'year'))throw Error('Tarifpreis noch nicht für den Verkauf freigegeben');
+ const checked=await stripePrice(price,env);if(!validConsumerPrice(checked,plan==='monthly'?'month':'year',env.STRIPE_PRODUCT_ID||''))throw Error('Tarifpreis noch nicht für den Verkauf freigegeben');
  const existing=await subscriptionRow(user.id,env);
  if(existing&&['active','trialing'].includes(existing.status))throw Error('Dein Plus-Abo ist bereits aktiv. Bitte Abo verwalten.');
  const base=env.PUBLIC_BASE_URL||'https://backen-mit-sauerteig.onrender.com';
@@ -60,8 +60,8 @@ export async function checkoutSession(user,plan,env=process.env){
  mode:'subscription',
  'line_items[0][price]':price,'line_items[0][quantity]':'1',
  success_url:base+'/?billing=success',cancel_url:base+'/?billing=cancel',
- client_reference_id:user.id,'subscription_data[metadata][user_id]':user.id,
- 'metadata[user_id]':user.id,'billing_address_collection':'required',
+ client_reference_id:user.id,'subscription_data[metadata][user_id]':user.id,'subscription_data[metadata][app]':'sauerteig',
+ 'metadata[user_id]':user.id,'metadata[app]':'sauerteig','billing_address_collection':'required',
  'allow_promotion_codes':'true'
  };
  if(existing?.stripe_customer_id)params.customer=existing.stripe_customer_id;
@@ -82,6 +82,7 @@ export async function portalSession(userId,env=process.env){
 export function subscriptionFromEvent(event,env=process.env){
  if(!['customer.subscription.created','customer.subscription.updated','customer.subscription.deleted'].includes(event?.type))return null;
  const s=event.data?.object;if(!s?.id||!s.customer)return null;
+ if(s.metadata?.app && s.metadata.app!=='sauerteig')return null;
  const uid=s.metadata?.user_id;
  const priceId=s.items?.data?.[0]?.price?.id||null;
  const approved=[env.STRIPE_PRICE_MONTHLY,env.STRIPE_PRICE_YEARLY].filter(Boolean);
