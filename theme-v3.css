@@ -140,3 +140,22 @@ nav button.active{background:linear-gradient(130deg,#efd3dc,#f9e6e9)}
  .home-buddy>img{width:73px}
 }
 @media(prefers-reduced-motion:reduce){.home-feature:active{transform:none}}
+
+/* Illustrated recipe library */
+.recipe-gallery{display:grid;gap:11px;margin:18px 0 0}
+.recipe-gallery-item{display:flex;align-items:center;gap:13px;width:100%;min-height:107px;padding:10px 14px 10px 8px;
+ background:#fffaf7;border:1px solid #eadad6;border-radius:21px;color:#49363e;text-align:left;box-shadow:0 8px 20px -19px #74515b72}
+.recipe-gallery-picture{width:95px;height:85px;flex:0 0 95px;display:grid;place-items:center;
+ background:linear-gradient(145deg,#faf0ea,#f4e0e1);border-radius:15px;overflow:hidden}
+.recipe-gallery-picture img{width:99%;height:95%;object-fit:contain;filter:drop-shadow(0 5px 6px #906a6533)}
+.recipe-gallery-content{min-width:0;flex:1;display:grid;gap:7px}
+.recipe-gallery-content strong{font:600 1.05rem/1.16 'Fraunces',Georgia,serif;color:#5b3e4b}
+.recipe-gallery-content small{font:.78rem/1.4 'Outfit',system-ui,sans-serif;color:#79696d}
+.recipe-gallery-arrow{color:#ac7083;display:grid;place-items:center}
+@media(min-width:700px){.recipe-gallery{grid-template-columns:repeat(2,minmax(0,1fr))}.recipe-gallery-item{min-height:103px}}
+@media(max-width:375px){.recipe-gallery-item{gap:9px;padding:8px}.recipe-gallery-picture{width:78px;flex-basis:78px;height:75px}.recipe-gallery-content strong{font-size:.93rem}.recipe-gallery-content small{font-size:.72rem}}
+/* Keep illustrative accents consistent with the theme */
+body[data-page="knowledge"] .illustrated-section img,
+body[data-page="calculator"] .illustrated-section img{max-height:130px}
+body[data-page="buddy"] .buddy-watercolor{max-height:185px;height:160px}
+body[data-page="backtag"] .timer-panel{border-radius:22px}
