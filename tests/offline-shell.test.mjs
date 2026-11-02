@@ -58,7 +58,7 @@ test('private API requests are never served from the public offline cache',async
 });
 
 test('service-worker script retains a dedicated new cache version',()=>{
- assert.match(source,/sauerteig-public-v21/);
+ assert.match(source,/sauerteig-public-v22/);
  assert.match(source,/response\.ok/);
  assert.match(source,/isRealAsset/);
 });
