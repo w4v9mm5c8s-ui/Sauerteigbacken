@@ -1,0 +1,136 @@
+/* Sauerteig · Aquarell-Atelier v4
+   Editorial layout based on the approved horizontal illustration cards.
+   Artwork is served as native external SVGs, with no raster conversion. */
+:root{
+ --rose:#b87e80;--rose-deep:#884e50;--rose-light:#f3dddd;--rose-mist:#f8ece9;
+ --beige:#f8efe7;--sand:#e9d5c5;--ivory:#fff9f3;--ink:#4e302e;
+ --muted-ink:#866966;--line:#eadcd0;--sage:#8e937b;
+ --shadow-card:0 10px 27px -19px rgba(112,73,65,.36);
+}
+html{background:#f8eee5;-webkit-text-size-adjust:100%;overflow-x:clip}
+body{color:#4e302e;background:radial-gradient(ellipse at 8% 2%,#fffbf6 0,transparent 39%),
+ radial-gradient(ellipse at 86% 32%,#f6e5dc 0,transparent 52%),#f8efe7;
+ font-family:'Outfit',-apple-system,system-ui,sans-serif}
+h1,h2,h3{font-family:'Fraunces',Georgia,serif;color:#4f302f;letter-spacing:-.03em}
+.card{background:linear-gradient(150deg,#fffcf8,#fff9f3);border:1px solid #f1e6dc;
+ box-shadow:0 10px 27px -22px #926c5e61;border-radius:23px}
+button,.button{color:#543936;border-color:#e9d8cf}
+button.primary,.button.primary{background:#ae7274;color:#fff;border-color:#a96d6d}
+button:focus-visible,.home-feature:focus-visible,.hub-tile:focus-visible{outline:3px solid #a8666a;outline-offset:3px}
+body[data-page="start"] header{display:none}
+body[data-page="start"] main{padding:0 11px calc(125px + env(safe-area-inset-bottom,0px));max-width:850px}
+.home-masthead{position:relative;isolation:isolate;min-height:270px;overflow:hidden;
+ margin:0 -11px 14px;padding:0;border-radius:0 0 27px 27px;
+ border:0;border-bottom:1px solid #e9d8d0;background:
+ radial-gradient(ellipse at 70% 45%,#f4ddcd 0,transparent 57%),
+ radial-gradient(ellipse at 14% 13%,#fff7f2 0,transparent 52%),
+ linear-gradient(160deg,#fff8f3,#f5e5dc 80%,#f8ebe0)}
+.home-masthead::before{content:"";position:absolute;z-index:1;inset:0;pointer-events:none;
+ background:linear-gradient(90deg,#fff8f0c9 0%,#fff8f085 32%,transparent 57%)}
+.home-brand{position:relative;z-index:2;width:61%;max-width:385px;padding:36px 0 0 23px}
+.home-brand h1{font-family:'Fraunces',Georgia,serif;font-weight:600;
+ color:#51302c;letter-spacing:-.05em;font-size:clamp(1.74rem,7.1vw,2.52rem);
+ line-height:1.04;margin:0}
+.home-brand h1 em{display:block;white-space:nowrap;font-family:Georgia,'Times New Roman',serif;
+ font-size:1.29em;color:#945a56;font-weight:400;font-style:italic;line-height:1.04;
+ letter-spacing:-.065em;margin-top:5px}
+.home-brand p{font-size:clamp(.75rem,2.9vw,.99rem);line-height:1.4;
+ color:#684b45;max-width:190px;font-weight:400;margin:21px 0 0}
+.home-artwork{position:absolute;z-index:0;right:-68px;bottom:-3px;width:97%;height:94%;
+ margin:0;max-width:none;overflow:visible}
+.home-artwork img{width:100%;height:100%;display:block;object-fit:contain;object-position:right bottom;filter:none}
+.home-feature-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));
+ gap:9px;margin:10px 0 18px}
+.home-feature{position:relative;width:100%;min-width:0;height:118px;min-height:118px;
+ display:grid;grid-template-columns:51% minmax(0,1fr);align-items:center;gap:0;
+ padding:6px 9px 6px 4px;text-align:left;border-radius:22px;
+ border:1px solid rgba(255,255,255,.96);color:#4e302e;
+ background:linear-gradient(135deg,#fffdfa,#fff8f3 90%);
+ box-shadow:0 9px 19px -16px rgba(104,58,48,.47);
+ font-family:Georgia,'Times New Roman',serif;font-weight:600;
+ transition:transform .12s ease}
+.home-feature:active{transform:scale(.987)}
+.home-feature-art{display:flex;align-items:center;justify-content:center;flex:0 1 auto;
+ width:100%;height:100%;min-height:0;padding:0}
+.home-feature-art img{display:block;width:100%;height:100%;max-width:100%;max-height:113px;
+ object-fit:contain;object-position:center;filter:none;image-rendering:auto}
+.home-feature-label{display:block;min-width:0;max-width:100%;
+ color:#512d29;font-size:clamp(1rem,4.2vw,1.43rem);font-family:Georgia,'Times New Roman',serif;
+ font-weight:600;line-height:1.12;letter-spacing:-.035em;
+ hyphens:manual;overflow-wrap:normal}
+.home-feature-label wbr{display:inline}
+.home-current{margin:5px 0 10px;padding:9px;border-radius:21px;
+ border-color:#efded6;background:#fffaf5}
+.home-current-picture{background:#f8ebe3}
+.home-current h2{color:#573735}
+.home-current-button{background:#ab7074}
+.home-section-heading{margin:16px 2px 9px}
+.home-section-heading h2{font-size:1.35rem}
+.home-section-heading button{color:#946164}
+.home-recent-grid{gap:8px;padding:3px 2px 12px}
+.home-recent-card{border-color:#f1e3da;background:#fffaf5}
+.home-recent-art{background:linear-gradient(140deg,#faf0e7,#f5e2db)}
+.home-recent-card .home-stars{color:#ac7373}
+.home-buddy{background:linear-gradient(115deg,#fffaf5,#f8e9e2);
+ border:1px solid #f0dcd4;box-shadow:var(--shadow-card)}
+.home-buddy strong{color:#7d4846}
+.home-buddy-arrow{background:#b0797c}
+body[data-page="hub"] .hub-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+body[data-page="hub"] .hub-tile,body[data-page="hub"] .hub-tile.featured{
+ display:grid;grid-template-columns:50% minmax(0,1fr);align-items:center;
+ min-width:0;min-height:119px;height:119px;padding:7px 9px 7px 4px;
+ border-radius:22px;text-align:left;gap:0;
+ background:linear-gradient(130deg,#fffcf8,#fff7f2);
+ color:#513a35;border:1px solid #fff;box-shadow:var(--shadow-card)}
+body[data-page="hub"] .hub-icon{display:grid;place-items:center;width:100%;height:100%;min-height:0;flex:0 1 auto}
+body[data-page="hub"] .hub-icon img{display:block;max-height:110px;max-width:100%;width:100%;height:100%;
+ object-fit:contain;filter:none}
+body[data-page="hub"] .hub-icon.has-art .hub-line-icon{display:none}
+body[data-page="hub"] .hub-text{width:100%;min-width:0;display:block}
+body[data-page="hub"] .hub-text strong{font-family:Georgia,'Times New Roman',serif;
+ font-size:clamp(.97rem,4vw,1.28rem);font-weight:600;line-height:1.14;letter-spacing:-.03em;color:#56342f;
+ overflow-wrap:break-word;hyphens:auto}
+body[data-page="hub"] .hub-arrow,body[data-page="hub"] .hub-text small{display:none}
+.card.recipe-banner{background:linear-gradient(115deg,#fff8f3,#f8e9e0)}
+.illustrated-section img,.buddy-watercolor,.section-watercolor{filter:none;image-rendering:auto}
+nav{border-top:1px solid #eaddd6;background:#fffbf8f7;box-shadow:0 -7px 22px #92746816}
+nav button{color:#86716e;font-weight:600;border-radius:19px}
+nav button.active{background:#f3dede;color:#884d51}
+#toast{background:#744947}
+body[data-page="start"] main,body:not([data-page="start"]) main{
+ padding-bottom:calc(140px + env(safe-area-inset-bottom,0px))}
+@media(min-width:680px){
+ .home-masthead{margin:9px 0 17px;min-height:330px;border-radius:30px}
+ .home-brand{width:54%;padding-top:48px;padding-left:37px}
+ .home-brand h1{font-size:3rem}
+ .home-brand h1 em{font-size:1.24em}
+ .home-brand p{margin-top:25px;max-width:260px}
+ .home-artwork{right:-45px;width:78%;height:100%}
+ .home-feature-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:15px}
+ .home-feature{height:151px;min-height:151px;padding:8px 16px 8px 8px;border-radius:26px}
+ .home-feature-art img{max-height:145px}
+ .home-feature-label{font-size:1.55rem}
+ body[data-page="hub"] .hub-tile,body[data-page="hub"] .hub-tile.featured{height:150px;min-height:150px}
+ body[data-page="hub"] .hub-text strong{font-size:1.45rem}
+}
+@media(max-width:380px){
+ .home-masthead{min-height:246px}
+ .home-brand{width:65%;padding-left:19px;padding-top:33px}
+ .home-brand h1{font-size:1.68rem}
+ .home-brand h1 em{font-size:1.26em}
+ .home-brand p{font-size:.72rem;max-width:155px;margin-top:18px}
+ .home-artwork{right:-63px;height:91%;width:106%}
+ .home-feature-grid{gap:8px}
+ .home-feature{height:109px;min-height:109px;padding:5px 7px 5px 2px;border-radius:19px;
+ grid-template-columns:49% minmax(0,1fr)}
+ .home-feature-label{font-size:.99rem;letter-spacing:-.045em}
+ body[data-page="hub"] .hub-tile,body[data-page="hub"] .hub-tile.featured{height:106px;min-height:106px}
+ body[data-page="hub"] .hub-text strong{font-size:.95rem}
+}
+@media(max-width:335px){
+ .home-feature{height:105px;min-height:105px}
+ .home-feature-label{font-size:.87rem}
+ .home-brand h1{font-size:1.5rem}
+ .home-artwork{right:-75px}
+}
+@media(prefers-reduced-motion:reduce){.home-feature{transition:none}}
