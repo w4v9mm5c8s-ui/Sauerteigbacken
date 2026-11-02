@@ -1,3 +1,4 @@
+import {doughWeight} from './dough-weight.js';
 import {readBackup,makeBackup} from './backup.js';
 import {recipeCards,recipePicker,filterRecipeLibrary,recipeCategoryOptions} from './recipe-gallery.js';
 import {homeView,bakingDaysView} from './home.js';
@@ -104,7 +105,7 @@ if(a==='calculate'){
  const p=makePlan(data.recipe,data.finish,data.from,data.to,data.ready,data.preheat,data.awayFrom,data.awayTo,data.options);
  const out=$('#planResult');
  if(!p){out.innerHTML='<p class="warning">Unter diesen Vorgaben konnte innerhalb von 21 Tagen kein sicherer Zeitplan berechnet werden. Passe die Schlaf- oder Abwesenheitszeiten an oder wähle eine geeignete Kühlschrankgare.</p>';return}
- const sum=data.recipe.flours.reduce((a,f)=>a+f.grams,0)+data.recipe.water+data.recipe.salt+data.recipe.starter.grams+data.recipe.extras.reduce((a,f)=>a+f.grams,0);
+ const sum=doughWeight(data.recipe);
  out.innerHTML='<h3>Dein Backplan</h3><p class="muted">'+(p.shift?'Nächster passender Fertigtermin: '+new Date(p.finish).toLocaleString('de-DE'):'Dein Wunschtermin passt.')+'</p><p class="success">'+data.loaves+' fertige Brote · '+Math.round(sum)+' g roher Teig'+(data.estimatedFinishedWeight?' · ca. '+Math.round(data.estimatedFinishedWeight*data.loaves)+' g fertiges Brot (Schätzung)':'')+' · '+(p.cold?'Kühlschrankgare':'Stückgare')+'</p><div class="steps">'+p.steps.map((x,i)=>'<div class="step"><strong>'+new Date(x.at).toLocaleString('de-DE')+' · '+escape(x.title)+'</strong><p class="muted small">'+escape(x.detail)+'</p></div>').join('')+'</div><p class="muted small">'+escape(p.assumptions)+'</p>'+button('Backtag übernehmen','saveBake');
  window.lastPlan={...p,recipe:data.name,ingredients:data.recipe,temperatures:data.temperatures,estimatedFinishedWeight:data.estimatedFinishedWeight,bakeLoss:data.bakeLoss,starterHydration:data.starterHydration,loaves:data.loaves,createdAt:new Date().toISOString(),sleepFrom:data.from,sleepTo:data.to};
  return
