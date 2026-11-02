@@ -27,7 +27,7 @@ test('home and learning screens use the watercolor motifs matching the approved 
  assert.ok(knowledge.includes('src="/art-books.svg"'));
  assert.ok(app.includes('src="/art-starter.svg"'));
  assert.ok(app.includes('src="/art-buddy.svg"'));
- assert.ok(gallery.includes('/art-pretzel.svg'));
+ assert.ok(gallery.includes('/design/photo-brezeln.png'));
 });
 
 test('new theme is loaded after legacy stylesheet and supports iPhone safe area',()=>{

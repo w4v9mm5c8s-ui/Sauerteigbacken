@@ -5,7 +5,7 @@ import {homeView} from '../home.js';
 import {recipePhotoPath} from '../recipe-gallery.js';
 
 const read=name=>readFileSync(new URL('../'+name,import.meta.url),'utf8');
-const names=['hero-aquarell','tile-plan','tile-recipes','tile-import','tile-backtage','tile-statistik','tile-favoriten','tile-backbuecher','tile-wissen','tile-einkauf','photo-landbrot','photo-vollkorn','photo-bauernbrot','photo-helles','photo-saaten','photo-kasten','photo-krume','photo-rustikal'];
+const names=['hero-aquarell','tile-plan','tile-recipes','tile-import','tile-backtage','tile-statistik','tile-favoriten','tile-backbuecher','tile-wissen','tile-einkauf','photo-landbrot','photo-vollkorn','photo-bauernbrot','photo-helles','photo-saaten','photo-kasten','photo-krume','photo-rustikal','photo-brezeln','photo-baguette','photo-bagels','photo-focaccia','photo-pizza','photo-zimtschnecken'];
 
 test('every design graphic is an actual local PNG with valid dimensions',()=>{
  const server=read('server.mjs'),sw=read('sw.js');
@@ -18,7 +18,7 @@ test('every design graphic is an actual local PNG with valid dimensions',()=>{
   assert.ok(sw.includes("'"+path+"'"),name+' offline cache');
  }
  assert.match(server,/\.png':'image\/png'/);
- assert.match(sw,/sauerteig-public-v23/);
+ assert.match(sw,/sauerteig-public-v24/);
 });
 test('the immediately visible and dynamic home display identical PNG illustrations',()=>{
  const html=read('index.html'),live=homeView({signed:false,history:[],parked:[],active:null,recipes:[]});
@@ -38,7 +38,7 @@ test('recipe photography varies by bread style and never invents personal photos
  assert.equal(recipePhotoPath({title:'Weizen-Landbrot'}),'/design/photo-helles.png');
  assert.equal(recipePhotoPath({title:'Bauernmischbrot'}),'/design/photo-bauernbrot.png');
  assert.equal(recipePhotoPath({title:'Sonnenblumenkernbrot'}),'/design/photo-vollkorn.png');
- assert.equal(recipePhotoPath({title:'Sauerteig-Laugenbrezeln'}),'/art-pretzel.svg');
+ assert.equal(recipePhotoPath({title:'Sauerteig-Laugenbrezeln'}),'/design/photo-brezeln.png');
 });
 test('mobile app retains accessible buttons and manual ingredient grouping',()=>{
  const app=read('app.js'),css=read('theme-reference.css');
