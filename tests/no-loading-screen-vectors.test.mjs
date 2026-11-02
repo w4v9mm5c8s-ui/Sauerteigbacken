@@ -10,18 +10,19 @@ test('homepage is visible immediately before JavaScript loads',()=>{
  assert.doesNotMatch(html,/<p>Lädt|class="loading-screen"|id="splash"/i);
  assert.match(html,/<button data-tab="start" class="active" aria-current="page"/);
 });
-test('vector illustrations are linked as original SVG files, not PNG or WebP copies',()=>{
- const html=read('index.html'),home=read('home.js'),css=read('theme-v4.css');
- assert.match(html,/src="\/art-hero\.svg"/);
- for(const source of [html,home])assert.doesNotMatch(source,/src="\/art-[^"]+\.(?:png|webp|jpe?g)"/i);
- assert.match(css,/home-feature-grid\{display:grid;grid-template-columns:repeat\(2,minmax\(0,1fr\)\)/);
+test('approved reference illustrations are served as local PNG files without a splash',()=>{
+ const html=read('index.html'),home=read('home.js'),css=read('theme-reference.css');
+ assert.match(html,/src="\/design\/hero-aquarell\.png"/);
+ assert.match(home,/src="\/design\/hero-aquarell\.png"/);
+ assert.match(html,/href="\/theme-reference\.css"/);
+ assert.match(css,/grid-template-columns:repeat\(4,minmax\(0,1fr\)\)/);
  const server=read('server.mjs');
- assert.match(server,/\.svg':'image\/svg\+xml'/);
+ assert.match(server,/\.png':'image\/png'/);
 });
 test('SVG navigation icons are present on first paint',()=>{
  const html=read('index.html');
  assert.equal((html.match(/<svg class="ui-icon"/g)||[]).length,4);
- for(const id of ['home','bread','chat','user'])assert.match(html,new RegExp('data-icon="'+id+'"><svg'));
+ for(const id of ['home','rolling-pin','sprout','user'])assert.match(html,new RegExp('data-icon="'+id+'"><svg'));
 });
 test('there is no in-app loading screen even after app startup fails',()=>{
  const js=read('app.js');

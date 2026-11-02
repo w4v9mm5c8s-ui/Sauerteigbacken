@@ -1,16 +1,16 @@
 import {icon} from './icons.js';
 
 const tiles=[
- ['Neues Brot planen','Zutaten und Zeiten','newPlan','calendar','/art-calendar.svg'],
- ['Meine Rezepte','Deine Rezeptsammlung','own','book','/art-books.svg'],
- ['Rezeptbibliothek','26 geprüfte Vorlagen','recipes','library','/art-basket.svg'],
- ['Historische Rezepte','Dokumentierte Rezeptstände','historical','book','/art-loaf.svg'],
- ['Favoriten','Deine Lieblingsrezepte','favorites','heart','/art-heart.svg'],
- ['Community-Backbuch','Rezepte entdecken','community','users','/art-buddy.svg'],
- ['Rezept importieren','Foto, Text oder Link','import','upload','/art-tools.svg'],
- ['Meine Brote','Backhistorie','history','bread','/art-loaf.svg'],
- ['Meine Backstatistik','Deine Backergebnisse','stats','chart','/art-chart.svg'],
- ['Rechner & Helfer','Mengen und Hydration','calculator','calculator','/art-scale.svg']
+ ['Neues Brot planen','Zutaten und Zeiten','newPlan','calendar','/design/tile-plan.png'],
+ ['Meine Rezepte','Deine Rezeptsammlung','own','book','/design/tile-recipes.png'],
+ ['Rezeptbibliothek','26 geprüfte Vorlagen','recipes','library','/design/tile-backtage.png'],
+ ['Historische Rezepte','Dokumentierte Rezeptstände','historical','book','/design/photo-rustikal.png'],
+ ['Favoriten','Deine Lieblingsrezepte','favorites','heart','/design/tile-favoriten.png'],
+ ['Community-Backbuch','Rezepte entdecken','community','users','/design/tile-backbuecher.png'],
+ ['Rezept importieren','Foto, Text oder Link','import','upload','/design/tile-import.png'],
+ ['Meine Brote','Backhistorie','history','bread','/design/photo-landbrot.png'],
+ ['Meine Backstatistik','Deine Backergebnisse','stats','chart','/design/tile-statistik.png'],
+ ['Rechner & Helfer','Mengen und Hydration','calculator','calculator','/design/tile-import.png']
 ];
 export function hubView(button,user,historyCount,ownCount){
  return '<section class="hub-actions" aria-label="Backen und Rezepte">'+tiles.map(([title,subtitle,route,symbol,art],i)=>{

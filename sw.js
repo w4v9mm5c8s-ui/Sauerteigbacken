@@ -1,4 +1,4 @@
-const CACHE='sauerteig-public-v22';const ASSETS=['/','/index.html','/style.css','/theme.css','/theme-v3.css','/theme-v4.css','/app.js','/dough-weight.js','/backup.js','/planner.js','/backtag.js','/home.js','/recipe-gallery.js','/calendar.js','/hub.js','/icons.js','/stats.js','/calculators.js','/knowledge.js','/pantry.js','/billing-ui.js','/own-recipes.js','/recipes.json','/knowledge-data.json','/planning-ui.js','/flour-table.js','/flour-table.json','/resources.js','/resources.json','/source-conflicts.json','/community-ui.js','/historical.js','/bake-metrics.js','/historical-recipes.json','/photos.js','/own-recipe-parser.js','/starter-tracking.js','/onboarding.js','/art-pretzel.svg','/art-shopping.svg','/art-heart.svg','/art-chart.svg','/art-hero.svg','/art-books.svg','/art-scale.svg','/art-calendar.svg','/art-buddy.svg','/art-loaf.svg','/art-starter.svg','/art-tools.svg','/art-basket.svg','/art-wheat.svg','/manifest.webmanifest','/icon.svg'];
+const CACHE='sauerteig-public-v23';const ASSETS=['/','/index.html','/style.css','/theme.css','/theme-v3.css','/theme-v4.css','/theme-reference.css','/design/hero-aquarell.png','/design/tile-plan.png','/design/tile-recipes.png','/design/tile-import.png','/design/tile-backtage.png','/design/tile-statistik.png','/design/tile-favoriten.png','/design/tile-backbuecher.png','/design/tile-wissen.png','/design/tile-einkauf.png','/design/photo-landbrot.png','/design/photo-vollkorn.png','/design/photo-bauernbrot.png','/design/photo-helles.png','/design/photo-saaten.png','/design/photo-kasten.png','/design/photo-krume.png','/design/photo-rustikal.png','/app.js','/dough-weight.js','/backup.js','/planner.js','/backtag.js','/home.js','/recipe-gallery.js','/calendar.js','/hub.js','/icons.js','/stats.js','/calculators.js','/knowledge.js','/pantry.js','/billing-ui.js','/own-recipes.js','/recipes.json','/knowledge-data.json','/planning-ui.js','/flour-table.js','/flour-table.json','/resources.js','/resources.json','/source-conflicts.json','/community-ui.js','/historical.js','/bake-metrics.js','/historical-recipes.json','/photos.js','/own-recipe-parser.js','/starter-tracking.js','/onboarding.js','/art-pretzel.svg','/art-shopping.svg','/art-heart.svg','/art-chart.svg','/art-hero.svg','/art-books.svg','/art-scale.svg','/art-calendar.svg','/art-buddy.svg','/art-loaf.svg','/art-starter.svg','/art-tools.svg','/art-basket.svg','/art-wheat.svg','/manifest.webmanifest','/icon.svg'];
 const publicPaths=new Set(ASSETS);
 async function isRealAsset(path,response){
  if(!response.ok)return false;
@@ -8,6 +8,7 @@ async function isRealAsset(path,response){
   return (await response.clone().text()).includes('<main id="main">');
  }
  if(/\.svg$/.test(path))return type.includes('image/svg+xml');
+ if(/\.png$/.test(path))return type.includes('image/png');
  if(/\.css$/.test(path))return type.includes('text/css');
  if(/\.js$/.test(path))return type.includes('javascript');
  if(/\.json$/.test(path))return type.includes('json');
@@ -30,7 +31,7 @@ self.addEventListener('fetch',event=>{
  event.respondWith((async()=>{
   const cache=await caches.open(CACHE),cached=await cache.match(key);
   if(cached){
-   // Return the local SVG-based app instantly, while waking the free Render server in the background.
+   // Return the cached watercolor PNG app instantly, while waking the free Render server in the background.
    event.waitUntil(fetch(request,{cache:'no-store'}).then(async response=>(await isRealAsset(url.pathname,response))?cache.put(key,response.clone()):undefined).catch(()=>{}));
    return cached;
   }

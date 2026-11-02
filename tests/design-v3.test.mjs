@@ -8,7 +8,7 @@ test('home screen has eight real navigation tiles with decorative watercolors',(
  const html=homeView({signed:false,active:null,parked:[],history:[],favorites:[],escape:x=>String(x)});
  assert.equal((html.match(/class="home-feature"/g)||[]).length,8);
  for(const route of ['newPlan','own','import','bakingDays','stats','favorites','community','knowledge'])assert.ok(html.includes('data-act="'+route+'"'),route);
- assert.match(html,/art-hero\.svg/);
+ assert.match(html,/design\/hero-aquarell\.png/);
  assert.doesNotMatch(html,/Zuletzt gebacken/);
  assert.doesNotMatch(html,/home-buddy/);
 });
@@ -16,7 +16,7 @@ test('home only shows actual completed bakes and signed-in buddy',()=>{
  const html=homeView({signed:true,active:null,parked:[],history:[{title:'Mein Brot',date:'02.11.2026',rating:5}],escape:x=>String(x)});
  assert.match(html,/Mein Brot/);
  assert.match(html,/★★★★★/);
- assert.match(html,/art-buddy\.svg/);
+ assert.match(html,/design\/tile-recipes\.png/);
  assert.equal((html.match(/home-recent-card/g)||[]).length,1);
 });
 test('active bake is resumed from its actual saved step',()=>{

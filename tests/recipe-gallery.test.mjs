@@ -14,8 +14,8 @@ test('recipe cards include coherent watercolor art and real quantities',()=>{
  const html=recipeCards(recipes,x=>String(x));
  assert.equal((html.match(/recipe-gallery-item/g)||[]).length,3);
  assert.match(html,/art-pretzel\.svg/);
- assert.match(html,/art-basket\.svg/);
- assert.match(html,/art-loaf\.svg/);
+ assert.match(html,/design\/photo-rustikal\.png/);
+ assert.match(html,/design\/photo-helles\.png/);
  assert.match(html,/8 Brezeln/);
 });
 test('new plan first asks for an explicit recipe selection',()=>{
