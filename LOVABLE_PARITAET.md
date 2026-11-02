@@ -31,3 +31,14 @@ Ziel: Eigenständige App auf Render, **ohne Lovable-Abhängigkeit**, mit gleiche
 - [ ] Datenschutz, Impressum und Veröffentlichungsfreigabe
 
 **Wichtig:** Vorhandene Seiten oder Menüpunkte bedeuten nicht automatisch, dass die vollständige Funktionalität des Lovable-Vorbilds übernommen ist.
+
+## Rose-Beige-Überarbeitung (02.11.2026)
+- [x] Terrakotta durch abgestimmte Rose-/Beige-Palette ersetzt (inkl. App-Icon und Installationsfarben)
+- [x] Einheitliches SVG-Liniensymbolsystem für Hauptnavigation, Backen-Hub, Startseite und Direktzugriffe
+- [x] Favoriten für Bibliotheksrezepte, sichtbar auf der Startseite (angemeldet)
+- [x] Backhistorie mit 1–5-Bewertung und echten Monats-/Durchschnittsstatistiken
+- [x] Mehrere parallele Backtage mit getrenntem Fortschritt und Wechselmöglichkeit
+- [x] Persistente Countdown-Timer pro Backtag und Arbeitsschritt (ohne garantierte Hintergrund-Benachrichtigungen)
+- [ ] Echte iPhone-Layoutkontrolle, Detailabgleich mit Originalgrafiken und Test der Timer bei gesperrtem Bildschirm
+- [ ] Erweiterte Statistik nach Mehlen, Hydration und Garzeiten (hierfür fehlen noch strukturierte Messwerte)
+- [ ] Rezeptimport über URL (sichere Abruf- und Quellenprüfung fehlt)
