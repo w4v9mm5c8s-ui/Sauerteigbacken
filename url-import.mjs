@@ -1,3 +1,4 @@
+import {extractStructuredRecipe} from './structured-recipe.mjs';
 import https from 'node:https';
 import {lookup} from 'node:dns/promises';
 import {isIP} from 'node:net';
@@ -13,9 +14,11 @@ export async function fetchPublicRecipeUrl(value){
  const type=res.headers['content-type']||'';if(!/text\/(html|plain)/i.test(type)){res.resume();return reject(Error('Die Seite enthält keinen lesbaren Rezepttext'))}
  let bytes=0;const parts=[];res.on('data',chunk=>{bytes+=chunk.length;if(bytes>350000){req.destroy(Error('Seite ist zu groß'));return}parts.push(chunk)});res.on('end',()=>{
  const raw=Buffer.concat(parts).toString('utf8');
+ const structuredRecipe=extractStructuredRecipe(raw);
  const text=raw.replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi,' ').replace(/<style\b[^>]*>[\s\S]*?<\/style>/gi,' ').replace(/<[^>]*>/g,' ').replace(/&nbsp;|&#160;/gi,' ').replace(/&amp;/gi,'&').replace(/&quot;/gi,'"').replace(/&#39;/gi,"'").replace(/\s+/g,' ').trim();
- if(text.length<80)return reject(Error('Auf der Seite wurde kein ausreichender Rezepttext gefunden'));
- resolve({text:text.slice(0,14000),source:url.origin+url.pathname})
+ if(text.length<80&&!structuredRecipe)return reject(Error('Auf der Seite wurde kein ausreichender Rezepttext gefunden'));
+ const readable=structuredRecipe?[structuredRecipe.title,'Zutaten:',...structuredRecipe.ingredients,'Zubereitung:',...structuredRecipe.steps].join('\n'):text;
+ resolve({text:readable.slice(0,14000),source:url.origin+url.pathname,structuredRecipe})
  })});
  req.on('timeout',()=>req.destroy(Error('Rezeptseite antwortet nicht')));req.on('error',reject);req.end();
  })
