@@ -1,3 +1,4 @@
+import {billingEnabled,billingConfigured,checkoutSession,portalSession,subscriptionRow,verifyStripeWebhook,applyStripeEvent} from './billing.mjs';
 import {fetchPublicRecipeUrl} from './url-import.mjs';
 import http from 'node:http';
 import {readFile,stat} from 'node:fs/promises';
@@ -23,13 +24,33 @@ async function ai(prompt,image){
 }
 const headers={'X-Content-Type-Options':'nosniff','Referrer-Policy':'strict-origin-when-cross-origin','X-Frame-Options':'DENY','Permissions-Policy':'camera=(self), microphone=()','Content-Security-Policy':"default-src 'self'; connect-src 'self' https://*.supabase.co; img-src 'self' data: blob:; style-src 'self' 'unsafe-inline'; script-src 'self'; frame-ancestors 'none'; base-uri 'none'; form-action 'self'"};
 async function handle(req,res){for(const [k,v] of Object.entries(headers))res.setHeader(k,v);const url=new URL(req.url,'http://localhost');
+if(url.pathname==='/api/stripe/webhook'&&req.method==='POST'){
+ if(!billingConfigured())return json(res,503,{error:'Zahlungsdienst nicht eingerichtet'});
+ let chunks=[],size=0;for await(const c of req){size+=c.length;if(size>1000000)return json(res,413,{error:'Webhook zu groß'});chunks.push(c)}
+ const raw=Buffer.concat(chunks);
+ if(!verifyStripeWebhook(raw,req.headers['stripe-signature'],process.env.STRIPE_WEBHOOK_SECRET))return json(res,400,{error:'Ungültige Signatur'});
+ let event;try{event=JSON.parse(raw.toString('utf8'))}catch{return json(res,400,{error:'Ungültiges Ereignis'})}
+ await applyStripeEvent(event);return json(res,200,{received:true});
+}
 if(url.pathname==='/api/health')return json(res,200,{ok:true,name:'Backen mit Sauerteig'});
 if(url.pathname==='/api/config')return json(res,200,{supabaseUrl:process.env.SUPABASE_URL||'',supabaseKey:process.env.SUPABASE_PUBLISHABLE_KEY||'',aiEnabled:!!process.env.OPENAI_API_KEY});
 if(url.pathname==='/api/community'&&req.method==='GET'){if(!process.env.SUPABASE_URL)return json(res,200,{recipes:[]});const r=await fetch(process.env.SUPABASE_URL+'/rest/v1/community_recipes?status=eq.published&select=id,title,ingredients,instructions,created_at,author_display_name,flour_type,bread_type,hydration,difficulty,starter_type,bake_method,total_hours&limit=100',{headers:{apikey:process.env.SUPABASE_PUBLISHABLE_KEY}});return json(res,r.ok?200:502,r.ok?{recipes:await r.json()}:{error:'Community nicht erreichbar'})}
 if(url.pathname.startsWith('/api/')){
  const id=await who(req);if(!id)return json(res,401,{error:'Bitte zuerst anmelden.'});
  if(!limit('user:'+id.user.id,180))return json(res,429,{error:'Zu viele Anfragen'});
- if(url.pathname==='/api/sync'){
+ if(url.pathname==='/api/billing/status'&&req.method==='GET'){
+ if(!billingConfigured())return json(res,200,{enabled:false,plus:false,status:'unavailable'});
+ const row=await subscriptionRow(id.user.id);return json(res,200,{enabled:billingEnabled(),plus:!!row&&['active','trialing'].includes(row.status),status:row?.status||'inactive',periodEnd:row?.current_period_end||null});
+}
+if(url.pathname==='/api/billing/checkout'&&req.method==='POST'){
+ if(!limit('billing-checkout:'+id.user.id,5))return json(res,429,{error:'Bitte später erneut versuchen'});
+ const input=await body(req,1500);return json(res,200,await checkoutSession(id.user,String(input.plan||'')));
+}
+if(url.pathname==='/api/billing/portal'&&req.method==='POST'){
+ if(!limit('billing-portal:'+id.user.id,10))return json(res,429,{error:'Bitte später erneut versuchen'});
+ return json(res,200,await portalSession(id.user.id));
+}
+if(url.pathname==='/api/sync'){
  if(req.method==='GET'){const r=await db('GET','app_data?user_id=eq.'+id.user.id+'&select=payload',id);return json(res,200,r[0]||{payload:null})}
  if(req.method==='PUT'){const b=await body(req,900000);if(!b.payload||typeof b.payload!=='object'||Array.isArray(b.payload))return json(res,400,{error:'Ungültige Daten'});await db('POST','app_data?on_conflict=user_id',id,{user_id:id.user.id,payload:b.payload,updated_at:new Date().toISOString()});return json(res,200,{ok:true})}}
  if(url.pathname==='/api/moderation/me'&&req.method==='GET'){const rows=await db('GET','sourdough_moderators?user_id=eq.'+id.user.id+'&select=user_id',id);return json(res,200,{moderator:rows.length>0})}
