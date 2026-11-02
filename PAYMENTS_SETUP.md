@@ -78,3 +78,31 @@ Quellen: https://docs.stripe.com/payments/checkout , https://docs.stripe.com/bil
 - Test-Price-IDs: vorhanden.
 - Zahlungsfunktion: deaktiviert.
 - Der Test-Webhook ist bis zur Ergänzung beider fehlender Schlüssel deaktiviert, um fehlgeschlagene Zustellungen zu vermeiden.
+
+## Ergänzung – direktes Stripe für alle vier Apps (02.11.2026)
+
+Stripe Payments und Stripe Billing laufen hier über **den eigenen Node-Server auf Render**,
+nicht über Lovable Payments. Der Test-Produktentwurf in Stripe heißt
+**Backen mit Sauerteig**: `prod_VYUFpenhskYOlE`. Er ist inaktiv; es gibt keine
+Monats- oder Jahrespreise und keine Live-Zahlungen.
+
+- Mit `STRIPE_PRODUCT_ID=prod_VYUFpenhskYOlE` wird zusätzlich geprüft, ob die
+  monatliche/jährliche Stripe-Preis-ID tatsächlich zu diesem Produkt gehört.
+  Dies ist eine **Testkonto-ID** und muss beim Livewechsel separat ersetzt werden.
+- Neue Checkout-Abos tragen `metadata.app=sauerteig`; Abos anderer Apps werden verworfen.
+  Bestandsabos ohne dieses neue Feld bleiben über die freigegebenen Preis-IDs kompatibel.
+- Signierte Ereignisse `invoice.paid`, `invoice.payment_failed` und
+  `checkout.session.completed` werden auf den aktuellen Stripe-Abozustand abgeglichen.
+- Bevor Zahlungen aktiviert werden, Webhook-Ziel `/api/stripe/webhook`, Preise,
+  Kontoportal, Zugangskontrolle, Renewal, Fehler, Löschung und rechtliche Texte testen.
+- Die Supabase-Funktion `public.apply_sourdough_subscription_event(jsonb)` wurde
+  im Test geprüft: `anon` und `authenticated` haben **kein EXECUTE**, nur
+  `service_role` (neben Datenbank-Administrator:innen).
+
+## Wichtige Abgrenzung
+
+Der Stand dieses Dokuments ist ein **GitHub-Entwicklungsentwurf**. Die vorhandene
+Serverinstallation auf Render ist hierdurch nicht verändert. Bestehende Gratisfunktionen
+bleiben frei. Eine spätere KI-Nutzung mit Kosten benötigt eigene Limits und
+Wirtschaftlichkeitsprüfung. Die Einmalzahlung über Stripe Payments kann später als
+eigener Preis mit `mode=payment` ergänzt werden, sobald ein konkretes Produkt existiert.
