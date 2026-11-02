@@ -51,7 +51,7 @@ if(url.pathname.startsWith('/api/')){
 if(!['GET','HEAD'].includes(req.method))return json(res,405,{error:'Methode nicht erlaubt'});
 let pathname;try{pathname=decodeURIComponent(url.pathname)}catch{return json(res,400,{error:'Ungültiger Pfad'})}
 if(pathname==='/'||(!extname(pathname)&&pathname!=='/recipes.json'))pathname='/index.html';
-const publicFiles=new Set(['/index.html','/app.js','/planner.js','/backtag.js','/own-recipes.js','/hub.js','/calculators.js','/knowledge.js','/pantry.js','/backup.js','/recipes.json','/style.css','/manifest.webmanifest','/icon.svg','/sw.js','/robots.txt']);
+const publicFiles=new Set(['/index.html','/app.js','/planner.js','/backtag.js','/own-recipes.js','/hub.js','/icons.js','/stats.js','/calculators.js','/knowledge.js','/pantry.js','/backup.js','/recipes.json','/style.css','/manifest.webmanifest','/icon.svg','/sw.js','/robots.txt']);
 if(!publicFiles.has(pathname))return json(res,404,{error:'Nicht gefunden'});
 const file=resolve(root,'.'+pathname);if(!file.startsWith(root+sep))return json(res,403,{error:'Zugriff verweigert'});
 try{if(!(await stat(file)).isFile())throw Error();const data=await readFile(file);res.writeHead(200,{'Content-Type':mime[extname(file)]||'application/octet-stream','Cache-Control':'public, max-age=180'});res.end(req.method==='HEAD'?undefined:data)}catch{return json(res,404,{error:'Nicht gefunden'})}
