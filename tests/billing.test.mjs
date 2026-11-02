@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {createHmac} from 'node:crypto';
-import {billingConfigured,billingEnabled,verifyStripeWebhook,subscriptionFromEvent,checkoutSession} from '../billing.mjs';
+import {billingConfigured,billingEnabled,verifyStripeWebhook,subscriptionFromEvent,checkoutSession,validConsumerPrice} from '../billing.mjs';
 import {billingView} from '../billing-ui.js';
 
 test('payments remain disabled until all credentials and explicit approval are present',()=>{
