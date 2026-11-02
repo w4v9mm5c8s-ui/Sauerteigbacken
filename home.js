@@ -5,8 +5,8 @@ const tiles=[
  ['Meine Rezepte','own','/art-books.svg'],
  ['Rezept importieren','import','/art-tools.svg'],
  ['Meine Backtage','bakingDays','/art-loaf.svg'],
- ['Backstatistik','stats',null],
- ['Favoriten','favorites',null],
+ ['Backstatistik','stats','/art-chart.svg'],
+ ['Favoriten','favorites','/art-heart.svg'],
  ['Wissensbibliothek','knowledge','/art-books.svg'],
  ['Rechner & Helfer','calculator','/art-scale.svg']
 ];
