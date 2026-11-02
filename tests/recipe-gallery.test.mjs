@@ -33,3 +33,10 @@ test('recipe browse results preserve action prefix and escape visible names',()=
  assert.match(html,/data-act="selectForPlan:safe"/);
  assert.match(html,/Test &amp; Brote/);
 });
+
+test('new bake chooser can include complete private recipes',()=>{
+ const app=readFileSync(new URL('../app.js',import.meta.url),'utf8');
+ assert.match(app,/recipesForPlanning=\(\)=>/);
+ assert.match(app,/\.ownRecipes\|\|\[\]/);
+ assert.match(app,/recipeSelect:\(\)=>recipePicker\(recipesForPlanning\(\),escape\)/);
+});
