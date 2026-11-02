@@ -14,7 +14,7 @@ test('vector illustrations are linked as original SVG files, not PNG or WebP cop
  const html=read('index.html'),home=read('home.js'),css=read('theme-v4.css');
  assert.match(html,/src="\/art-hero\.svg"/);
  for(const source of [html,home])assert.doesNotMatch(source,/src="\/art-[^"]+\.(?:png|webp|jpe?g)"/i);
- assert.match(css,/home-feature-grid\{grid-template-columns:repeat\(2,minmax\(0,1fr\)\)/);
+ assert.match(css,/home-feature-grid\{display:grid;grid-template-columns:repeat\(2,minmax\(0,1fr\)\)/);
  const server=read('server.mjs');
  assert.match(server,/\.svg':'image\/svg\+xml'/);
 });
