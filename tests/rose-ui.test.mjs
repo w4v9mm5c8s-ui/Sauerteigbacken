@@ -1,6 +1,6 @@
 import test from 'node:test';import assert from 'node:assert/strict';import {readFileSync} from 'node:fs';import {icon} from '../icons.js';import {hubView} from '../hub.js';import {statsView} from '../stats.js';
 test('unified icons render SVG, not emoji',()=>{for(const name of ['home','bread','chat','user','calendar','book','library','users','upload','history','chart','calculator']){const html=icon(name);assert.match(html,/<svg/);assert.match(html,/<path|<rect|<circle/)}});
-test('baking hub uses SVG icons for all eight tiles',()=>{const html=hubView(()=>'',true,1,2);assert.equal((html.match(/<svg/g)||[]).length,8)});
+test('baking hub uses SVG icons for all navigation tiles',()=>{const html=hubView(()=>'',true,1,2);assert.equal((html.match(/<svg/g)||[]).length,9)});
 test('rose and beige palette is applied',()=>{const css=readFileSync(new URL('../style.css',import.meta.url),'utf8');assert.match(css,/--rose:#a9667b/);assert.match(css,/--beige:#f7f0e8/)});
 test('statistics use actual ratings and counts',()=>{const html=statsView([{title:'Brot',finishedAt:'2026-11-01T12:00:00Z',rating:5},{title:'Brot',finishedAt:'2026-11-02T12:00:00Z',rating:3}],x=>x);assert.match(html,/>2<\/strong>/);assert.match(html,/>4<\/strong>/)});
 test('baking session timers and parallel sessions are independent',()=>{const app=readFileSync(new URL('../app.js',import.meta.url),'utf8');assert.match(app,/parkedKey/);assert.match(app,/timerKey/);assert.match(app,/switchBake:/)});
