@@ -151,3 +151,29 @@ body[data-page="start"] main,body:not([data-page="start"]) main{
  .home-brand h1 em::after{width:73px;margin-left:20px}
  .home-feature-label::after{width:33px;margin-top:4px}
 }
+
+/* v4.1 iPhone: reserve actual space for title, subtitle and artwork.
+   Never overlay subtitle or title on the sourdough illustration. */
+@media(max-width:679px){
+ .home-masthead{min-height:360px;display:grid;grid-template-rows:auto 1fr;align-items:start;overflow:hidden}
+ .home-masthead::before{background:linear-gradient(180deg,#fff8f5f2 0%,#fff8f5e8 35%,transparent 72%)}
+ .home-brand{position:relative;z-index:3;width:100%;max-width:100%;padding:23px 22px 0;box-sizing:border-box}
+ .home-brand h1{display:flex;flex-wrap:wrap;align-items:baseline;gap:0 7px;font-size:clamp(1.65rem,7.3vw,2.15rem);line-height:1.05;letter-spacing:-.045em}
+ .home-brand h1 em{display:block;flex-basis:100%;white-space:normal;font-size:1.35em;line-height:1.05;margin:2px 0 0}
+ .home-brand h1 .brand-heart{position:absolute;left:min(74%,295px);top:23px}
+ .home-brand p{position:relative;z-index:3;display:block;margin:8px 0 0;font-size:.83rem;line-height:1.3;max-width:270px;color:#694846}
+ .home-artwork{position:absolute;z-index:0;right:-8px;bottom:-2px;width:96%;height:57%;pointer-events:none;overflow:hidden}
+ .home-artwork img{width:100%;height:100%;object-fit:contain;object-position:right bottom}
+ .home-feature-label{font-size:clamp(.94rem,4.05vw,1.25rem);overflow-wrap:normal;word-break:normal;hyphens:auto}
+ .home-feature{grid-template-columns:45% minmax(0,1fr);padding:6px 10px 6px 2px}
+ .home-feature-art img{max-height:102px}
+}
+@media(max-width:380px){
+ .home-masthead{min-height:333px}
+ .home-brand{padding:18px 18px 0}
+ .home-brand h1{font-size:1.6rem}
+ .home-brand h1 .brand-heart{top:18px}
+ .home-brand p{font-size:.75rem;margin-top:7px}
+ .home-artwork{height:56%}
+ .home-feature-label{font-size:.96rem}
+}
