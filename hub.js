@@ -1,7 +1,7 @@
 import {icon} from './icons.js';
 
 const tiles=[
- ['Neues Brot planen','Zutaten und Zeiten','plan','calendar','/art-calendar.svg'],
+ ['Neues Brot planen','Zutaten und Zeiten','newPlan','calendar','/art-calendar.svg'],
  ['Meine Rezepte','Deine Rezeptsammlung','own','book','/art-books.svg'],
  ['Rezeptbibliothek','26 geprüfte Vorlagen','recipes','library','/art-basket.svg'],
  ['Historische Rezepte','Dokumentierte Rezeptstände','historical','book','/art-loaf.svg'],
