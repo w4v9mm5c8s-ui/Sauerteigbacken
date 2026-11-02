@@ -103,6 +103,11 @@ inaktiver Entwurf `prod_VYUFpenhskYOlE` ohne Preise. Keine Live-Zahlungen.
   im Test geprüft: `anon` und `authenticated` haben **kein EXECUTE**, nur
   `service_role` (neben Datenbank-Administrator:innen).
 
+## Kundenportal im Stripe-Testkonto
+- Testkonfiguration `bpc_1UXNpV21ZUER5Za8IEZR8QYm` erstellt: Rechnungsverlauf, Zahlungsmethoden, Kündigung zum Periodenende.
+- Optional, aber empfohlen: In Render `STRIPE_PORTAL_CONFIGURATION_ID` genau mit dieser Test-ID konfigurieren, damit das Portal auch verwendet wird (Live-Portal hat andere ID).
+- Es gibt weiterhin keine Live-Freigabe. Die Portalkonfiguration allein aktiviert keine Zahlungen.
+
 ## Wichtige Abgrenzung
 
 Der Stand dieses Dokuments ist ein **GitHub-Entwicklungsentwurf**. Die vorhandene
