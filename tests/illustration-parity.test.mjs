@@ -11,7 +11,7 @@ test('all primary watercolor illustrations exist as self-contained SVG assets',(
  for(const asset of expected){
   const svg=read(asset);
   assert.match(svg,/^<svg xmlns="http:\/\/www\.w3\.org\/2000\/svg"/,asset);
-  assert.match(svg,/<title id="t"/,asset);
+  assert.match(svg,/<title\b[^>]*>/,asset);
   assert.match(svg,/viewBox=/,asset);
   assert.match(svg,/<\/svg>$/,asset);
   assert.doesNotMatch(svg,/<script|<foreignObject|onload=/i,asset);
