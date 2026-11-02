@@ -60,3 +60,18 @@ Ziel: Eigenständige App auf Render, **ohne Lovable-Abhängigkeit**, mit gleiche
 - [x] CSS für iPhone-Safe-Area, kleinere Viewports, Scrollabstand zur Bottom-Navigation und iOS-Formularzoom angepasst
 - [ ] Live-Screenshot auf echtem iPhone und Vergleich mit Lovable-Original weiterhin nicht durchgeführt
 - [ ] Originalillustrationen nicht verlustfrei verfügbar: Quellprojekt liefert PNGs über die angebundene Schnittstelle nur als fehlerhaft dekodierten Text
+
+## Design- und Backtag-Überarbeitung 02.11.2026
+- [x] Startseiten-Brot-Icon durch eigenes großformatiges Aquarell-SVG ersetzt.
+- [x] Detailliertere, neu gezeichnete SVG-Motive: Brotlaib, Starterglas, Küchenmaschine/Backutensilien, Brotkorb und Weizen mit Mehlschale.
+- [x] Einheitliches SVG-Iconset mit identischer Strichstärke, Rundungen und harmonisierten Navigationspfeilen.
+- [x] Eigenes abschließendes Rose-Beige-Stylesheet `theme.css` für Startseite, Reiter, Karten, Formulare, Rezeptbibliothek, Wissen und iPhone-Safe-Areas.
+- [x] Bildmotive auf Startseite, Rezeptbibliothek, Starterseite, Wissensseite und beim KI-Buddy integriert.
+- [x] PWA-Offline-Cache auf neue SVG- und CSS-Dateien aktualisiert.
+- [x] Im Backtag bisher fehlende sichtbare Formulare für Temperatur, Volumenzunahme und Notizen ergänzt.
+- [x] Foto-Upload pro Backschritt für angemeldete Personen im UI ergänzt.
+- [x] Restzeitverschiebung, Timer-Voreinstellungen und einheitliche Schritt-Navigation sichtbar eingebaut.
+- [x] iCalendar-Export für Backschritte mit Erinnerungen für aktive Schritte ergänzt.
+- [ ] Visueller Vergleich mit echten iPhone-Screenshots und Original-Lovable-Ansichten weiterhin nicht abgeschlossen.
+- [ ] Die SVGs sind eigens gezeichnete stilisierte Aquarell-Vektoren, keine exakten Reproduktionen der vom User gezeigten Rasterillustrationen.
+- [ ] Zuverlässige Hintergrund-Push-Benachrichtigungen bei geschlossener PWA benötigen weitere Plattform-/Push-Infrastruktur und praktische Tests.
