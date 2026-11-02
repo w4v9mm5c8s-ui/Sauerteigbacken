@@ -11,6 +11,18 @@ function limit(key,max=25){const hour=Math.floor(Date.now()/3600000),id=hour+':'
 async function body(req,max=2200000){let size=0,parts=[];for await(const c of req){size+=c.length;if(size>max)throw Error('Zu große Anfrage');parts.push(c)}return JSON.parse(Buffer.concat(parts).toString('utf8'))}
 async function who(req){const token=/^Bearer ([^\s]+)$/.exec(req.headers.authorization||'')?.[1];if(!token||!process.env.SUPABASE_URL||!process.env.SUPABASE_PUBLISHABLE_KEY)return null;const r=await fetch(process.env.SUPABASE_URL+'/auth/v1/user',{headers:{apikey:process.env.SUPABASE_PUBLISHABLE_KEY,Authorization:'Bearer '+token}});return r.ok?{user:await r.json(),token}:null}
 async function db(method,path,identity,data){const r=await fetch(process.env.SUPABASE_URL+'/rest/v1/'+path,{method,headers:{apikey:process.env.SUPABASE_PUBLISHABLE_KEY,Authorization:'Bearer '+identity.token,'Content-Type':'application/json',Prefer:'resolution=merge-duplicates,return=representation'},...(data?{body:JSON.stringify(data)}:{})});if(!r.ok)throw Error('Speichern derzeit nicht möglich');return r.json()}
+async function consumeAiDaily(userId,plus){
+ if(process.env.AI_DAILY_QUOTA_ENABLED!=='true')return true;
+ if(!process.env.SUPABASE_SERVICE_ROLE_KEY||!process.env.SUPABASE_URL)return false;
+ const configured=Number(plus?process.env.AI_PLUS_DAILY_LIMIT:process.env.AI_FREE_DAILY_LIMIT);
+ const cap=Number.isInteger(configured)&&configured>0&&configured<=1000?configured:(plus?100:30);
+ const r=await fetch(process.env.SUPABASE_URL+'/rest/v1/rpc/consume_sourdough_ai_usage',{
+  method:'POST',headers:{apikey:process.env.SUPABASE_SERVICE_ROLE_KEY,Authorization:'Bearer '+process.env.SUPABASE_SERVICE_ROLE_KEY,'Content-Type':'application/json'},
+  body:JSON.stringify({p_user_id:userId,p_limit:cap}),signal:AbortSignal.timeout(8000)
+ });
+ if(!r.ok)return false;
+ return (await r.json())===true;
+}
 async function ai(prompt,image){
  const ctrl=new AbortController(),timer=setTimeout(()=>ctrl.abort(),35000);
  try{
@@ -63,7 +75,7 @@ if(url.pathname==='/api/sync'){
  if(url.pathname==='/api/community'&&req.method==='POST'){const b=await body(req,20000);const title=String(b.title||'').trim(),ingredients=String(b.ingredients||'').trim(),instructions=String(b.instructions||'').trim();if(title.length<3||title.length>120||ingredients.length<5||instructions.length<5)return json(res,400,{error:'Bitte alle Felder ausfüllen'});await db('POST','community_recipes',id,{author_id:id.user.id,title,ingredients,instructions,status:'pending',author_display_name:String(b.author||'Bäcker:in').slice(0,60),flour_type:String(b.flour||'').slice(0,100)||null,bread_type:String(b.breadType||'').slice(0,100)||null,hydration:b.hydration===''||b.hydration==null?null:Number(b.hydration),difficulty:String(b.difficulty||'').slice(0,50)||null,starter_type:String(b.starterType||'').slice(0,50)||null,bake_method:String(b.bakeMethod||'').slice(0,60)||null,total_hours:b.totalHours===''||b.totalHours==null?null:Number(b.totalHours)});return json(res,201,{ok:true})}
  if(url.pathname==='/api/recipe-url'&&req.method==='POST'){if(!limit('import-url:'+id.user.id,10))return json(res,429,{error:'Zu viele Rezeptimporte'});const b=await body(req,4000);try{const found=await fetchPublicRecipeUrl(String(b.url||''));return json(res,200,found)}catch(e){return json(res,422,{error:e.message||'Link konnte nicht gelesen werden'})}}
  if(['/api/buddy','/api/recipe-extract'].includes(url.pathname)&&req.method==='POST'){
- let aiLimit=30;if(billingEnabled()){try{const sub=await subscriptionRow(id.user.id);if(['active','trialing'].includes(sub?.status))aiLimit=90}catch{}}if(!limit('ai:'+id.user.id,aiLimit))return json(res,429,{error:'Dein KI-Limit für diese Stunde ist erreicht'});
+ let aiLimit=30,plus=false;if(billingEnabled()){try{const sub=await subscriptionRow(id.user.id);plus=['active','trialing'].includes(sub?.status);if(plus)aiLimit=90}catch{}}if(!limit('ai:'+id.user.id,aiLimit))return json(res,429,{error:'Dein KI-Limit für diese Stunde ist erreicht'});if(!await consumeAiDaily(id.user.id,plus))return json(res,429,{error:'Dein tägliches KI-Limit ist erreicht oder kann gerade nicht geprüft werden'});
  if(!process.env.OPENAI_API_KEY)return json(res,503,{error:'Die KI ist noch nicht freigeschaltet.'});
  const b=await body(req);const image=typeof b.image==='string'&&/^data:image\/(jpeg|png|webp);base64,/.test(b.image)&&b.image.length<2100000?b.image:null;
  if(b.image&&!image)return json(res,400,{error:'Bitte ein kleineres JPG-, PNG- oder WebP-Bild wählen.'});
