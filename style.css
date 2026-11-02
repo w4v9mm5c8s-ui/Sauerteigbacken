@@ -92,3 +92,38 @@ button{overflow-wrap:break-word}
 #toast{bottom:calc(94px + env(safe-area-inset-bottom,0px));width:max-content;max-width:calc(100vw - 32px)}
 @media(max-width:390px){header{padding:18px 16px 8px}main{padding-left:12px;padding-right:12px}.card{padding:18px;border-radius:21px}.hub-tile{gap:12px;padding:13px}.hub-icon{width:42px;height:42px}.hub-text strong{font-size:1rem}.hero-bread .ui-icon{width:60px;height:60px}.stats-grid{gap:8px}.stat-box{padding:12px}.stat-box strong{font-size:1.45rem}}
 @media(max-width:340px){.action-grid{grid-template-columns:1fr}.home-hero h2{font-size:1.25rem}}
+
+/* Rose-beige watercolor editorial polish */
+:root{--rose:#aa6a7d;--rose-deep:#84495d;--rose-light:#f1dce2;--beige:#f8f1e9;--ivory:#fffaf5;--line:#e8d9d4;--ink:#433139}
+body{background:radial-gradient(ellipse at 15% 5%,#fff8f4 0,transparent 45%),var(--beige)}
+header{padding-bottom:0}
+.card{box-shadow:0 12px 36px -26px #78545b77;border-radius:26px}
+.card.hero{overflow:hidden;background:linear-gradient(110deg,#f6e7e7 0%,#faede5 68%,#f7ede2 100%);padding:20px 12px 16px 24px}
+.home-hero{min-height:150px;gap:2px}
+.home-hero h2{font-family:Georgia,serif;font-size:clamp(1.4rem,5vw,2.3rem);line-height:1.17;color:#6c4050}
+.home-hero .eyebrow{letter-spacing:.17em}
+.hero-watercolor{width:min(48%,235px);height:155px;object-fit:contain;filter:drop-shadow(0 9px 13px #9b6b6944);margin-right:-10px}
+.section-watercolor{width:140px;height:155px;object-fit:contain;float:right;margin:-18px -10px 5px 15px}
+.buddy-watercolor{width:100%;max-height:120px;object-fit:contain;object-position:center;display:block;margin:-12px 0 12px}
+.hub-tile{border-radius:22px;min-height:88px}
+.hub-tile.featured{background:linear-gradient(130deg,#b5788a,#95596c)}
+.hub-tile .hub-arrow{color:inherit;opacity:.6}
+.hub-icon{border-radius:16px}
+button.primary{background:#a86679;border-color:#a86679}
+button:focus-visible{outline:3px solid #d69cad;outline-offset:3px}
+details{padding:6px 0}
+details>summary{font-size:1rem;line-height:1.45}
+details[open]>summary{color:#88536a}
+details .cols{grid-template-columns:repeat(2,minmax(0,1fr))}
+details input,details select{background:#fffdfb}
+details>label{margin-top:12px}
+.stats-edit{padding:12px 0}
+.starter-entry{border:1px solid var(--line);border-radius:18px;padding:12px 16px;margin:12px 0;background:#fffdfb}
+.bake-log{border:1px solid var(--line);border-radius:17px;padding:12px 14px;margin:10px 0}
+.timer-panel{border:1px solid #e4cbd4;background:#f9edf0;border-radius:20px;padding:16px;margin:18px 0}
+.timer-panel .row{align-items:stretch}
+.timer-panel input{background:#fff}
+#planResult .step{margin:9px 0}
+#planResult .step p{margin:6px 0 0}
+#planResult .steps{max-height:none}
+@media(max-width:375px){.hero-watercolor{width:40%;height:130px}.home-hero h2{font-size:1.42rem}.home-hero{min-height:135px}}
