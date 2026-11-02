@@ -1,5 +1,5 @@
 const num=(v,f=0)=>Number.isFinite(Number(v))?Number(v):f;
-export function planningView(r,esc,now,flourTable=[]){
+export function planningView(r,esc,now,flourTable=[],starters=[]){
  if(!r)return '<section class="card">Bitte zuerst ein Rezept auswählen.</section>';
  const date=new Date(now.getTime()+2*86400000),pad=n=>String(n).padStart(2,'0'),local=date.getFullYear()+'-'+pad(date.getMonth()+1)+'-'+pad(date.getDate())+'T'+pad(date.getHours())+':'+pad(date.getMinutes());
  const field=(label,id,value,opts='')=>'<label for="'+id+'">'+label+'</label><input id="'+id+'" '+opts+' value="'+esc(value)+'">';
@@ -17,7 +17,7 @@ export function planningView(r,esc,now,flourTable=[]){
  '<details><summary>3. Starter und Fütterung</summary>'+
  field('Reifer Starter (g)','starterAmount',r.starter.grams,'type="number" min="0" max="10000"')+
  '<label>Starter oder Anstellgut</label><select id="starterType"><option '+(r.starter.type==='Weizen'?'selected':'')+'>Weizen</option><option '+(r.starter.type==='Roggen'?'selected':'')+'>Roggen</option><option>Dinkel</option></select>'+
- field('Hydration des Starters (%)','starterHydration',100,'type="number" min="20" max="250"')+
+ field('Hydration des Starters (%)','starterHydration',r.starter.hydration||100,'type="number" min="20" max="250"')+
  '<label>Fütterungsverhältnis</label><select id="feedRatio"><option>1:2:2</option><option>1:1:1</option><option>1:3:3</option><option>1:5:5</option></select>'+
  '<label><input id="starterReady" type="checkbox" style="width:auto"> Starter ist bereits reif</label>'+
  field('Starter-Reifezeit in Stunden (optional)','starterHours','','type="number" min="1" max="72" step="0.5" placeholder="Persönliche Erfahrung"')+
