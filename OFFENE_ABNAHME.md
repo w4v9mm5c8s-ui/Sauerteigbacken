@@ -47,3 +47,10 @@ Dies ist eine veröffentlichte **Entwicklungsfassung**, keine freigegebene ferti
 - [x] Backplaner vorbelegt mit einem künftigen Termin; Eingaben beim Zurücknavigieren erhalten
 - [x] Laufender Backtag über Neustarts hinweg lokal gespeichert und pro angemeldetem Konto getrennt
 - [ ] Browser-E2E-Tests und tatsächliche E-Mail-Zustellung fehlen weiterhin
+
+## 02.11.2026 – GitHub-E-Mail-Flut
+- [x] Automatisch bei jedem Commit gestarteten GitHub-Actions-Workflow `mobile-ui.yml` vollständig entfernt; dadurch werden keine weiteren Fehlermails von diesem Workflow ausgelöst.
+- [x] Veralteten Browser-Test-Selektor für das Startseitenmotiv korrigiert.
+- [x] Übrig gebliebene Unicode-Symbole auf der Startseite durch einheitliche SVG-Icons ersetzt.
+- [ ] GitHub-Kontobenachrichtigungen werden separat durch die GitHub-Kontoeinstellungen verwaltet; hier nicht verändert.
+- [ ] Browser-Smoketests künftig nur nach gezieltem manuellen Start in einer geeigneten Testumgebung durchführen.
