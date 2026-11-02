@@ -1,0 +1,5 @@
+export function resourcesView(resources,esc){
+ const labels={buch:'Bücher',blog:'Blogs',youtube:'YouTube',instagram:'Instagram'};
+ return '<section class="card"><h2>Weiterführende Quellen</h2><p class="muted small">Aus der ursprünglichen Sauerteig-Unterlage übernommen. Die Links und ISBN wurden nicht unabhängig überprüft.</p>'+['buch','blog','youtube','instagram'].map(kind=>'<h3>'+labels[kind]+'</h3>'+resources.filter(x=>x.kind===kind).map(x=>'<div class="line"><strong>'+esc(x.name)+'</strong>'+(x.author?'<p class="muted">'+esc(x.author)+'</p>':'')+(x.isbn?'<p>ISBN '+esc(x.isbn)+'</p>':'')+(x.url&&/^https:\/\//.test(x.url)?'<p><a href="'+esc(x.url)+'" target="_blank" rel="noopener noreferrer">Quelle öffnen</a></p>':'')+'</div>').join('')).join('')+'</section>';
+}
+export function conflictsView(conflicts,esc){return '<section class="card"><h2>Quellen und Widersprüche</h2><p class="muted">Wo sich Angaben unterscheiden, werden sie nicht stillschweigend gleichgesetzt.</p>'+conflicts.map(x=>'<details><summary>'+esc(x.title)+'</summary><p>'+esc(x.handling)+'</p></details>').join('')+'</section>'}
