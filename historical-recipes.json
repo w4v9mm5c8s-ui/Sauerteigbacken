@@ -1,0 +1,515 @@
+[
+  {
+    "id": "ruchbrot-weizenprotein-altbrot-2026-04-01",
+    "title": "Ruchbrot mit Weizenprotein und Altbrot",
+    "version": "01.04.2026",
+    "source": "Frühere Sauerteig-Arbeit (Rezeptversion)",
+    "sourceDate": "2026-04-01",
+    "yieldNote": "",
+    "outcome": "",
+    "ingredients": [
+      {
+        "name": "Weizen-Ruchmehl",
+        "amount": "450 g",
+        "part": "hauptteig"
+      },
+      {
+        "name": "Weizenprotein",
+        "amount": "50 g",
+        "part": "hauptteig"
+      },
+      {
+        "name": "Wasser",
+        "amount": "380 g",
+        "part": "hauptteig"
+      },
+      {
+        "name": "Salz",
+        "amount": "10 g",
+        "part": "salz"
+      },
+      {
+        "name": "Altbrot",
+        "amount": "25 g",
+        "part": "quellstueck"
+      },
+      {
+        "name": "kochendes Wasser (Quellstück)",
+        "amount": "75 g",
+        "part": "quellstueck"
+      },
+      {
+        "name": "reifer Weizensauerteig",
+        "amount": "100 g",
+        "part": "starter"
+      }
+    ],
+    "process": [
+      "Führung bei 21 °C",
+      "Stockgare ca. 4 h",
+      "Stückgare ca. 1,5–2 h"
+    ],
+    "bake": [
+      "250 °C vorheizen",
+      "zunächst 230 °C",
+      "danach 210 °C",
+      "Ziel Kerntemperatur 96–97 °C"
+    ],
+    "unknowns": [],
+    "deviations": [
+      "Kerntemperatur 96–97 °C statt 97 °C im Standard-Backablauf.",
+      "Starteraufbau 10 + 45 + 45 entspricht 100 % Hydration – spätere Trainingskorrektur nennt Weizenanstellgut mit 50 % Hydration.",
+      "Weizenprotein ist nicht Teil der Mehltabelle; keine Tabellenwerte dafür."
+    ],
+    "conflictNotes": [
+      "Nicht eindeutig, ob die 380 g Wasser das Gesamtwasser oder nur das Hauptteigwasser sind. Regel: Quellstückwasser gehört zur Gesamtwassermenge – bitte bestätigen."
+    ]
+  },
+  {
+    "id": "weizen-550-rezept",
+    "title": "Weizenbrot Type 550",
+    "version": "Rezeptdatensatz",
+    "source": "Frühere Sauerteig-Arbeit (Rezeptdatensatz)",
+    "sourceDate": "",
+    "yieldNote": "",
+    "outcome": "",
+    "ingredients": [
+      {
+        "name": "Weizenmehl 550",
+        "amount": "500 g",
+        "part": "hauptteig"
+      },
+      {
+        "name": "Wasser",
+        "amount": "320 g",
+        "part": "hauptteig"
+      },
+      {
+        "name": "Salz",
+        "amount": "10 g",
+        "part": "salz"
+      },
+      {
+        "name": "reifes Weizen-ASG",
+        "amount": "170 g",
+        "part": "starter"
+      }
+    ],
+    "process": [
+      "Hydration in dieser Rezeptversion 64 %",
+      "Autolyse 30–60 Min",
+      "Stockgare als Orientierung ca. 4,5 h bei 20 °C, bei 21 °C kürzer",
+      "Stückgare ca. 2 h"
+    ],
+    "bake": [],
+    "unknowns": [],
+    "deviations": [
+      "64 % beziehen sich auf 320 g Wasser / 500 g Hauptteigmehl; Mehl und Wasser aus dem ASG sind darin nicht enthalten."
+    ],
+    "conflictNotes": [
+      "Starter-Hydration des 170-g-ASG ist in diesem Datensatz nicht angegeben."
+    ]
+  },
+  {
+    "id": "roggen-1150-rezept",
+    "title": "Roggenbrot Type 1150",
+    "version": "Rezeptdatensatz",
+    "source": "Frühere Sauerteig-Arbeit (Rezeptdatensatz)",
+    "sourceDate": "",
+    "yieldNote": "",
+    "outcome": "",
+    "ingredients": [
+      {
+        "name": "Roggen 1150",
+        "amount": "500 g",
+        "part": "hauptteig"
+      },
+      {
+        "name": "Wasser",
+        "amount": "440 g",
+        "part": "hauptteig"
+      },
+      {
+        "name": "Salz",
+        "amount": "10 g",
+        "part": "salz"
+      },
+      {
+        "name": "Roggen-ASG",
+        "amount": "220 g",
+        "part": "starter"
+      }
+    ],
+    "process": [],
+    "bake": [],
+    "unknowns": [],
+    "deviations": [],
+    "conflictNotes": [
+      "Führung, Zeiten und Starter-Hydration sind in diesem Datensatz nicht angegeben – nicht ergänzt."
+    ]
+  },
+  {
+    "id": "ruchbrot-planung-2026-02-12",
+    "title": "Ruchbrot (Planung)",
+    "version": "12.02.2026",
+    "source": "Frühere Planung",
+    "sourceDate": "2026-02-12",
+    "yieldNote": "",
+    "outcome": "",
+    "ingredients": [
+      {
+        "name": "Weizen-Ruchmehl",
+        "amount": "500 g",
+        "part": "hauptteig"
+      },
+      {
+        "name": "Hauptteigwasser (damals ca. 38–39 °C)",
+        "amount": "280 g",
+        "part": "hauptteig"
+      },
+      {
+        "name": "Salz",
+        "amount": "10 g",
+        "part": "salz"
+      },
+      {
+        "name": "getrocknetes Altbrot",
+        "amount": "25 g",
+        "part": "quellstueck"
+      },
+      {
+        "name": "Wasser (Quellstück)",
+        "amount": "75 g",
+        "part": "quellstueck"
+      },
+      {
+        "name": "Roggenstarter Type 1350",
+        "amount": "150 g",
+        "part": "starter"
+      }
+    ],
+    "process": [
+      "Raumtemperatur 22 °C",
+      "Kühlschrank 7 °C",
+      "Backen auf Blech"
+    ],
+    "bake": [],
+    "unknowns": [],
+    "deviations": [
+      "Roggenstarter in einem Weizen-Ruchbrot – die Mehltabelle sieht für Weizenruch einen anderen Startertyp vor.",
+      "1:1:1 (100 % Hydration) – spätere Trainingskorrektur nennt Anstellgut mit 50 % Hydration.",
+      "Hauptteigwasser 38–39 °C war die damalige Vorgabe, kein allgemeiner Standard."
+    ],
+    "conflictNotes": []
+  },
+  {
+    "id": "joghurtsemmeln-weizen-550",
+    "title": "Sauerteig-Joghurtsemmeln",
+    "version": "Rezeptdatensatz",
+    "source": "Frühere Sauerteig-Arbeit (Rezeptdatensatz)",
+    "sourceDate": "",
+    "yieldNote": "9 Stück",
+    "outcome": "weiche Krume, knusprige Kruste",
+    "ingredients": [
+      {
+        "name": "Weizenmehl Type 550",
+        "amount": "400 g",
+        "part": "hauptteig"
+      },
+      {
+        "name": "Weizenvollkornmehl",
+        "amount": "80 g",
+        "part": "hauptteig"
+      },
+      {
+        "name": "Wasser",
+        "amount": "220 g",
+        "part": "hauptteig"
+      },
+      {
+        "name": "Joghurt",
+        "amount": "80 g",
+        "part": "hauptteig"
+      },
+      {
+        "name": "aktives Weizen-ASG",
+        "amount": "50 g",
+        "part": "starter"
+      },
+      {
+        "name": "Salz",
+        "amount": "1,5 TL",
+        "part": "salz"
+      }
+    ],
+    "process": [
+      "Autolyse 30 Min",
+      "Stockgare 4–6 h mit Falten",
+      "über Nacht kalt",
+      "in 9 Stücke teilen und formen",
+      "Stückgare 1–2 h"
+    ],
+    "bake": [
+      "250 °C vorheizen",
+      "backen bei 230 °C",
+      "ca. 10 Min mit Dampf",
+      "ca. 10 Min ohne Dampf"
+    ],
+    "unknowns": [],
+    "deviations": [
+      "Joghurt ist kein Wert der Mehltabelle. Er steht in diesem Datensatz neben den 220 g Wasser und wird nicht als zusätzliches Wasser verrechnet.",
+      "Salz als 1,5 TL (Volumenangabe), nicht in Gramm – nicht umgerechnet.",
+      "Backen 250 °C → 230 °C mit ca. 10 Min Dampf und ca. 10 Min ohne Dampf – kürzer als der Standard-Backablauf, ohne Kerntemperatur-Angabe.",
+      "Mehlmischung 550 + Vollkorn: die Mehltabelle führt je Mehlsorte eigene Werte, nicht für eine Mischung."
+    ],
+    "conflictNotes": [
+      "Raumtemperatur der 4–6 h Stockgare ist nicht angegeben – die Tabellenwerte beziehen sich auf 18–24 °C.",
+      "Temperatur und Dauer der kalten Führung sind nicht angegeben; sie liegt laut Ablauf zwischen Stockgare und Teilen, also nicht als kalte Stückgare.",
+      "220 g Wasser auf 480 g Mehl – wie viel Wasser der Joghurt mitbringt, ist nicht angegeben. Eine Gesamthydration lässt sich aus diesem Datensatz nicht ableiten."
+    ]
+  },
+  {
+    "id": "koernerbrot-weizen-00-2026-04-01",
+    "title": "Körnerbrot (Teilrekonstruktion)",
+    "version": "01.04.2026",
+    "source": "Frühere Sauerteig-Arbeit (teilweise rekonstruiert)",
+    "sourceDate": "2026-04-01",
+    "yieldNote": "",
+    "outcome": "",
+    "ingredients": [
+      {
+        "name": "Weizen Type 00",
+        "amount": "500 g",
+        "part": "hauptteig"
+      },
+      {
+        "name": "Wasser",
+        "amount": "290 g",
+        "part": "hauptteig"
+      },
+      {
+        "name": "Salz",
+        "amount": "10 g",
+        "part": "salz"
+      },
+      {
+        "name": "Weizen-ASG",
+        "amount": "150 g",
+        "part": "starter"
+      },
+      {
+        "name": "Altbrot",
+        "amount": "25 g",
+        "part": "quellstueck"
+      },
+      {
+        "name": "Quellstückwasser",
+        "amount": "75 g",
+        "part": "quellstueck"
+      }
+    ],
+    "process": [],
+    "bake": [],
+    "unknowns": [],
+    "deviations": [
+      "Der Name sagt Körnerbrot, Körner- oder Saatenangaben fehlen in den wiedergefundenen Daten.",
+      "290 g Wasser und 150 g Weizen-ASG entsprechen genau den Tabellenwerten für Weizen 00 (58 % Hydration) – der Datensatz bleibt trotzdem eigenständig und wird nicht mit der Tabelle verrechnet."
+    ],
+    "conflictNotes": [
+      "Nicht eindeutig, ob die 290 g Wasser das Gesamtwasser oder nur das Hauptteigwasser sind. Regel: Quellstückwasser gehört zur Gesamtwassermenge – bitte bestätigen.",
+      "Führung, Zeiten und Starter-Hydration sind in diesem Datensatz nicht angegeben – nicht ergänzt."
+    ]
+  },
+  {
+    "id": "roggen-997-altbrot-korrigiert",
+    "title": "Roggenbrot Type 997 mit Altbrot",
+    "version": "spätere Version nach Nutzerkorrektur",
+    "source": "Frühere Sauerteig-Arbeit (Rezeptversion)",
+    "sourceDate": "",
+    "yieldNote": "",
+    "outcome": "",
+    "ingredients": [
+      {
+        "name": "Roggen 997",
+        "amount": "455 g",
+        "part": "hauptteig"
+      },
+      {
+        "name": "Hauptteigwasser",
+        "amount": "315 g",
+        "part": "hauptteig"
+      },
+      {
+        "name": "Roggen-ASG",
+        "amount": "90 g",
+        "part": "starter"
+      },
+      {
+        "name": "Altbrot",
+        "amount": "25 g",
+        "part": "quellstueck"
+      },
+      {
+        "name": "Quellstückwasser",
+        "amount": "75 g",
+        "part": "quellstueck"
+      }
+    ],
+    "process": [
+      "Altbrot-Quellstück 12 h vor der Autolyse ansetzen"
+    ],
+    "bake": [],
+    "unknowns": [],
+    "deviations": [
+      "Historischer Datensatz – nicht mit der allgemeinen Mehltabelle verschmolzen."
+    ],
+    "conflictNotes": [
+      "Salz, Starter-Hydration, Führung und Zeiten sind in diesem Datensatz nicht angegeben – nicht ergänzt."
+    ]
+  },
+  {
+    "id": "weizen-1050-altbrot-testfall-2026-01-29",
+    "title": "Weizenbrot Type 1050 mit Altbrot (korrigierter Rechenstand)",
+    "version": "29.01.2026",
+    "source": "Frühere Sauerteig-Arbeit (historischer Rechenfall, Testfall)",
+    "sourceDate": "2026-01-29",
+    "yieldNote": "",
+    "outcome": "",
+    "ingredients": [
+      {
+        "name": "Weizenmehl Type 1050",
+        "amount": "750 g",
+        "part": "hauptteig"
+      },
+      {
+        "name": "Wasser (450 ml)",
+        "amount": "450 ml",
+        "part": "hauptteig"
+      },
+      {
+        "name": "Salz",
+        "amount": "15 g",
+        "part": "salz"
+      },
+      {
+        "name": "Roggen-ASG",
+        "amount": "250 g",
+        "part": "starter"
+      }
+    ],
+    "process": [],
+    "bake": [],
+    "unknowns": [],
+    "deviations": [
+      "Die Rechnung basiert auf angenommener 100 % Hydration des Roggen-ASG – die spätere Trainingskorrektur nennt Roggenanstellgut mit 50 % Hydration.",
+      "Wassermenge als 450 ml notiert, nicht in Gramm – wie überliefert übernommen."
+    ],
+    "conflictNotes": [
+      "WICHTIG: Dieser alte Rechenstand widerspricht der späteren Altbrot-Regel (5 % Altbrot auf Mehl, 3× Wasser, 12 h Quellzeit). Nicht als neue Standardregel verwenden – die spätere 12-h-Regel aus der Trainingsgrundlage ist für den aktuellen Standard maßgeblich.",
+      "Quellstück 50 g Altbrot + 125 g Wasser und Quellzeit 4–12 h sind historische Werte dieses Datensatzes, keine aktuellen Standardwerte."
+    ]
+  },
+  {
+    "id": "proteinbrot-variante",
+    "title": "Proteinbrot (Variante mit Lupinenmehl und Saaten)",
+    "version": "Rezeptvariante – Mengen nicht überliefert",
+    "source": "Nutzerangabe (Programmierauftrag 37, 28.10.2026): Zutatenliste ohne Mengen",
+    "sourceDate": "2026-10-28",
+    "yieldNote": "",
+    "outcome": "",
+    "ingredients": [],
+    "process": [],
+    "bake": [],
+    "unknowns": [
+      "Mengen aller fünf Zutaten",
+      "Grundmehl (Sorte und Menge), falls vorhanden",
+      "Wassermenge und ob Lein-/Flohsamen vorgequollen werden",
+      "Salz",
+      "Anstellgut: Menge, Typ und Hydration",
+      "Führungstemperatur, Gare- und Backzeiten, Backablauf"
+    ],
+    "deviations": [
+      "Weizenprotein und Lupinenmehl sind nicht Teil der Mehltabelle – keine Tabellenwerte dafür.",
+      "Flohsamenschalen und Leinsamen binden viel Wasser; die Quelle nennt dazu keine Menge – nicht ergänzt."
+    ],
+    "conflictNotes": [
+      "Keine Originalmengen zugänglich. Jede Menge muss beim Übernehmen bewusst selbst eingetragen werden. Eine spätere Version mit Mengen ist als eigener Datensatz „Proteinbrot (Version mit Mengen)“ erfasst."
+    ]
+  },
+  {
+    "id": "proteinbrot-mengen-2026-10-29",
+    "title": "Proteinbrot (Version mit Mengen)",
+    "version": "frühere Rezeptversion, nachgereicht 29.10.2026",
+    "source": "Nutzerangabe im Chat (Audit 29.10.2026): früher besprochene und übergebene Rezeptversion",
+    "sourceDate": "2026-10-29",
+    "yieldNote": "",
+    "outcome": "Nicht testgebacken – historische Rezeptversion, keine geprüfte Formel.",
+    "ingredients": [
+      {
+        "name": "Weizenmehl Type 550",
+        "amount": "250 g",
+        "part": "hauptteig"
+      },
+      {
+        "name": "Weizenprotein",
+        "amount": "120 g",
+        "part": "hauptteig"
+      },
+      {
+        "name": "Lupinenmehl",
+        "amount": "80 g",
+        "part": "hauptteig"
+      },
+      {
+        "name": "Hanfsamen, geschält",
+        "amount": "50 g",
+        "part": "quellstueck"
+      },
+      {
+        "name": "Leinsamen, geschrotet",
+        "amount": "30 g",
+        "part": "quellstueck"
+      },
+      {
+        "name": "Flohsamenschalen",
+        "amount": "20 g",
+        "part": "quellstueck"
+      },
+      {
+        "name": "Quellstückwasser",
+        "amount": "210 g",
+        "part": "quellstueck"
+      },
+      {
+        "name": "Hauptteigwasser",
+        "amount": "208 g",
+        "part": "hauptteig"
+      },
+      {
+        "name": "Salz",
+        "amount": "10 g",
+        "part": "salz"
+      },
+      {
+        "name": "aktives Weizen-ASG",
+        "amount": "120 g",
+        "part": "starter"
+      }
+    ],
+    "process": [],
+    "bake": [],
+    "unknowns": [
+      "Hydration des Weizen-ASG",
+      "Quellzeit des Saaten-/Flohsamen-Quellstücks",
+      "Führungstemperatur, Gare- und Backzeiten, Backablauf"
+    ],
+    "deviations": [
+      "Spezialrezept: Weizenprotein, Lupinenmehl und Flohsamenschalen sind nicht Teil der Mehltabelle; Wasserbedarf und Gare verhalten sich nicht wie bei normalem Weizenbrot. Tabellen-Hydration, Mehlfaktoren und Standardzeiten gelten hier NICHT.",
+      "Wasserbilanz wie überliefert: 208 g Hauptteigwasser + 210 g Quellstückwasser = 418 g Gesamtwasser (ohne ASG-Wasser). Bezogen auf 250 g W550 + 120 g Weizenprotein + 80 g Lupinenmehl = 450 g wären das ca. 92,9 % – nur rechnerischer Hinweis, keine Bewertung."
+    ],
+    "conflictNotes": [
+      "Validierung nötig: Ob Weizenprotein und Lupinenmehl als Mehl (Bäckerprozent-Basis) oder als Zusatz zählen, ist nicht überliefert – beim Übernehmen bewusst entscheiden.",
+      "Ältere Variante „Proteinbrot (Variante mit Lupinenmehl und Saaten)“ ohne Mengen bleibt als eigener Datensatz erhalten."
+    ]
+  }
+]
