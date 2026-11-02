@@ -42,3 +42,14 @@ Ziel: Eigenständige App auf Render, **ohne Lovable-Abhängigkeit**, mit gleiche
 - [ ] Echte iPhone-Layoutkontrolle, Detailabgleich mit Originalgrafiken und Test der Timer bei gesperrtem Bildschirm
 - [ ] Erweiterte Statistik nach Mehlen, Hydration und Garzeiten (hierfür fehlen noch strukturierte Messwerte)
 - [ ] Rezeptimport über URL (sichere Abruf- und Quellenprüfung fehlt)
+
+## Erweiterungen vom 02.11.2026
+- [x] Rezeptimport per HTTPS-Link mit serverseitiger Prüfung gegen lokale/interne Ziele, Größenlimit und ohne automatische Weiterleitungen; Text vor KI-Import überprüfbar
+- [x] 39 Wissenskarten aus dem Originalprojekt mit Kategorien und erklärenden Absätzen übernommen; Originalmaterial enthält weitere FAQ/Glossare, die noch separat geprüft werden müssen
+- [x] Erweiterte Backstatistik mit Monats-, Rezept- und Mehlauswertung, Hydration, Teigtemperatur, Garzeiten und CSV-Export; nur tatsächlich protokollierte Werte
+- [x] Bearbeitbare Messwerte und Bewertungen pro abgeschlossenem Brot
+- [x] Browser-Benachrichtigung bei abgelaufenem Timer, wenn App geöffnet und Berechtigung erteilt; kein verlässlicher Hintergrund-Push
+- [x] iPhone-Safari-CSS für Safe Areas, kleine Bildschirmbreiten, Eingabefelder und Scrollen ergänzt
+- [ ] Original-PNG-Illustrationen: Im Lovable-Projekt gefunden, aber Binärdateien lassen sich über die verfügbare Textschnittstelle nicht verlustfrei übernehmen. Keine fehlerhaften Kopien veröffentlichen.
+- [ ] Pixelgenauer iPhone-Screenshotvergleich und manuelle Touch-Bedienungsprüfung stehen aus
+- [ ] Import realer fremder Rezept-Webseiten und tatsächliche KI-Antworten unter authentifiziertem Testkonto prüfen
