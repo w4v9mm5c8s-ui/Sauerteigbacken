@@ -66,3 +66,5 @@ Quellen: https://docs.stripe.com/payments/checkout , https://docs.stripe.com/bil
 - Webhook: `we_1UXNDt21ZUER5Za8Prl1Qc1B`
 - Test-Preiskennungen und Webhook-Signatur sind in Render konfiguriert. Checkout bleibt deaktiviert.
 - Preise vor Live-Verkauf bestätigen; Test-IDs später durch Live-IDs ersetzen.
+
+- Stripe-Sandbox-Webhook bleibt bis zur vollständigen Server-Konfiguration deaktiviert, damit keine unnötigen Fehlzustellungs-E-Mails entstehen.
