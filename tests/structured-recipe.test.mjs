@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
 import {extractStructuredRecipe} from '../structured-recipe.mjs';
 const fixture=`<html><head><script type="application/ld+json">
 {"@context":"https://schema.org","@graph":[{"@type":["Recipe","CreativeWork"],"name":"Mein Sauerteig-Landbrot",
@@ -24,8 +25,7 @@ test('ignores unrelated schema types',()=>{
  assert.equal(extractStructuredRecipe(html),null);
 });
 test('recipe URL reader uses structured parsing before stripping script tags',()=>{
- const r=await import('node:fs');
- const s=r.readFileSync(new URL('../url-import.mjs',import.meta.url),'utf8');
+ const s=readFileSync(new URL('../url-import.mjs',import.meta.url),'utf8');
  assert.match(s,/extractStructuredRecipe\(raw\)/);
  assert.match(s,/structuredRecipe/);
 });
