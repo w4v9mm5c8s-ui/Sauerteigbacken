@@ -104,3 +104,5 @@ nav button.active{color:var(--rose-deep);background:var(--rose-mist)}
 .step-list .item.current-step{border:2px solid var(--rose);background:var(--rose-mist)}
 .step-list .item.done{opacity:.65}
 @media(max-width:360px){.timer-presets,.timer-actions{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+.calendar-export{display:inline-flex;align-items:center;justify-content:center;gap:9px;width:100%;margin-top:11px;border-color:#d7b7c3;color:var(--rose-deep);font-size:.87rem}
