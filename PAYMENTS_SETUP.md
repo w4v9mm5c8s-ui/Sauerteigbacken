@@ -70,3 +70,11 @@ Quellen: https://docs.stripe.com/payments/checkout , https://docs.stripe.com/bil
 - Stripe-Sandbox-Webhook bleibt bis zur vollständigen Server-Konfiguration deaktiviert, damit keine unnötigen Fehlzustellungs-E-Mails entstehen.
 
 - Optionale tägliche KI-Kontingente sind datenbankseitig vorbereitet. Sie bleiben mit `AI_DAILY_QUOTA_ENABLED=false` deaktiviert, bis Umfang und Freikontingente beschlossen sind.
+
+## Serverprüfung (02.11.2026)
+- Stripe-API-Schlüssel auf Render: **fehlt**.
+- Supabase Service-Role-Schlüssel auf Render: **fehlt**.
+- Stripe-Webhook-Signatur: vorhanden.
+- Test-Price-IDs: vorhanden.
+- Zahlungsfunktion: deaktiviert.
+- Der Test-Webhook ist bis zur Ergänzung beider fehlender Schlüssel deaktiviert, um fehlgeschlagene Zustellungen zu vermeiden.
