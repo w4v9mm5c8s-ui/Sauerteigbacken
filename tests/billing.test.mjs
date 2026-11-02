@@ -31,3 +31,17 @@ test('no checkout request when payments disabled',async()=>{
 });
 
 test('unrelated Stripe products cannot grant Sauerteig Plus',()=>{const e={type:'customer.subscription.updated',created:1783000000,data:{object:{id:'sub_other',customer:'cus_1',status:'active',metadata:{user_id:'11111111-1111-4111-8111-111111111111'},items:{data:[{price:{id:'price_unrelated'}}]}}}};assert.equal(subscriptionFromEvent(e,{STRIPE_PRICE_MONTHLY:'price_123',STRIPE_PRICE_YEARLY:'price_456'}),null)});
+
+test('subscription event is ignored when Stripe price is not configured',()=>{
+ const e={type:'customer.subscription.updated',created:1783000000,data:{object:{id:'sub_1',customer:'cus_1',status:'active',metadata:{user_id:'11111111-1111-4111-8111-111111111111'},items:{data:[{price:{id:'price_123'}}]}}}};
+ assert.equal(subscriptionFromEvent(e,{}),null);
+});
+test('Stripe portal stays available to existing subscribers after new checkout is disabled',async()=>{
+ const source=(await import('node:fs')).readFileSync(new URL('../billing.mjs',import.meta.url),'utf8');
+ const fn=source.slice(source.indexOf('export async function portalSession'),source.indexOf('export function subscriptionFromEvent'));
+ assert.doesNotMatch(fn,/billingEnabled\(env\)/);
+});
+test('subscription updates use atomic database RPC rather than read-then-write',async()=>{
+ const source=(await import('node:fs')).readFileSync(new URL('../billing.mjs',import.meta.url),'utf8');
+ assert.match(source,/rpc\/apply_sourdough_subscription_event/);
+});
