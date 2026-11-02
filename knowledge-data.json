@@ -448,5 +448,430 @@
       "Für längere Zeit: einfrieren.",
       "Vor dem Einfrieren vollständig auskühlen lassen und luftdicht verpacken."
     ]
+  },
+  {
+    "slug": "fehler-sauer",
+    "title": "Brot zu sauer",
+    "category": "Fehler & Lösungen",
+    "summary": "Mögliche Ursachen: zu lange Fermentation, zu warme Führung, zu viel ASG.",
+    "body": [
+      "Stellschrauben: Gare kürzer, kühler führen, ASG reduzieren.",
+      "Zu viel Säure kann die Struktur schwächen. Roggen ist grundsätzlich stärker säuregeprägt."
+    ]
+  },
+  {
+    "slug": "fehler-klebrig",
+    "title": "Teig zu klebrig",
+    "category": "Fehler & Lösungen",
+    "summary": "Klebrigkeit allein ist kein Fehler – problematisch wird sie, wenn gleichzeitig Struktur fehlt.",
+    "body": [
+      "Mögliche Ursachen: zu hohe Hydration, schwache Glutenentwicklung, Reife zu weit.",
+      "Maßnahmen: Struktur durch Falten, sauberes Handling, leicht befeuchtete Hände und Werkzeuge; nächstes Mal ggf. weniger Wasser.",
+      "Nicht hektisch viel Mehl in den fertigen Teig einarbeiten."
+    ]
+  },
+  {
+    "slug": "temperatur-jahreszeit",
+    "title": "Sommer, Winter, Raumtemperatur",
+    "category": "Fehler & Lösungen",
+    "summary": "Temperatur ist ein starker Regler: wärmer geht schneller, kühler langsamer.",
+    "body": [
+      "Zeiten nie blind übernehmen – im Warmen früher, im Kühlen später kontrollieren. Der Teigzustand entscheidet."
+    ]
+  },
+  {
+    "slug": "asg-alt",
+    "title": "Altes Anstellgut",
+    "category": "Starter",
+    "summary": "Weniger Triebkraft, aber Aroma.",
+    "body": [
+      "Einsetzbar in Rezepten, bei denen maximale Triebkraft nicht entscheidend ist, z. B. Pfannkuchen, Waffeln, Cracker.",
+      "Überschuss reduzierst du durch kleinere Fütterungsmengen."
+    ]
+  },
+  {
+    "slug": "asg-urlaub",
+    "title": "Anstellgut im Urlaub",
+    "category": "Starter",
+    "summary": "Normale Urlaubszeiten: füttern, in den Kühlschrank, danach 1–2× auffrischen.",
+    "body": [
+      "Für eine längere Pause ein Backup anlegen – die Quelle bevorzugt Trocknen gegenüber Einfrieren."
+    ]
+  },
+  {
+    "slug": "asg-trocknen-einfrieren",
+    "title": "Anstellgut trocknen oder einfrieren",
+    "category": "Starter",
+    "summary": "Trocknen: dünn ausstreichen, vollständig trocknen, Stücke trocken und luftdicht lagern.",
+    "body": [
+      "Einfrieren ist möglich, kann aber länger bis zur Reaktivierung brauchen.",
+      "Danach in beiden Fällen mehrere Fütterungen, bis das ASG wieder aktiv ist – an Reifezeichen beurteilen."
+    ]
+  },
+  {
+    "slug": "sauerteig-tuetchen",
+    "title": "Sauerteig im Tütchen",
+    "category": "Starter",
+    "summary": "Liefert laut Quelle meist Aroma, aber nicht den gleichen lebenden Trieb wie aktives ASG.",
+    "body": [
+      "Nicht als gleichwertigen Ersatz für aktives Anstellgut behandeln."
+    ]
+  },
+  {
+    "slug": "glossar-0",
+    "title": "Sauerteig / Anstellgut",
+    "category": "Begriffe",
+    "summary": "Mehl + Wasser + natürliche Mikroorganismen. Das dauerhaft geführte Anstellgut (ASG) bringt Trieb und Säure in den Teig.",
+    "body": []
+  },
+  {
+    "slug": "glossar-1",
+    "title": "Teig",
+    "category": "Begriffe",
+    "summary": "Die Mischung aus Mehl, Wasser, Anstellgut, Salz und ggf. weiteren Zutaten, die gärt und gebacken wird.",
+    "body": []
+  },
+  {
+    "slug": "glossar-2",
+    "title": "Hydration",
+    "category": "Begriffe",
+    "summary": "Wasser im Verhältnis zum Mehl, in Prozent. 60–65 % fest, 65–70 % Standard, 70–80 % weich.",
+    "body": []
+  },
+  {
+    "slug": "glossar-3",
+    "title": "Fermentation",
+    "category": "Begriffe",
+    "summary": "Die Arbeit der Mikroorganismen: Sie bilden Gas (Aufgehen) und Säure (Stabilität, Geschmack).",
+    "body": []
+  },
+  {
+    "slug": "glossar-4",
+    "title": "Gare",
+    "category": "Begriffe",
+    "summary": "Die Phase, in der der Teig durch Fermentation aufgeht – als Stockgare und Stückgare.",
+    "body": []
+  },
+  {
+    "slug": "glossar-5",
+    "title": "Reife",
+    "category": "Begriffe",
+    "summary": "Der Zustand, in dem Anstellgut oder Teig die gewünschte Aktivität erreicht hat. Erkennbar an Reifezeichen, nicht an der Uhr.",
+    "body": []
+  },
+  {
+    "slug": "glossar-6",
+    "title": "Auffrischen / Füttern",
+    "category": "Begriffe",
+    "summary": "Anstellgut mit frischem Mehl und Wasser versorgen, z. B. im Verhältnis 1:1:1, damit es wieder aktiv wird.",
+    "body": []
+  },
+  {
+    "slug": "glossar-7",
+    "title": "Triebstark",
+    "category": "Begriffe",
+    "summary": "Anstellgut, das nach dem Füttern zuverlässig und kräftig aufgeht.",
+    "body": []
+  },
+  {
+    "slug": "glossar-8",
+    "title": "Reif / überreif",
+    "category": "Begriffe",
+    "summary": "Reif: höchste Triebkraft (Peak). Überreif: nach dem Peak – Anstellgut fällt ein, wird saurer und treibt schwächer.",
+    "body": []
+  },
+  {
+    "slug": "glossar-9",
+    "title": "Autolyse",
+    "category": "Begriffe",
+    "summary": "Mehl und Wasser ruhen vor dem Zugeben von Anstellgut und Salz, damit das Mehl Wasser aufnimmt und der Teig dehnbarer wird.",
+    "body": []
+  },
+  {
+    "slug": "glossar-10",
+    "title": "Quellstück",
+    "category": "Begriffe",
+    "summary": "Zutaten wie Saaten, Schrote oder Altbrot werden vorab in Wasser eingeweicht. Das Wasser gehört zur Gesamtwassermenge.",
+    "body": []
+  },
+  {
+    "slug": "glossar-11",
+    "title": "Brühstück",
+    "category": "Begriffe",
+    "summary": "Mehl oder Körner mit kochendem Wasser übergießen. (Seite 27 der Unterlage beschreibt das Brühstück dagegen als Aufkochen – siehe Quellenkonflikte.)",
+    "body": []
+  },
+  {
+    "slug": "glossar-12",
+    "title": "Kochstück",
+    "category": "Begriffe",
+    "summary": "Mehl oder Getreide wird mit Wasser aufgekocht, bis es bindet, und dann abgekühlt dem Teig zugegeben.",
+    "body": []
+  },
+  {
+    "slug": "glossar-13",
+    "title": "Altbrot",
+    "category": "Begriffe",
+    "summary": "Restbrot, eingeweicht als Quellstück. Standard: 5 % auf Mehl, Wasser 3× Altbrot, 12 h vor der Autolyse.",
+    "body": []
+  },
+  {
+    "slug": "glossar-14",
+    "title": "Kneten",
+    "category": "Begriffe",
+    "summary": "Mechanisches Bearbeiten des Teigs, um das Glutengerüst aufzubauen.",
+    "body": []
+  },
+  {
+    "slug": "glossar-15",
+    "title": "Stretch & Fold",
+    "category": "Begriffe",
+    "summary": "Teig dehnen und über sich falten – am Anfang der Stockgare, um Struktur aufzubauen.",
+    "body": []
+  },
+  {
+    "slug": "glossar-16",
+    "title": "Coil Fold",
+    "category": "Begriffe",
+    "summary": "Teig in der Mitte anheben und unter sich falten lassen – schonender, eher später in der Stockgare.",
+    "body": []
+  },
+  {
+    "slug": "glossar-17",
+    "title": "Formen / Wirken",
+    "category": "Begriffe",
+    "summary": "Den Teigling mit Oberflächenspannung in seine Endform bringen.",
+    "body": []
+  },
+  {
+    "slug": "glossar-18",
+    "title": "Gluten",
+    "category": "Begriffe",
+    "summary": "Eiweißgerüst, das vor allem Weizen bildet. Es macht den Teig dehnbar und hält das Gas.",
+    "body": []
+  },
+  {
+    "slug": "glossar-19",
+    "title": "Teigspannung",
+    "category": "Begriffe",
+    "summary": "Die straffe Oberfläche nach dem Formen, die den Teigling stützt.",
+    "body": []
+  },
+  {
+    "slug": "glossar-20",
+    "title": "Ofenstabilität",
+    "category": "Begriffe",
+    "summary": "Wie gut der Teigling im Ofen seine Form hält, statt breitzulaufen.",
+    "body": []
+  },
+  {
+    "slug": "glossar-21",
+    "title": "Stockgare",
+    "category": "Begriffe",
+    "summary": "Erste Gare des gesamten Teigs im Behälter. Beurteilt über Volumen, Blasen, Oberfläche und Stabilität.",
+    "body": []
+  },
+  {
+    "slug": "glossar-22",
+    "title": "Stückgare",
+    "category": "Begriffe",
+    "summary": "Zweite Gare des geformten Teiglings. Beurteilt über Fingertest, Wackeltest, Oberfläche und Volumen.",
+    "body": []
+  },
+  {
+    "slug": "glossar-23",
+    "title": "Untergare",
+    "category": "Begriffe",
+    "summary": "Der Teigling ist noch nicht ausreichend aufgegangen – er reißt oft unkontrolliert und die Krume bleibt dicht.",
+    "body": []
+  },
+  {
+    "slug": "glossar-24",
+    "title": "Punktgare",
+    "category": "Begriffe",
+    "summary": "Der richtige Garezustand zum Backen.",
+    "body": []
+  },
+  {
+    "slug": "glossar-25",
+    "title": "Übergare",
+    "category": "Begriffe",
+    "summary": "Der Teigling ist zu weit gegangen – er verliert Stabilität, läuft breit und hat wenig Ofentrieb.",
+    "body": []
+  },
+  {
+    "slug": "glossar-26",
+    "title": "Unterfermentation",
+    "category": "Begriffe",
+    "summary": "Zu wenig Fermentation insgesamt – wenig Gas und Säure, Teig bleibt fest und dicht.",
+    "body": []
+  },
+  {
+    "slug": "glossar-27",
+    "title": "Überfermentation",
+    "category": "Begriffe",
+    "summary": "Zu viel Fermentation – Struktur wird abgebaut, Teig wird schwach und klebrig.",
+    "body": []
+  },
+  {
+    "slug": "glossar-28",
+    "title": "Teigtemperatur",
+    "category": "Begriffe",
+    "summary": "Die gemessene Temperatur im Teig. Sie bestimmt maßgeblich, wie schnell die Gare läuft.",
+    "body": []
+  },
+  {
+    "slug": "glossar-29",
+    "title": "Raumtemperatur",
+    "category": "Begriffe",
+    "summary": "Die Umgebungstemperatur, in der Teig und Anstellgut stehen.",
+    "body": []
+  },
+  {
+    "slug": "glossar-30",
+    "title": "Kühlschrankgare",
+    "category": "Begriffe",
+    "summary": "Gare bei niedriger Temperatur, z. B. kalte Stückgare bei 7 °C ca. 12 h ± 2,5 h.",
+    "body": []
+  },
+  {
+    "slug": "glossar-31",
+    "title": "Roggenverquellung",
+    "category": "Begriffe",
+    "summary": "Roggen bindet Wasser über Quellstoffe statt über ein Glutengerüst – der Teig hält über Wasser und Säure.",
+    "body": []
+  },
+  {
+    "slug": "glossar-32",
+    "title": "Pentosane",
+    "category": "Begriffe",
+    "summary": "Schleimstoffe im Roggen, die viel Wasser binden und dem Roggenteig Struktur geben.",
+    "body": []
+  },
+  {
+    "slug": "glossar-33",
+    "title": "Ofentrieb",
+    "category": "Begriffe",
+    "summary": "Das Aufgehen des Teiglings in den ersten Backminuten.",
+    "body": []
+  },
+  {
+    "slug": "glossar-34",
+    "title": "Spannungsschnitt",
+    "category": "Begriffe",
+    "summary": "Gezielter Schnitt in die Oberfläche, damit der Teigling kontrolliert aufreißt.",
+    "body": []
+  },
+  {
+    "slug": "glossar-35",
+    "title": "Ausbund",
+    "category": "Begriffe",
+    "summary": "Die aufgebrochene, oft hochstehende Kante am Einschnitt.",
+    "body": []
+  },
+  {
+    "slug": "glossar-36",
+    "title": "Schwaden / Dampf",
+    "category": "Begriffe",
+    "summary": "Feuchtigkeit im Ofen zu Backbeginn. Unterstützt eine elastische Oberfläche und Stärkeverkleisterung außen.",
+    "body": []
+  },
+  {
+    "slug": "glossar-37",
+    "title": "Ofenfeuchte",
+    "category": "Begriffe",
+    "summary": "Die Feuchtigkeit im Backraum während des Backens.",
+    "body": []
+  },
+  {
+    "slug": "glossar-38",
+    "title": "Krume",
+    "category": "Begriffe",
+    "summary": "Das Innere des Brots – Porung, Feuchte und Struktur.",
+    "body": []
+  },
+  {
+    "slug": "glossar-39",
+    "title": "Kruste",
+    "category": "Begriffe",
+    "summary": "Die äußere, gebackene Schicht des Brots.",
+    "body": []
+  },
+  {
+    "slug": "glossar-40",
+    "title": "Krustenbildung",
+    "category": "Begriffe",
+    "summary": "Das Entstehen und Bräunen der Kruste im Ofen.",
+    "body": []
+  },
+  {
+    "slug": "glossar-41",
+    "title": "Enzymaktivität",
+    "category": "Begriffe",
+    "summary": "Die Arbeit der mehleigenen Enzyme, die Stärke und Eiweiß abbauen.",
+    "body": []
+  },
+  {
+    "slug": "glossar-42",
+    "title": "Amylase",
+    "category": "Begriffe",
+    "summary": "Enzym, das Stärke in Zucker spaltet – Nahrung für die Mikroorganismen.",
+    "body": []
+  },
+  {
+    "slug": "glossar-43",
+    "title": "Protease",
+    "category": "Begriffe",
+    "summary": "Enzym, das Eiweiß abbaut und damit das Glutengerüst schwächen kann.",
+    "body": []
+  },
+  {
+    "slug": "glossar-44",
+    "title": "Stärkeverkleisterung",
+    "category": "Begriffe",
+    "summary": "Stärke bindet beim Erhitzen Wasser und wird fest – so entsteht die Krume.",
+    "body": []
+  },
+  {
+    "slug": "glossar-45",
+    "title": "Säureführung",
+    "category": "Begriffe",
+    "summary": "Steuerung der Säurebildung über Temperatur, Zeit und Anstellgutmenge.",
+    "body": []
+  },
+  {
+    "slug": "glossar-46",
+    "title": "pH-Wert",
+    "category": "Begriffe",
+    "summary": "Maß für den Säuregrad. Je saurer, desto niedriger.",
+    "body": []
+  },
+  {
+    "slug": "glossar-47",
+    "title": "Vorfermentiertes Mehl",
+    "category": "Begriffe",
+    "summary": "Der Mehlanteil, der bereits im Anstellgut oder Vorteig fermentiert ist.",
+    "body": []
+  },
+  {
+    "slug": "glossar-48",
+    "title": "Direkte Führung",
+    "category": "Begriffe",
+    "summary": "Alle Zutaten werden in einem Schritt zum Teig verarbeitet.",
+    "body": []
+  },
+  {
+    "slug": "glossar-49",
+    "title": "Indirekte Führung",
+    "category": "Begriffe",
+    "summary": "Zuerst wird ein Vorteig oder Sauerteig angesetzt, danach der Hauptteig.",
+    "body": []
+  },
+  {
+    "slug": "glossar-50",
+    "title": "Restfeuchte",
+    "category": "Begriffe",
+    "summary": "Die im gebackenen Brot verbleibende Feuchtigkeit. Deshalb braucht Brot Zeit zum Auskühlen.",
+    "body": []
   }
 ]
