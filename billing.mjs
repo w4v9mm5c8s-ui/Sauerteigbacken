@@ -1,6 +1,6 @@
 import {createHmac,timingSafeEqual} from 'node:crypto';
 
-export const SAUERTEIG_STRIPE_TEST_PRODUCT_ID='prod_VYUFpenhskYOlE';
+export const SAUERTEIG_STRIPE_TEST_PRODUCT_ID='prod_VYU3gEDcFeG3XR';
 export function billingConfigured(env=process.env){
  return Boolean(env.STRIPE_SECRET_KEY&&env.STRIPE_WEBHOOK_SECRET&&env.STRIPE_PRICE_MONTHLY&&env.STRIPE_PRICE_YEARLY&&env.SUPABASE_SERVICE_ROLE_KEY&&env.SUPABASE_URL);
 }
