@@ -47,7 +47,7 @@ export async function checkoutSession(user,plan,env=process.env){
  return {url:result.url};
 }
 export async function portalSession(userId,env=process.env){
- if(!billingEnabled(env))throw Error('Bezahlfunktion noch nicht freigeschaltet');
+ if(!env.STRIPE_SECRET_KEY||!env.SUPABASE_SERVICE_ROLE_KEY||!env.SUPABASE_URL)throw Error('Stripe-Kundenportal nicht eingerichtet');
  const existing=await subscriptionRow(userId,env);
  if(!existing?.stripe_customer_id)throw Error('Noch kein Stripe-Kundenkonto vorhanden');
  const base=env.PUBLIC_BASE_URL||'https://backen-mit-sauerteig.onrender.com';
@@ -70,15 +70,11 @@ export function subscriptionFromEvent(event,env=process.env){
 }
 export async function applyStripeEvent(event,env=process.env){
  const record=subscriptionFromEvent(event,env);if(!record)return {ignored:true};
- const old=await subscriptionRow(record.user_id,env);
- // A stale webhook must never restore a cancelled subscription.
- const lookup=await fetch(env.SUPABASE_URL+'/rest/v1/sourdough_subscriptions?user_id=eq.'+record.user_id+'&select=last_event_created',{headers:{apikey:env.SUPABASE_SERVICE_ROLE_KEY,Authorization:'Bearer '+env.SUPABASE_SERVICE_ROLE_KEY}});
- if(!lookup.ok)throw Error('Abo-Ereignis konnte nicht geprüft werden');
- const previous=(await lookup.json())[0];
- if(previous&&Number(previous.last_event_created)>record.last_event_created)return {ignored:true};
- // A different subscription may not replace an active one.
- if(old?.stripe_subscription_id&&old.stripe_subscription_id!==record.stripe_subscription_id&&['active','trialing'].includes(old.status))return {ignored:true};
- const r=await fetch(env.SUPABASE_URL+'/rest/v1/sourdough_subscriptions?on_conflict=user_id',{method:'POST',headers:{apikey:env.SUPABASE_SERVICE_ROLE_KEY,Authorization:'Bearer '+env.SUPABASE_SERVICE_ROLE_KEY,'Content-Type':'application/json',Prefer:'resolution=merge-duplicates'},body:JSON.stringify(record)});
- if(!r.ok)throw Error('Abo-Ereignis konnte nicht gespeichert werden');
- return {updated:true};
+ const response=await fetch(env.SUPABASE_URL+'/rest/v1/rpc/apply_sourdough_subscription_event',{
+  method:'POST',
+  headers:{apikey:env.SUPABASE_SERVICE_ROLE_KEY,Authorization:'Bearer '+env.SUPABASE_SERVICE_ROLE_KEY,'Content-Type':'application/json'},
+  body:JSON.stringify({p_record:record}),signal:AbortSignal.timeout(8000)
+ });
+ if(!response.ok)throw Error('Abo-Ereignis konnte nicht verarbeitet werden');
+ return {updated:(await response.json())===true};
 }
