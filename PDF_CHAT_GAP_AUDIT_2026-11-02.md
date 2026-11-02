@@ -87,3 +87,14 @@
 **Reihenfolge:** (1) Mengen-/Wasser-/Starterbilanz absichern → (2) Tabellenbasierte Temperatur-/Gärplanung → (3) Phasen/Checklisten/Equipment → (4) dedizierte Starter-/Foto-Funktionen → (5) Community, Push und Smartphone-Endtests → (6) Design-Feinschliff, Datenschutz und Payment-Freigabe.
 
 Stand: Live-Deployment c8483b1 war am 02.11.2026 21:16 MEZ bestätigt; neuere GitHub-Commits müssen separat gebaut/verifiziert werden.
+
+## 02.11.2026, 21:18–21:21: neue iPhone-Befunde und Bildanforderungen
+
+- [x] **Kritischer Fehler Einkaufsliste:** Bei abgemeldetem Konto wurde `shop()` aufgerufen; `shopping: null` aus Alt-/Cloud-Daten führte zu `null is not an object`. Abhilfe: Datensätze normalisieren, fehlende Listen als leere Arrays behandeln und nur vorhandenes DOM rendern. Regressionstest ergänzt. Echte iPhone-Prüfung noch offen.
+- [x] **Startseite:** Überschrift, handschriftliches „Sauerteig“ und Untertitel überlagerten sich. Mobile Layoutregeln mit reserviertem Titelbereich, neuer Hero-Position und reduzierter Textgröße ergänzt. Optische Abnahme auf echtem Gerät noch offen.
+- [x] **Kacheln:** „Rezept importieren“ wurde mitten im Wort getrennt. Auf schmalen Displays Schriftgröße, Bild/Text-Verhältnis und Zeilenumbruch angepasst. Noch kein echter iPhone-Screenshotvergleich.
+- [ ] **Aquarellillustrationen:** Die bisherige vektorbasierte Gestaltung trifft die vom Nutzer gelieferten Aquarellbeispiele nicht. Neu generierte PNG-Entwürfe sind separat vorhanden; sie sind noch nicht vollständig als echte Bildassets ins öffentliche GitHub-Repository und die App übernommen.
+- [ ] **Rezeptbilder:** Alle 26 Rezeptvorlagen sollen eigene, passende **KI-generierte fotorealistische Food-Fotos** bekommen, nicht das wiederholte schematische Brot-SVG. Aktuell ist die Live-App in diesem Punkt **nicht fertig**. Bilder müssen einzeln motivgerecht erzeugt, geprüft, optimiert, ins Repo eingebunden und in der Galerie angezeigt werden. Kein Foto als tatsächlich gebackenes Nutzerbrot ausgeben.
+- [ ] **Vollständige visuelle Abnahme:** iPhone-Safari mit sichtbarer Tastatur, Statusbar, Scrollen, Fixnavigation, Rezeptkarten, Konto-Sperren und Einkaufslistenfehler nach Deployment erneut prüfen.
+
+**Wichtig:** Ein grüner Build beweist weder visuelle Übereinstimmung noch die vollständige Übernahme der PNGs und Rezeptfotos.
