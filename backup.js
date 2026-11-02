@@ -14,7 +14,7 @@ export function validateBackup(input){
  }
  const checkBake=b=>b===null||b===undefined||typeof b==='object'&&!Array.isArray(b)&&typeof b.title==='string'&&b.title.length<=200&&Array.isArray(b.steps)&&b.steps.length>=1&&b.steps.length<=150&&b.steps.every(step=>step&&typeof step.title==='string'&&step.title.length<=180&&Number.isFinite(Number(step.at)));
  if(!checkBake(input.activeBake))throw Error('Aktiver Backtag in der Datensicherung ist ungültig');
- if(input.parallelBakes!==undefined&&(!Array.isArray(input.parallelBakes)||input.parallelBakes.length>24||!input.parallelBakes.every(checkBake)))throw Error('Parallele Backtage in der Datensicherung sind ungültig');
+ if(input.parallelBakes!==undefined&&(!Array.isArray(input.parallelBakes)||input.parallelBakes.length>24||!input.parallelBakes.every(b=>b!==null&&b!==undefined&&checkBake(b))))throw Error('Parallele Backtage in der Datensicherung sind ungültig');
  const clean=Object.fromEntries(Object.entries(JSON.parse(raw)).filter(([key])=>allowed.has(key)));
  for(const key of ['history','shopping','starters'])clean[key]??=[];
  clean.updatedAt=Date.now();
