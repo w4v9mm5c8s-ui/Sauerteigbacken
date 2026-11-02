@@ -1,5 +1,5 @@
 const num=(v,f=0)=>Number.isFinite(Number(v))?Number(v):f;
-export function planningView(r,esc,now){
+export function planningView(r,esc,now,flourTable=[]){
  if(!r)return '<section class="card">Bitte zuerst ein Rezept auswählen.</section>';
  const date=new Date(now.getTime()+2*86400000),pad=n=>String(n).padStart(2,'0'),local=date.getFullYear()+'-'+pad(date.getMonth()+1)+'-'+pad(date.getDate())+'T'+pad(date.getHours())+':'+pad(date.getMinutes());
  const field=(label,id,value,opts='')=>'<label for="'+id+'">'+label+'</label><input id="'+id+'" '+opts+' value="'+esc(value)+'">';
@@ -10,7 +10,7 @@ export function planningView(r,esc,now){
  field('Mehlmenge je Brot (g)','flourPerLoaf',Math.round(flour),'type="number" min="50" max="10000"')+
  '<p class="muted small">Das fertige Brot wiegt nach dem Backen weniger als der rohe Teig. Die genaue Differenz hängt vom Rezept ab.</p></details>'+
  '<details open><summary>2. Mehl und Zutaten</summary>'+
- r.flours.map((f,i)=>'<div class="cols"><div>'+field('Mehl '+(i+1),'flourName'+i,f.name,'maxlength="90"')+'</div><div>'+field('Gramm','flourAmount'+i,f.grams,'type="number" min="0" max="20000"')+'</div></div>').join('')+
+ r.flours.map((f,i)=>'<label>Mehl aus der Tabelle (optional)</label><select id="flourPreset'+i+'"><option value="">Manuell eingeben</option>'+flourTable.map(row=>'<option value="'+esc(row.name)+'" '+(row.name===f.name?'selected':'')+'>'+esc(row.name)+'</option>').join('')+'</select><div class="cols"><div>'+field('Mehl '+(i+1),'flourName'+i,f.name,'maxlength="90"')+'</div><div>'+field('Gramm','flourAmount'+i,f.grams,'type="number" min="0" max="20000"')+'</div></div>').join('')+
  field('Wasser (g)','waterAmount',r.water,'type="number" min="0" max="30000"')+
  field('Salz (g)','saltAmount',r.salt,'type="number" min="0" max="1000"')+
  '<div id="doughPreview" class="success">Rezeptmenge: '+Math.round(total)+' g Teig</div></details>'+
@@ -25,7 +25,7 @@ export function planningView(r,esc,now){
  field('Raumtemperatur (°C)','roomTemp',22,'type="number" min="5" max="40" step="0.5"')+
  field('Mehltemperatur (°C)','flourTemp',22,'type="number" min="5" max="40" step="0.5"')+
  field('Startertemperatur (°C, optional)','starterTemp','','type="number" min="5" max="40" step="0.5"')+
- field('Gewünschte Teigtemperatur (°C)','targetTemp',24,'type="number" min="15" max="35" step="0.5"')+
+ field('Gewünschte Teigtemperatur (°C)','targetTemp',24,'type="number" min="15" max="35" step="0.5"')+'<div id="waterSuggestion" class="muted small"></div>'+
  field('Kühlschranktemperatur (°C, optional)','fridgeTemp','','type="number" min="0" max="15" step="0.5"')+
  '</details><details><summary>5. Gare und Equipment</summary>'+
  '<label>Gare</label><select id="proofMode"><option value="auto">Passende Gare automatisch wählen</option><option value="warm">Stückgare</option><option value="cold" '+(!r.cold?'disabled':'')+'>Kühlschrankgare'+(!r.cold?' (für dieses Rezept nicht hinterlegt)':'')+'</option></select>'+
@@ -57,5 +57,5 @@ export function readPlanningForm(r,get){
  const options={mode:val('proofMode'),starterHours:optional('starterHours'),foldInterval:n('foldInterval'),foldCount:n('foldCount'),earliestStart:val('earliestStart')?new Date(val('earliestStart')):null};
  const room=n('roomTemp'),flour=n('flourTemp'),target=n('targetTemp'),starterTemp=optional('starterTemp'),fridge=optional('fridgeTemp');
  if([room,flour,target].some(x=>x<5||x>40||!Number.isFinite(x)))throw Error('Bitte Temperaturen prüfen');
- return {recipe:ingredients,finish,loaves,options,preheat:n('preheat'),from:val('sleepFrom'),to:val('sleepTo'),awayFrom,awayTo,ready:Boolean(get('starterReady')?.checked),temperatures:{room,flour,target,starterTemp,fridge},name:val('bakeName').trim()||r.title};
+ return {recipe:ingredients,finish,loaves,starterHydration:n('starterHydration'),options,preheat:n('preheat'),from:val('sleepFrom'),to:val('sleepTo'),awayFrom,awayTo,ready:Boolean(get('starterReady')?.checked),temperatures:{room,flour,target,starterTemp,fridge},name:val('bakeName').trim()||r.title};
 }
