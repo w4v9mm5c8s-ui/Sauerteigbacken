@@ -15,6 +15,6 @@ const tiles=[
 export function hubView(button,user,historyCount,ownCount){
  return '<section class="hub-actions" aria-label="Backen und Rezepte">'+tiles.map(([title,subtitle,route,symbol,art],i)=>{
  const visual=art?'<img src="'+art+'" alt="" loading="lazy" decoding="async">':'';
- return '<button class="hub-tile '+(i===0?'featured':'')+'" data-act="'+route+'"><span class="hub-icon" aria-hidden="true">'+visual+'<span class="hub-line-icon">'+icon(symbol,art?19:45)+'</span></span><span class="hub-text"><strong>'+title+'</strong><small>'+subtitle+'</small></span><span class="hub-arrow" aria-hidden="true"></span></button>';
+ return '<button class="hub-tile '+(i===0?'featured':'')+'" data-act="'+route+'"><span class="hub-icon '+(art?'has-art':'')+'" aria-hidden="true">'+visual+'<span class="hub-line-icon">'+icon(symbol,art?19:45)+'</span></span><span class="hub-text"><strong>'+title+'</strong><small>'+subtitle+'</small></span><span class="hub-arrow" aria-hidden="true"></span></button>';
  }).join('')+'</section>';
 }
