@@ -223,3 +223,14 @@ body[data-page="start"] .home-masthead{isolation:isolate}
  .home-feature-art,.home-feature-art img{height:58px;min-height:58px}
  .home-buddy>img{width:75px}
 }
+
+/* Parallel baking days: show the next recorded active tasks, not guessed durations */
+.baking-day-next{background:var(--rose-mist);border:1px solid #ead6df;border-radius:20px;padding:13px;margin:14px 0}
+.baking-day-next h3{font-size:1.05rem;margin:0 0 9px}
+.baking-day-task{display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;padding:10px 6px;
+ background:transparent;border:0;border-top:1px solid #e9d7dc;text-align:left;border-radius:0}
+.baking-day-task span{display:grid;min-width:0;gap:4px}
+.baking-day-task strong{font-size:.91rem;color:var(--rose-deep)}
+.baking-day-task small{color:var(--muted-ink);font-size:.77rem}
+.baking-day-task time{flex:0 0 auto;color:#77515f;font-size:.76rem;font-variant-numeric:tabular-nums}
+@media(max-width:375px){.baking-day-task{align-items:flex-start;flex-wrap:wrap}.baking-day-task time{margin-left:0}}
