@@ -34,7 +34,7 @@ async function ai(prompt,image){
  if(!text)throw Error('Keine KI-Antwort erhalten');return text;
  }finally{clearTimeout(timer)}
 }
-const headers={'X-Content-Type-Options':'nosniff','Referrer-Policy':'strict-origin-when-cross-origin','X-Frame-Options':'DENY','Permissions-Policy':'camera=(self), microphone=()','Content-Security-Policy':"default-src 'self'; connect-src 'self' https://*.supabase.co; img-src 'self' data: blob:; style-src 'self' 'unsafe-inline'; script-src 'self'; frame-ancestors 'none'; base-uri 'none'; form-action 'self'"};
+const headers={'X-Content-Type-Options':'nosniff','Referrer-Policy':'strict-origin-when-cross-origin','X-Frame-Options':'DENY','Permissions-Policy':'camera=(self), microphone=()','Content-Security-Policy':"default-src 'self'; connect-src 'self' https://*.supabase.co; img-src 'self' data: blob:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; script-src 'self'; frame-ancestors 'none'; base-uri 'none'; form-action 'self'"};
 async function handle(req,res){for(const [k,v] of Object.entries(headers))res.setHeader(k,v);const url=new URL(req.url,'http://localhost');
 if(url.pathname==='/api/stripe/webhook'&&req.method==='POST'){
  if(!billingConfigured())return json(res,503,{error:'Zahlungsdienst nicht eingerichtet'});
