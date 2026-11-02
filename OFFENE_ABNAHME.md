@@ -84,3 +84,13 @@ Dies ist eine veröffentlichte **Entwicklungsfassung**, keine freigegebene ferti
 - [ ] iPhone-Safari-Rendering und tatsächlicher Vergleich mit Referenzbild weiterhin nicht manuell abgenommen.
 - [ ] Stripe-Live-Zahlungen unverändert deaktiviert. Fehlende Render-Geheimnisse nur in gesicherter Verwaltung ergänzen.
 - [ ] Der vorige Render-Deploy blieb zeitweise bei update_in_progress; nach den Änderungen muss der live-Status erneut verifiziert werden.
+
+## 02.11.2026 – Cold Start und parallele Backtage
+- [x] Ursache des von Render gezeigten schwarzen Ladebildschirms bestätigt: Render-Free-Webservice wird nach 15 Minuten ohne Anfragen abgeschaltet und braucht beim nächsten Besuch einen Neustart. Dokumentation: https://render.com/docs/free
+- [x] Offline-First-PWA: bereits kontrollierende Service Worker zeigen die lokal gecachte Startseite sowie native SVG-, CSS- und JS-Ressourcen sofort an, während Render im Hintergrund aufwacht.
+- [x] Der Service Worker speichert keine privaten `/api/`-Antworten und akzeptiert keine 503-Aufwachseiten oder falschen Content-Typen als gültige Assets.
+- [x] Die Oberfläche wird bei erneutem Laden vor der API-Konfiguration angezeigt. Bei schlafendem Server folgen mehrere begrenzte Verbindungsversuche, ohne einen blockierenden Ladebildschirm.
+- [x] Übersicht paralleler Backtage zeigt die tatsächlich geplanten aktiven nächsten Schritte, chronologisch und mit direktem Wechsel zum jeweiligen Backtag.
+- [x] Datenimport weist leere Einträge innerhalb paralleler Backtage zurück.
+- [ ] Auf dem kostenlosen Render-Plan bleibt der native Ladebildschirm **beim ersten Seitenaufruf und ohne aktiven Service Worker** unvermeidbar. Dauerhafte Abhilfe: Umstellung auf einen kostenpflichtigen always-on-Webservice mit ausdrücklicher Genehmigung. Nicht automatisch gebucht.
+- [ ] Die PWA-Abkürzung funktioniert nur nach erfolgreicher Erstinstallation des Service Workers; sie wurde mit automatisierten Mock-Tests geprüft, nicht auf einem echten iPhone validiert.
