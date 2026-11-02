@@ -3,3 +3,5 @@ test('recurring work hours are blocked only on selected weekdays',()=>{const d=n
 test('second absence window blocks active work',()=>{const d=new Date(2026,10,4,15,0),o={absenceWindows:[{from:new Date(2026,10,4,14,0),to:new Date(2026,10,4,16,0)}]};assert.equal(unavailableAt(d,'22:00','07:00',null,null,o),true)});
 test('recurring overnight unavailability works',()=>{const o={recurringDays:[0],recurringFrom:'18:00',recurringTo:'23:00'};assert.equal(unavailableAt(new Date(2026,10,2,19,0),'23:30','06:00',null,null,o),true)});
 test('planning UI exposes recurring weekday and second absence inputs',()=>{const s=readFileSync(new URL('../planning-ui.js',import.meta.url),'utf8');assert.match(s,/recurringDay/);assert.match(s,/awayFrom2/)});
+
+test('overnight recurring block continues into the following weekday',()=>{const o={recurringDays:[0],recurringFrom:'20:00',recurringTo:'04:00'};assert.equal(unavailableAt(new Date(2026,10,3,2,0),'22:00','23:00',null,null,o),true);assert.equal(unavailableAt(new Date(2026,10,3,5,0),'22:00','23:00',null,null,o),false)});
