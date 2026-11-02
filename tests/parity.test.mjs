@@ -1,0 +1,6 @@
+import test from 'node:test';import assert from 'node:assert/strict';import {hubView} from '../hub.js';import {calculateDough,calculateFeed} from '../calculators.js';import {guides} from '../knowledge.js';import {readFileSync} from 'node:fs';
+test('original baking hub exposes all eight areas',()=>{const html=hubView((label,action)=>'<button data-act="'+action+'">'+label+'</button>',true,3,2);for(const x of ['Neues Brot planen','Meine Rezepte','Rezeptbibliothek','Community-Backbuch','Rezept importieren','Meine Brote','Meine Backstatistik','Rechner'])assert.ok(html.includes(x),x)});
+test('dough hydration includes starter flour and water',()=>{const v=calculateDough(500,350,10,100,100);assert.ok(Math.abs(v.hydration-72.727)<0.01);assert.equal(v.total,960)});
+test('starter ratio calculator sums to desired quantity',()=>{const x=calculateFeed(150,'1:2:2');assert.deepEqual(x,[30,60,60])});
+test('knowledge is short and actionable',()=>{assert.ok(guides.length>=5);assert.ok(guides.every(x=>x.body.length<400))});
+test('four main tabs match original',()=>{const html=readFileSync(new URL('../index.html',import.meta.url),'utf8');for(const t of ['start','hub','buddy','account'])assert.ok(html.includes('data-tab="'+t+'"'))});
