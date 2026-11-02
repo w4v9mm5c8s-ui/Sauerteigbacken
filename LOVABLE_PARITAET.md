@@ -53,3 +53,10 @@ Ziel: Eigenständige App auf Render, **ohne Lovable-Abhängigkeit**, mit gleiche
 - [ ] Original-PNG-Illustrationen: Im Lovable-Projekt gefunden, aber Binärdateien lassen sich über die verfügbare Textschnittstelle nicht verlustfrei übernehmen. Keine fehlerhaften Kopien veröffentlichen.
 - [ ] Pixelgenauer iPhone-Screenshotvergleich und manuelle Touch-Bedienungsprüfung stehen aus
 - [ ] Import realer fremder Rezept-Webseiten und tatsächliche KI-Antworten unter authentifiziertem Testkonto prüfen
+
+## Nachtrag – Wissensbibliothek und mobile Darstellung
+- [x] Insgesamt 97 deduplizierte Einträge aus Wissenskarten, FAQ und Glossar des ursprünglichen Projekts importiert (teilweise Kurzdefinitionen)
+- [x] Ausführliche Absätze für 39 Haupt-Wissenskarten, kategorisierte Suche
+- [x] CSS für iPhone-Safe-Area, kleinere Viewports, Scrollabstand zur Bottom-Navigation und iOS-Formularzoom angepasst
+- [ ] Live-Screenshot auf echtem iPhone und Vergleich mit Lovable-Original weiterhin nicht durchgeführt
+- [ ] Originalillustrationen nicht verlustfrei verfügbar: Quellprojekt liefert PNGs über die angebundene Schnittstelle nur als fehlerhaft dekodierten Text
