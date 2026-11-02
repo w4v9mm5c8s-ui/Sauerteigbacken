@@ -1,3 +1,4 @@
+import {fetchPublicRecipeUrl} from './url-import.mjs';
 import http from 'node:http';
 import {readFile,stat} from 'node:fs/promises';
 import {resolve,extname,sep} from 'node:path';
@@ -35,6 +36,7 @@ if(url.pathname.startsWith('/api/')){
  if(url.pathname==='/api/moderation/pending'&&req.method==='GET'){const m=await db('GET','sourdough_moderators?user_id=eq.'+id.user.id+'&select=user_id',id);if(!m.length)return json(res,403,{error:'Keine Berechtigung'});const rows=await db('GET','community_recipes?status=eq.pending&select=id,title,ingredients,instructions,created_at&order=created_at.asc&limit=50',id);return json(res,200,{recipes:rows})}
  if(url.pathname==='/api/moderation/decision'&&req.method==='POST'){const m=await db('GET','sourdough_moderators?user_id=eq.'+id.user.id+'&select=user_id',id);if(!m.length)return json(res,403,{error:'Keine Berechtigung'});const b=await body(req,2000);if(!/^[0-9a-f-]{36}$/i.test(b.id||'')||!['published','rejected'].includes(b.status))return json(res,400,{error:'Ungültige Entscheidung'});await db('PATCH','community_recipes?id=eq.'+b.id,id,{status:b.status});return json(res,200,{ok:true})}
  if(url.pathname==='/api/community'&&req.method==='POST'){const b=await body(req,20000);const title=String(b.title||'').trim(),ingredients=String(b.ingredients||'').trim(),instructions=String(b.instructions||'').trim();if(title.length<3||title.length>120||ingredients.length<5||instructions.length<5)return json(res,400,{error:'Bitte alle Felder ausfüllen'});await db('POST','community_recipes',id,{author_id:id.user.id,title,ingredients,instructions,status:'pending'});return json(res,201,{ok:true})}
+ if(url.pathname==='/api/recipe-url'&&req.method==='POST'){if(!limit('import-url:'+id.user.id,10))return json(res,429,{error:'Zu viele Rezeptimporte'});const b=await body(req,4000);try{const found=await fetchPublicRecipeUrl(String(b.url||''));return json(res,200,found)}catch(e){return json(res,422,{error:e.message||'Link konnte nicht gelesen werden'})}}
  if(['/api/buddy','/api/recipe-extract'].includes(url.pathname)&&req.method==='POST'){
  if(!limit('ai:'+id.user.id,30))return json(res,429,{error:'Dein KI-Limit ist erreicht'});
  if(!process.env.OPENAI_API_KEY)return json(res,503,{error:'Die KI ist noch nicht freigeschaltet.'});
