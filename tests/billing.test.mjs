@@ -20,7 +20,7 @@ test('Stripe webhook validates signature and rejects tampering, replay and missi
 });
 test('subscription webhook maps verified customer and owner only',()=>{
  const event={type:'customer.subscription.updated',created:1783000000,data:{object:{id:'sub_1',customer:'cus_1',status:'active',metadata:{user_id:'11111111-1111-4111-8111-111111111111'},items:{data:[{price:{id:'price_123'},current_period_end:1784000000}]}}}};
- const row=subscriptionFromEvent(event);assert.equal(row.status,'active');assert.equal(row.stripe_customer_id,'cus_1');assert.equal(row.price_id,'price_123');assert.equal(subscriptionFromEvent({...event,data:{object:{...event.data.object,metadata:{}}}}),null);
+ const env={STRIPE_PRICE_MONTHLY:'price_123',STRIPE_PRICE_YEARLY:'price_456'};const row=subscriptionFromEvent(event,env);assert.equal(row.status,'active');assert.equal(row.stripe_customer_id,'cus_1');assert.equal(row.price_id,'price_123');assert.equal(subscriptionFromEvent({...event,data:{object:{...event.data.object,metadata:{}}}},env),null);
 });
 test('billing view never offers checkout when not enabled',()=>{
  const html=billingView({id:'x',email:'test@example.org'},{enabled:false,plus:false,status:'unavailable'},x=>x);
@@ -29,3 +29,5 @@ test('billing view never offers checkout when not enabled',()=>{
 test('no checkout request when payments disabled',async()=>{
  await assert.rejects(checkoutSession({id:'test',email:'test@example.org'},'monthly',{}),/nicht freigeschaltet/);
 });
+
+test('unrelated Stripe products cannot grant Sauerteig Plus',()=>{const e={type:'customer.subscription.updated',created:1783000000,data:{object:{id:'sub_other',customer:'cus_1',status:'active',metadata:{user_id:'11111111-1111-4111-8111-111111111111'},items:{data:[{price:{id:'price_unrelated'}}]}}}};assert.equal(subscriptionFromEvent(e,{STRIPE_PRICE_MONTHLY:'price_123',STRIPE_PRICE_YEARLY:'price_456'}),null)});
