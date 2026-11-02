@@ -11,3 +11,17 @@ export function recipeCards(recipes,escape=x=>String(x),action='recipe'){
 }
 
 export function recipePicker(recipes,escape=x=>String(x)){return '<section class="card"><span class="hero-kicker">NEUER BACKTAG</span><h2>Was möchtest du backen?</h2><p class="muted">Wähle zuerst ein Rezept. Danach legst du Menge und Backzeit fest.</p><label for="pickRecipeSearch">Rezept suchen</label><input id="pickRecipeSearch" placeholder="Brot, Brötchen, Brezeln …"><div id="pickRecipeResults" class="recipe-gallery">'+recipeCards(recipes,escape,'selectForPlan')+'</div></section>'}
+
+export function filterRecipeLibrary(recipes,query='',category=''){
+ const q=String(query||'').trim().toLocaleLowerCase('de-DE');
+ const c=String(category||'').trim();
+ return recipes.filter(r=>{
+  if(c&&r.category!==c)return false;
+  const searchable=[r.title,r.category,r.yieldLabel,...(r.flours||[]).map(x=>x.name),...(r.extras||[]).map(x=>x.name)].join(' ').toLocaleLowerCase('de-DE');
+  return !q||searchable.includes(q);
+ });
+}
+export function recipeCategoryOptions(recipes,escape=x=>String(x)){
+ const categories=[...new Set(recipes.map(r=>r.category).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'de'));
+ return '<label for="recipeCategory">Kategorie</label><select id="recipeCategory"><option value="">Alle Kategorien</option>'+categories.map(category=>'<option value="'+escape(category)+'">'+escape(category)+'</option>').join('')+'</select>';
+}
