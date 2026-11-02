@@ -28,3 +28,5 @@ test('backup import restores active and parallel local storage keys',()=>{
  assert.match(app,/localStorage\.setItem\(activeKey\(\),JSON\.stringify\(data\.activeBake\)\)/);
  assert.match(app,/localStorage\.setItem\(parkedKey\(\),JSON\.stringify\(data\.parallelBakes\)\)/);
 });
+
+test('null parallel bake entries are rejected before saving user data',()=>{assert.throws(()=>validateBackup({...sample,parallelBakes:[null]}));});
