@@ -3,234 +3,450 @@
     "slug": "grundlagen-sauerteig",
     "title": "Was ist Sauerteig?",
     "category": "Grundlagen",
-    "summary": "Mehl + Wasser + natürliche Mikroorganismen. Gas lässt aufgehen, Säure gibt Stabilität und Geschmack."
+    "summary": "Mehl + Wasser + natürliche Mikroorganismen. Gas lässt aufgehen, Säure gibt Stabilität und Geschmack.",
+    "body": [
+      "Sauerteig besteht aus Mehl, Wasser und natürlichen Mikroorganismen.",
+      "Das Gas lässt den Teig aufgehen.",
+      "Die Säure sorgt für Stabilität und Geschmack.",
+      "Das System wird vor allem bestimmt von: Mehl, Wasser/Hydration und Sauerteigmenge/Aktivität."
+    ]
   },
   {
     "slug": "grundformel",
     "title": "Die Grundformel",
     "category": "Grundlagen",
-    "summary": "Mehl 100 %, Wasser mehlabhängig, Salz ca. 2 %, Anstellgut mehlabhängig."
+    "summary": "Mehl 100 %, Wasser mehlabhängig, Salz ca. 2 %, Anstellgut mehlabhängig.",
+    "body": [
+      "Mehl = 100 % – alles andere bezieht sich darauf.",
+      "Wasser und Anstellgut richten sich nach dem Mehl – deshalb kommen sie in der App aus der Mehltabelle.",
+      "Salz ca. 2 % der Mehlmenge.",
+      "Altbrot 5 % auf Mehl, Wasser 3× Altbrot – dieses Wasser ist Teil der Gesamtwassermenge."
+    ]
   },
   {
     "slug": "ausruestung",
     "title": "Ausrüstung",
     "category": "Grundlagen",
-    "summary": "Was du laut Quelle brauchst – und was optional ist."
+    "summary": "Was du laut Quelle brauchst – und was optional ist.",
+    "body": [
+      "Reismehl hilft, dass der Teigling nicht am Gärkörbchen klebt."
+    ]
   },
   {
     "slug": "mehle-gluten",
     "title": "Weizen: Gluten trägt den Teig",
     "category": "Mehle",
-    "summary": "Weizen bildet Gluten und ist dadurch dehnbar und stabil."
+    "summary": "Weizen bildet Gluten und ist dadurch dehnbar und stabil.",
+    "body": [
+      "Weizen bildet ein Glutengerüst – der Teig wird dehnbar und hält Gas.",
+      "Deshalb funktionieren Stretch & Fold und Coil Fold bei Weizen so gut.",
+      "Das Mehl bestimmt Wasserbedarf, Stabilität und Führungsdauer."
+    ]
   },
   {
     "slug": "mehle-urgetreide",
     "title": "Dinkel, Emmer, Einkorn, Kamut",
     "category": "Mehle",
-    "summary": "Schwächeres Gluten – diese Teige werden schneller weich und instabil."
+    "summary": "Schwächeres Gluten – diese Teige werden schneller weich und instabil.",
+    "body": [
+      "Dinkel, Emmer, Einkorn und Kamut haben schwächeres Gluten als Weizen.",
+      "Sie werden schneller weich und instabil – Zustand deshalb früher und öfter prüfen.",
+      "Für diese Mehle nutzt die App einen Weizenstarter, Werte kommen aus der Mehltabelle."
+    ]
   },
   {
     "slug": "mehle-system",
     "title": "Mehl bestimmt das System",
     "category": "Mehle",
-    "summary": "Mehl legt Wasserbedarf, Stabilität und Führungsdauer fest."
+    "summary": "Mehl legt Wasserbedarf, Stabilität und Führungsdauer fest.",
+    "body": [
+      "Laut Quelle wird das Ganze vor allem bestimmt von Mehl, Wasser/Hydration und Sauerteigmenge/Aktivität.",
+      "Wechselst du das Mehl, ändern sich Wasser, Startermenge und Gare-Faktor – plane dann neu."
+    ]
   },
   {
     "slug": "bakers-percent",
     "title": "Bäckerprozent verstehen",
     "category": "Grundlagen",
-    "summary": "Mehl ist immer 100 %. Alles andere wird darauf bezogen."
+    "summary": "Mehl ist immer 100 %. Alles andere wird darauf bezogen.",
+    "body": [
+      "Mehl = 100 %. Wasser, Salz, Starter und Zusätze werden als Prozent des Mehls angegeben.",
+      "Grundformel der Quelle: Mehl 100 %, Wasser mehlabhängig, Salz ca. 2 %, Anstellgut mehlabhängig.",
+      "Salz liegt typischerweise bei ca. 2 % der Mehlmenge.",
+      "Altbrot wird mit 5 % auf die Mehlmenge gerechnet.",
+      "Dadurch lässt sich jedes Rezept beliebig skalieren, ohne das Verhältnis zu verändern."
+    ]
   },
   {
     "slug": "hydration",
     "title": "Hydration",
     "category": "Grundlagen",
-    "summary": "Wassermenge im Verhältnis zum Mehl – mehlabhängig, nicht beliebig."
+    "summary": "Wassermenge im Verhältnis zum Mehl – mehlabhängig, nicht beliebig.",
+    "body": [
+      "Hydration = Wasser ÷ Mehl in Prozent. Beispiel der Quelle: 500 g Mehl + 330 g Wasser = 66 % Hydration.",
+      "Orientierung aus der Quelle: 60–65 % fest, 65–70 % Standard, 70–80 % weich.",
+      "Jedes Mehl hat eine eigene sinnvolle Hydration: Weizen 00 liegt bei 58 %, Roggenvollkorn bei 100 %.",
+      "Mehr Hydration heißt offenere Krume, aber auch weicherer, schwerer zu handhabender Teig.",
+      "Quellstückwasser gehört immer zur Gesamtwassermenge."
+    ]
   },
   {
     "slug": "begriffe-asg",
     "title": "ASG, Levain, Lievito",
     "category": "Begriffe",
-    "summary": "Alles Bezeichnungen für den Sauerteig-Starter."
+    "summary": "Alles Bezeichnungen für den Sauerteig-Starter.",
+    "body": [
+      "ASG = Anstellgut, der dauerhaft geführte Sauerteig.",
+      "Levain bezeichnet oft eine gezielt für ein Rezept angesetzte Teilmenge.",
+      "Peak = der Punkt maximaler Triebkraft, kurz vor dem Zusammenfallen."
+    ]
   },
   {
     "slug": "begriffe-gare",
     "title": "Stockgare und Stückgare",
     "category": "Begriffe",
-    "summary": "Erste Gare im Behälter, zweite Gare als geformtes Brot."
+    "summary": "Erste Gare im Behälter, zweite Gare als geformtes Brot.",
+    "body": [
+      "Stockgare: Der Teig gärt als Ganzes, hier entsteht Struktur und Aroma.",
+      "Stückgare: Der geformte Teigling gärt bis zur Backreife.",
+      "Zeitangaben sind Orientierung – entscheidend ist der Teigzustand."
+    ]
   },
   {
     "slug": "mehle-typen",
     "title": "Was die Mehltypen bedeuten",
     "category": "Mehle",
-    "summary": "Die Typenzahl beschreibt den Mineralstoffgehalt, nicht die Qualität."
+    "summary": "Die Typenzahl beschreibt den Mineralstoffgehalt, nicht die Qualität.",
+    "body": [
+      "Höhere Typenzahl = mehr Schalenanteil = mehr Wasseraufnahme und schnellere Gärung.",
+      "Deshalb hat Weizen 1600 82 % Hydration und einen Stockgare-Faktor von 85 %.",
+      "Helle Mehle wie Weizen 00 gären langsamer: Stockgare-Faktor 110 %."
+    ]
   },
   {
     "slug": "mehle-roggen",
     "title": "Roggen ist anders",
     "category": "Mehle",
-    "summary": "Roggen braucht Säure, mehr Wasser und Roggenstarter."
+    "summary": "Roggen braucht Säure, mehr Wasser und Roggenstarter.",
+    "body": [
+      "Roggen bildet kein stabiles Gluten – er hält über Wasser und Säure (Pentosane, Roggenverquellung).",
+      "Roggenteige werden nicht gedehnt und gefaltet wie Weizenteige.",
+      "Roggen führt man mit Roggenstarter, Hydration liegt zwischen 80 und 100 %."
+    ]
   },
   {
     "slug": "starter-fuehrung",
     "title": "Fütterungsverhältnis und Peak",
     "category": "Starter",
-    "summary": "Grundregel 1:1:1. Mehr Futter = länger, wärmer = schneller."
+    "summary": "Grundregel 1:1:1. Mehr Futter = länger, wärmer = schneller.",
+    "body": [
+      "Die Schreibweise bedeutet Starter : Mehl : Wasser. Grundregel laut Quelle: 1:1:1.",
+      "Bei 20 °C: 1:1:1 ca. 7 h ± 1,5 h, 1:2:2 ca. 11 h ± 2 h, 1:5:5 ca. 23 h ± 4,5 h, 1:10:10 ca. 34 h ± 7 h.",
+      "Die Tabelle gilt für ASG aus dem Kühlschrank, Mehl mit Raumtemperatur und angepasstes Wasser.",
+      "Raumtemperatur messen – 1–2 °C Unterschied können relevant sein.",
+      "Die Peak-Zeiten sind für Weizen- und Roggen-ASG identisch. Zeit ist Prognose, Reifezeichen sind führend."
+    ]
   },
   {
     "slug": "starter-fuettern",
     "title": "So fütterst du richtig",
     "category": "Starter",
-    "summary": "Sauberes Glas, gründlich verrühren, Rand säubern, Deckel locker."
+    "summary": "Sauberes Glas, gründlich verrühren, Rand säubern, Deckel locker.",
+    "body": [
+      "Sauberes Glas verwenden, ASG + Mehl + Wasser gründlich verrühren.",
+      "Rand säubern und den Deckel nur locker auflegen.",
+      "Kommt das ASG aus dem Kühlschrank und hat das Mehl Raumtemperatur: Wasser ca. 26–27 °C.",
+      "Arbeitsbereich für den Starter laut Quelle: ca. 21–26 °C."
+    ]
   },
   {
     "slug": "starter-reif-ueberreif",
     "title": "Reif oder über Peak?",
     "category": "Starter",
-    "summary": "Reif: gewachsen, viele Bläschen, leicht gewölbt. Über Peak: fällt ein, riecht spitzer."
+    "summary": "Reif: gewachsen, viele Bläschen, leicht gewölbt. Über Peak: fällt ein, riecht spitzer.",
+    "body": [
+      "Reif: deutlich gewachsen, viele Bläschen, Oberfläche leicht gewölbt – Weizen oft am höchsten Punkt.",
+      "Über Peak: fällt ein, Oberfläche flach oder eingesunken, Geruch spitzer, saurer oder alkoholisch, Struktur schwächer oder flüssiger."
+    ]
   },
   {
     "slug": "starter-weizen-roggen",
     "title": "Weizen-ASG vs. Roggen-ASG",
     "category": "Starter",
-    "summary": "Die Quelle empfiehlt beide. Weizen liest man an der Höhe, Roggen über Blasen, Geruch und Struktur."
+    "summary": "Die Quelle empfiehlt beide. Weizen liest man an der Höhe, Roggen über Blasen, Geruch und Struktur.",
+    "body": [
+      "Weizen-ASG: wächst etwa 2–3×, bleibt länger stabil, fällt langsam zusammen. Reagiert stärker auf Temperatur. Aroma mild, leicht nussig oder süßlich. Gut für stabile, luftige Brote sowie Weizen und Dinkel.",
+      "Roggen-ASG: startet oft schneller, wächst etwa 1,5–2×, fällt schneller zusammen. Robuster bei Schwankungen und kühleren Temperaturen. Aroma kräftig, säuerlich, komplex. Gut für lange Führungen, schwierige Mehle und mehr Säure.",
+      "Die Peak-Zeiten der Tabelle gelten für beide gleich."
+    ]
   },
   {
     "slug": "autolyse",
     "title": "Teig anmischen & Autolyse",
     "category": "Autolyse & Kneten",
-    "summary": "Mehl + Wasser ca. 30–60 Min ruhen lassen, dann ASG + Salz."
+    "summary": "Mehl + Wasser ca. 30–60 Min ruhen lassen, dann ASG + Salz.",
+    "body": [
+      "Nur Mehl und Wasser mischen, Autolyse ca. 30–60 Min.",
+      "Danach ASG und Salz dazu und gut verkneten.",
+      "Autolyse lohnt sich laut Quelle besonders bei Weizen und Dinkel."
+    ]
   },
   {
     "slug": "kneten",
     "title": "Kneten",
     "category": "Autolyse & Kneten",
-    "summary": "Hand ca. 8–12 Min, Maschine ca. 3–4 Min. Fertig: Fenstertest."
+    "summary": "Hand ca. 8–12 Min, Maschine ca. 3–4 Min. Fertig: Fenstertest.",
+    "body": [
+      "Von Hand ca. 8–12 Min, mit der Maschine ca. 3–4 Min.",
+      "Fertig: Fenstertest gelingt, Teig glatt und leicht glänzend, elastisch.",
+      "Zu kurz: reißt, wenig Spannung, kompakt.",
+      "Zu lang: weich und schmierig, verliert Spannung.",
+      "Maschine zu schnell: Risiko, dass der Teig überhitzt."
+    ]
   },
   {
     "slug": "folds",
     "title": "Stretch & Fold und Coil Fold",
     "category": "Stretch & Fold / Coil Fold",
-    "summary": "Stretch & Fold am Anfang, Coil Fold später. Ziel: straffer, formstabiler, glatter."
+    "summary": "Stretch & Fold am Anfang, Coil Fold später. Ziel: straffer, formstabiler, glatter.",
+    "body": [
+      "Die Folds gehören in die Stockgare.",
+      "30 Min nach dem Mischen: Stretch & Fold. 30 Min später: nochmal Stretch & Fold.",
+      "30 Min später: Coil Fold, danach 1–2 weitere Coil Folds.",
+      "Ziel: Der Teig wird straffer, formstabiler und glatter. Ist er das schon, brauchst du keine weitere Runde."
+    ]
   },
   {
     "slug": "stockgare-zeichen",
     "title": "Stockgare erkennen",
     "category": "Stockgare",
-    "summary": "Nicht nach Zeit, sondern nach Zustand."
+    "summary": "Nicht nach Zeit, sondern nach Zustand.",
+    "body": [
+      "Reif: Volumen ca. +50–100 %, viele kleine Blasen von unten, Oberfläche leicht matt statt glänzend. Optional: Wassertest.",
+      "Untergare: fest und straff, kaum Volumen, kaum Blasen.",
+      "Übergare: sehr weich, verliert Spannung, fällt zusammen.",
+      "Glasgefäß empfohlen, damit du die Blasen von unten siehst. Abdecken, aber nicht luftdicht. Platz für mindestens eine Verdopplung lassen.",
+      "Basis Weizen (500 g Mehl, 170 g ASG, aktive Führung, korrekte Teigtemperatur): 18 °C 5,5 h · 20 °C 4,5 h · 22 °C 3,5 h · 24 °C 2,5 h, jeweils ca. ± 20 %, mal Mehlfaktor.",
+      "Mehr ASG = schneller, weniger ASG = länger. Laut Quelle bewirken ±10 % Starter ungefähr ±10–15 % Zeit."
+    ]
   },
   {
     "slug": "formen",
     "title": "Formen",
     "category": "Formen",
-    "summary": "Direkt nach der Stockgare. Spannen, ohne zu entgasen."
+    "summary": "Direkt nach der Stockgare. Spannen, ohne zu entgasen.",
+    "body": [
+      "Bereit: Teig löst sich beim Umdrehen der Schüssel, zieht keine Fäden oder Spinnweben, wirkt locker, elastisch und stabil.",
+      "Vorsichtig lösen, nicht entgasen, Oberfläche spannen.",
+      "Ablauf: zum Rechteck ziehen, Seiten zur Mitte legen, wie einen Burrito einrollen, außen vernähen, rund walken.",
+      "Zu wenig Spannung: läuft breit, wenig Ofentrieb. Zu viel Spannung: reißt, ungleichmäßige Krume."
+    ]
   },
   {
     "slug": "stueckgare-zeichen",
     "title": "Stückgare erkennen",
     "category": "Stückgare",
-    "summary": "Fingertest, Wackeltest, Oberfläche, Volumen."
+    "summary": "Fingertest, Wackeltest, Oberfläche, Volumen.",
+    "body": [
+      "Punktgare: Fingertest kommt langsam zurück, kleine Delle bleibt. Wackeltest weich und locker. Oberfläche leicht matt, weniger klebrig. Sichtbar aufgegangen, noch stabil.",
+      "Untergare: sehr straff, springt sofort zurück, wenig Volumen.",
+      "Übergare: sehr weich, fällt leicht ein, viele große Blasen.",
+      "Direktgare: schneller und risikoreicher. Kühlschrankgare: langsamer, stabiler, planbarer. Immer abdecken, nicht luftdicht.",
+      "Basis: 18 °C 2,5 h · 20 °C 2 h · 22 °C 1,6 h · 24 °C 1,2 h – mal Mehlfaktor. Kühlschrank 7 °C: ca. 12 h ± 2,5 h."
+    ]
   },
   {
     "slug": "gaerkoerbchen",
     "title": "Gärkörbchen wählen",
     "category": "Gärkörbchen",
-    "summary": "Der Teig sollte das Körbchen zu 70–80 % füllen."
+    "summary": "Der Teig sollte das Körbchen zu 70–80 % füllen.",
+    "body": [
+      "Rund: 500–700 g → 16–18 cm, 700–900 g → 18–20 cm, 900–1100 g → 20–22 cm, 1100–1300 g → 22–24 cm, 1300–1500 g → 24–26 cm.",
+      "Oval: 500–700 g → 18–20 cm, 700–900 g → 20–22 cm, 900–1100 g → 22–24 cm, 1100–1300 g → 24–26 cm, 1300–1500 g → 26–28 cm.",
+      "Zu groß: Der Teig läuft breit und verliert Spannung. Zu klein: Der Teig wird gedrückt und geht ungleichmäßig auf.",
+      "Arten: Holzschliff nimmt Feuchtigkeit auf. Kunststoff ist pflegeleicht und nimmt weniger Feuchtigkeit auf. Stoffeinsatz ergibt eine glatte Oberfläche, kann aber bei falscher Bemehlung kleben.",
+      "Vorbereitung: Mit Reismehl bemehlen. Während der Stückgare abdecken/schützen, aber nicht luftdicht. Den Teig oben leicht bemehlen."
+    ]
   },
   {
     "slug": "nahtfuehrung",
     "title": "Nahtführung im Gärkorb",
     "category": "Gärkörbchen",
-    "summary": "Kontrollierter Ausbund oder rustikales Aufreißen – je nach Nahtlage."
+    "summary": "Kontrollierter Ausbund oder rustikales Aufreißen – je nach Nahtlage.",
+    "body": [
+      "Kontrollierte Variante: Die Naht liegt so im Gärkorb, dass du nach dem Stürzen gezielt einschneidest – das Brot reißt am Schnitt auf (Ausbund).",
+      "Rustikale Variante: Die Naht reißt beim Backen natürlich auf – kein Schnitt nötig, unregelmäßige wilde Kruste."
+    ]
   },
   {
     "slug": "backablauf",
     "title": "Standard-Backablauf",
     "category": "Backen",
-    "summary": "Heiß anbacken mit Dampf, dann fallend fertigbacken."
+    "summary": "Heiß anbacken mit Dampf, dann fallend fertigbacken.",
+    "body": [
+      "Ofen und Backfläche 60 Min auf 250 °C vorheizen.",
+      "Brot vor dem Backen für den kontrollierten Ausbund vorbereiten (flach/schräg einschneiden).",
+      "Einschießen bei 230 °C mit Dampf. Nach 4 Min den Ausbund nochmals öffnen, weiter mit Dampf.",
+      "Nach weiteren 4 Min Dampf ablassen, auf 210 °C reduzieren, ca. 20 Min weiterbacken.",
+      "Dann ein Blech als Schutz vor zu starker Oberhitze über das Brot und ca. 20 Min weiter. Ziel-Kerntemperatur 97 °C.",
+      "Mindestens 1 h auskühlen lassen – vorher schneiden macht die Krume klebrig.",
+      "Wichtig laut Quelle: Dampf nur am Anfang; er hält die Oberfläche zunächst elastisch. Den Ofen nicht zu früh öffnen und den Hitzeverlauf einhalten. Für klassisches Sauerteigbrot ist Ober-/Unterhitze der Standard. Heißluft kann die Oberfläche früher trocknen.",
+      "Kleinere Laibe backen schneller, größere langsamer. Minuten nicht einfach proportional skalieren: Farbe der Kruste und Kerntemperatur (Ziel 97 °C) mitbeurteilen."
+    ]
   },
   {
     "slug": "fehler-zu-dunkel",
     "title": "Brot wird zu dunkel",
     "category": "Fehler & Lösungen",
-    "summary": "Starke Oberhitze oder eine tatsächlich höhere Ofentemperatur kommen infrage."
+    "summary": "Starke Oberhitze oder eine tatsächlich höhere Ofentemperatur kommen infrage.",
+    "body": [
+      "Prüfe, ob vor allem die Oberseite zu dunkel wird und ob die tatsächliche Ofentemperatur vom eingestellten Wert abweicht.",
+      "Die Quelle empfiehlt, die reale Ofentemperatur zu kontrollieren. Im Standardablauf schützt später ein Blech vor zu starker Oberhitze.",
+      "Kleinere Laibe backen schneller, größere langsamer. Beurteile Farbe und Kerntemperatur (Ziel 97 °C), nicht nur die Minuten. Ober-/Unterhitze ist der Standard für klassisches Sauerteigbrot; Heißluft kann die Oberfläche früher trocknen."
+    ]
   },
   {
     "slug": "quellstuecke",
     "title": "Quellstücke rechnen",
     "category": "Quellstücke",
-    "summary": "Wasseraufnahme je Zutat, Wasser zählt zum Gesamtwasser."
+    "summary": "Wasseraufnahme je Zutat, Wasser zählt zum Gesamtwasser.",
+    "body": [
+      "50 % Wasser: Haselnüsse, Kürbiskerne, Mandeln, Sesam, Sonnenblumenkerne, Walnüsse.",
+      "100 %: Buchweizen, Dinkelschrot, Haferflocken, Hartweizengrieß, Quinoa, Roggenschrot, Soja, Weizenschrot.",
+      "150 %: Leinsaat, Maisgrieß. 200 %: geschrotete Leinsaat, fein gemahlenes Altbrot, Weizenkleie.",
+      "Körner und Saaten vorher quellen lassen; harte Körner brauchen gegebenenfalls länger.",
+      "Das Quellwasser gehört zur Gesamtwassermenge und wird vom Hauptteigwasser abgezogen, nicht zusätzlich zugegeben."
+    ]
   },
   {
     "slug": "altbrot",
     "title": "Altbrot-Quellstück",
     "category": "Quellstücke",
-    "summary": "5 % auf Mehl, dreifache Wassermenge, 12 h quellen."
+    "summary": "5 % auf Mehl, dreifache Wassermenge, 12 h quellen.",
+    "body": [
+      "Altbrot = 5 % der Mehlmenge. Beispiel bei 500 g Mehl: 25 g Altbrot + 75 g Wasser.",
+      "Zubereitung: Altbrot trocknen und fein mahlen, mit kochendem Wasser übergießen, verrühren, luftdicht verschließen und 12 h quellen lassen.",
+      "Wasser = 3 × Altbrotmenge. Dieses Wasser gehört zur Gesamtwassermenge und wird vom Hauptteigwasser abgezogen.",
+      "Zweck laut Quelle: Aroma, Frischhaltung, saftigere und stabilere Krume, höhere Wasserbindung."
+    ]
   },
   {
     "slug": "bruehstueck",
     "title": "Brühstück",
     "category": "Quellstücke",
-    "summary": "5–20 % auf Mehl mit kochendem Wasser – hohe Wasserbindung, saftigere Krume."
+    "summary": "5–20 % auf Mehl mit kochendem Wasser – hohe Wasserbindung, saftigere Krume.",
+    "body": [
+      "Menge: 5–20 % der Mehlmenge als Mehl oder Schrot, Wasser etwa 100–200 % darauf.",
+      "Beispiel bei 500 g Mehl und 10 %: 50 g Mehl/Schrot + 50–100 g Wasser.",
+      "Zweck laut Quelle: hohe Wasserbindung, stabilerer Teig, saftigere Krume, längere Frischhaltung.",
+      "Vor dem Einsatz vollständig abkühlen lassen. Das Wasser gehört zur Gesamtwassermenge und wird vom Hauptteigwasser abgezogen.",
+      "Wegen der Wasserspanne (100–200 %) rechnet die App hier keine festen Werte – die Menge legst du selbst fest."
+    ]
   },
   {
     "slug": "fehler-flach",
     "title": "Flaches Brot",
     "category": "Fehler & Lösungen",
-    "summary": "Meist Übergare, zu schwache Spannung oder zu weicher Teig."
+    "summary": "Meist Übergare, zu schwache Spannung oder zu weicher Teig.",
+    "body": [
+      "Prüfe zuerst die Stückgare: war der Fingertest schon vollständig entspannt?",
+      "Danach Formung: entstand echte Oberflächenspannung?",
+      "Erst dann die Hydration: passt sie zum Mehl aus der Tabelle?"
+    ]
   },
   {
     "slug": "fehler-dicht",
     "title": "Dichte Krume",
     "category": "Fehler & Lösungen",
-    "summary": "Häufig Untergare oder schwacher Starter."
+    "summary": "Häufig Untergare oder schwacher Starter.",
+    "body": [
+      "War der Starter beim Einsatz wirklich am Peak?",
+      "Hat der Teig in der Stockgare sichtbar Volumen gewonnen?",
+      "War die Teigtemperatur deutlich unter 20 °C, verlängert sich alles erheblich."
+    ]
   },
   {
     "slug": "glanz",
     "title": "Glanz auf der Kruste",
     "category": "Backen",
-    "summary": "Dampf unterstützt eine elastische Oberfläche und die Stärkeverkleisterung außen."
+    "summary": "Dampf unterstützt eine elastische Oberfläche und die Stärkeverkleisterung außen.",
+    "body": [
+      "Schwaden zu Backbeginn hält die Oberfläche elastisch und fördert die Verkleisterung außen.",
+      "Wasser auf der Oberfläche kann natürlichen Glanz unterstützen."
+    ]
   },
   {
     "slug": "milch-statt-wasser",
     "title": "Milch statt Wasser",
     "category": "Grundlagen",
-    "summary": "Weichere, feinere, oft etwas dichtere Krume und stärkere Bräunung."
+    "summary": "Weichere, feinere, oft etwas dichtere Krume und stärkere Bräunung.",
+    "body": [
+      "Ersetzt Milch im Rezept das Wasser, wird sie nicht zusätzlich zur Wassermenge addiert."
+    ]
   },
   {
     "slug": "honig",
     "title": "Honig im Teig",
     "category": "Grundlagen",
-    "summary": "Keine neutrale Zutat: beeinflusst Fermentation, Wasserbindung, Krume und Bräunung."
+    "summary": "Keine neutrale Zutat: beeinflusst Fermentation, Wasserbindung, Krume und Bräunung.",
+    "body": [
+      "Mit Honig im Teig den Zustand besonders beobachten – die Tabellenzeiten gelten dafür nicht unverändert."
+    ]
   },
   {
     "slug": "vitamin-c",
     "title": "Vitamin C",
     "category": "Autolyse & Kneten",
-    "summary": "Stabileres, elastischeres Glutengerüst, bessere Gasbindung, oft gleichmäßigere Porung."
+    "summary": "Stabileres, elastischeres Glutengerüst, bessere Gasbindung, oft gleichmäßigere Porung.",
+    "body": [
+      "Konkrete Dosierungen sind in der Quelle nicht hinterlegt – die App nennt deshalb keine."
+    ]
   },
   {
     "slug": "frei-oder-form",
     "title": "Frei oder in der Form backen?",
     "category": "Formen",
-    "summary": "Frei bei ausreichender Eigenstabilität, Form bei sehr weichen, vollkornreichen oder strukturschwächeren Teigen."
+    "summary": "Frei bei ausreichender Eigenstabilität, Form bei sehr weichen, vollkornreichen oder strukturschwächeren Teigen.",
+    "body": [
+      "Frei backen passt, wenn der Teig genug Eigenstabilität und Spannung mitbringt.",
+      "Eine Form unterstützt sehr weiche, vollkornreiche oder strukturschwächere Teige – beispielsweise viele Roggenteige.",
+      "Roggen- und Urgetreideteige mit wenig Stabilität profitieren oft von der Kastenform."
+    ]
   },
   {
     "slug": "backstein",
     "title": "Backstein und Backstahl",
     "category": "Backen",
-    "summary": "Speichern Hitze und unterstützen eine stabile Unterhitze – aber kein automatischer Qualitätsgarant."
+    "summary": "Speichern Hitze und unterstützen eine stabile Unterhitze – aber kein automatischer Qualitätsgarant.",
+    "body": [
+      "Backstein und Backstahl speichern Hitze und unterstützen eine stabile Unterhitze.",
+      "Sie sind aber kein automatischer Qualitätsgarant: Gare, Spannung und Einschnitt entscheiden weiter mit.",
+      "Sie ersetzen keine gute Gare: Ein übergarer Teigling läuft auch auf dem Stahl breit."
+    ]
   },
   {
     "slug": "einlagen",
     "title": "Einlagen im Teig",
     "category": "Grundlagen",
-    "summary": "Saaten, Körner, Nüsse, Käse, Oliven, Tomaten, Schokolade oder Trockenfrüchte verändern Wasser, Salz, Struktur, Gärung und Bräunung."
+    "summary": "Saaten, Körner, Nüsse, Käse, Oliven, Tomaten, Schokolade oder Trockenfrüchte verändern Wasser, Salz, Struktur, Gärung und Bräunung.",
+    "body": [
+      "Zu den Einlagen der Quelle zählen Saaten, Körner, Nüsse, Käse, Oliven, getrocknete Tomaten, Schokolade und Trockenfrüchte.",
+      "Solche Einlagen wirken auf mehrere Dinge gleichzeitig: zusätzliche Wasseraufnahme, zusätzlicher Salzanteil, veränderte Struktur, andere Gärung und stärkere oder frühere Bräunung.",
+      "Trockene Einlagen können dem Teig Wasser entziehen – Quellstückwasser gehört deshalb immer zur Gesamtwassermenge und wird vom Hauptteigwasser abgezogen.",
+      "Salzige Einlagen wie Käse oder Oliven können den Salzbeitrag des Teigs erhöhen – das ist bei der Beurteilung mitzudenken.",
+      "Zuckerreiche Einlagen wie Trockenfrüchte oder Schokolade können die Gärung und die Bräunung beeinflussen.",
+      "Die Tabellenwerte dieser App gelten für den Grundteig. Mit Einlagen beobachte den Teigzustand besonders genau – die Zeiten gelten dafür nicht unverändert."
+    ]
   },
   {
     "slug": "lagerung",
     "title": "Brot aufbewahren",
     "category": "Backen",
-    "summary": "Kurzfristig geschützt bei Raumtemperatur, für länger einfrieren."
+    "summary": "Kurzfristig geschützt bei Raumtemperatur, für länger einfrieren.",
+    "body": [
+      "Für kurze Zeit: geschützt bei Raumtemperatur aufbewahren.",
+      "Für längere Zeit: einfrieren.",
+      "Vor dem Einfrieren vollständig auskühlen lassen und luftdicht verpacken."
+    ]
   }
 ]
