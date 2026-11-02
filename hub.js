@@ -5,11 +5,11 @@ const tiles=[
  ['Meine Rezepte','Deine Rezeptsammlung','own','book','/art-books.svg'],
  ['Rezeptbibliothek','26 geprüfte Vorlagen','recipes','library','/art-basket.svg'],
  ['Historische Rezepte','Dokumentierte Rezeptstände','historical','book','/art-loaf.svg'],
- ['Favoriten','Deine Lieblingsrezepte','favorites','heart',null],
+ ['Favoriten','Deine Lieblingsrezepte','favorites','heart','/art-heart.svg'],
  ['Community-Backbuch','Rezepte entdecken','community','users','/art-buddy.svg'],
  ['Rezept importieren','Foto, Text oder Link','import','upload','/art-tools.svg'],
  ['Meine Brote','Backhistorie','history','bread','/art-loaf.svg'],
- ['Meine Backstatistik','Deine Backergebnisse','stats','chart',null],
+ ['Meine Backstatistik','Deine Backergebnisse','stats','chart','/art-chart.svg'],
  ['Rechner & Helfer','Mengen und Hydration','calculator','calculator','/art-scale.svg']
 ];
 export function hubView(button,user,historyCount,ownCount){
