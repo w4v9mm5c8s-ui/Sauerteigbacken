@@ -57,7 +57,7 @@ body[data-page="start"] main{padding:0 11px calc(125px + env(safe-area-inset-bot
 .home-feature-label{display:block;min-width:0;max-width:100%;
  color:#512d29;font-size:clamp(1rem,4.2vw,1.43rem);font-family:Georgia,'Times New Roman',serif;
  font-weight:600;line-height:1.12;letter-spacing:-.035em;
- hyphens:manual;overflow-wrap:normal}
+ hyphens:manual;overflow-wrap:anywhere}
 .home-feature-label wbr{display:inline}
 .home-current{margin:5px 0 10px;padding:9px;border-radius:21px;
  border-color:#efded6;background:#fffaf5}
