@@ -1,7 +1,7 @@
 import {icon} from './icons.js';
 
 const tiles=[
- ['Neues Brot planen','plan','/art-calendar.svg'],
+ ['Neues Brot planen','newPlan','/art-calendar.svg'],
  ['Meine Rezepte','own','/art-books.svg'],
  ['Rezept importieren','import','/art-tools.svg'],
  ['Meine Backtage','bakingDays','/art-loaf.svg'],
@@ -26,5 +26,5 @@ export function homeView({signed=false,active=null,parked=[],history=[],favorite
 
 export function bakingDaysView({active=null,parked=[],escape=e=>String(e)}){
  const n=(active?1:0)+parked.length;
- return '<section class="card"><h2>Meine Backtage</h2>'+(!n?'<p class="muted">Aktuell läuft noch kein Backtag.</p><button class="primary" data-act="plan">Neuen Backtag planen</button>':(active?'<button class="item" data-act="backtag"><strong>'+escape(active.title)+'</strong><span class="muted">Aktiv · Schritt '+((active.index||0)+1)+' von '+active.steps.length+'</span></button>':'')+parked.map((b,i)=>'<button class="item" data-act="switchBake:'+i+'"><strong>'+escape(b.title)+'</strong><span class="muted">Schritt '+((b.index||0)+1)+' von '+(b.steps?.length||0)+'</span></button>').join('')+'<button data-act="plan">Weiteren Backtag planen</button>')+'</section>';
+ return '<section class="card"><h2>Meine Backtage</h2>'+(!n?'<p class="muted">Aktuell läuft noch kein Backtag.</p><button class="primary" data-act="newPlan">Neuen Backtag planen</button>':(active?'<button class="item" data-act="backtag"><strong>'+escape(active.title)+'</strong><span class="muted">Aktiv · Schritt '+((active.index||0)+1)+' von '+active.steps.length+'</span></button>':'')+parked.map((b,i)=>'<button class="item" data-act="switchBake:'+i+'"><strong>'+escape(b.title)+'</strong><span class="muted">Schritt '+((b.index||0)+1)+' von '+(b.steps?.length||0)+'</span></button>').join('')+'<button data-act="newPlan">Weiteren Backtag planen</button>')+'</section>';
 }
