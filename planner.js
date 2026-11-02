@@ -23,3 +23,14 @@ export function makePlan(r,want,from,to,ready,preheatMinutes=45,absenceStart=nul
  return {finish,steps,shift,cold,assumptions:'Starterreife ('+starterHours+' h) und Vorheizen ('+preheat+' min) sind Richtwerte, keine garantierten Zeiten.'};
  }}return null;
 }
+export function rescheduleRemaining(steps,index,delayMinutes,sleepFrom='22:00',sleepTo='07:00'){
+ if(!Number.isFinite(delayMinutes)||delayMinutes<0||delayMinutes>1440)throw Error('Bitte eine Verzögerung von 0 bis 1440 Minuten angeben');
+ const remaining=steps.slice(index+1);
+ if(!remaining.length)return steps;
+ for(let extra=0;extra<7*1440;extra+=15){
+ const delta=(delayMinutes+extra)*60000;
+ if(remaining.some(s=>s.active&&blocked(new Date(s.at+delta),sleepFrom,sleepTo)))continue;
+ return steps.map((s,i)=>i>index?{...s,at:s.at+delta}:s)
+ }
+ throw Error('Kein passender neuer Zeitplan gefunden. Bitte Schlafzeiten oder Backtermin ändern.');
+}
