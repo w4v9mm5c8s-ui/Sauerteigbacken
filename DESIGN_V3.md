@@ -32,3 +32,14 @@ Ziel: eigenständige App in Rosé/Beige mit echten Funktionen im Stil der zuvor 
 - Die extern geladenen Schriftarten Fraunces und Outfit sind in der Content Security Policy freigeschaltet. Vor öffentlicher Produktfreigabe müssen diese Schriftabrufe datenschutzrechtlich geprüft oder lokal bereitgestellt werden.
 - Zusätzliche Tests für Motive, ausgelieferte Assets, illustrierte Bereiche und den Backup-Import.
 - Ein echter iPhone-Safari- und Pixeltest ist weiterhin nicht als durchgeführt bestätigt; aus `npm test` folgt keine visuelle Abnahme.
+
+## 02.11.2026 – Direkte SVGs und sofort sichtbare Startseite
+- [x] In-App-Ladeanzeige `<p>Lädt …</p>` aus der initialen `index.html` entfernt.
+- [x] Die echte Startseite mit Aquarell-Header und acht Funktionskacheln wird jetzt direkt im HTML ausgeliefert, bevor JavaScript startet; kein zusätzlicher Lade-/Splash-Screen im App-Code.
+- [x] Vier Bottom-Navigation-Icons sind bereits im initialen HTML echte Inline-SVGs, auch ohne JavaScript.
+- [x] SVG-Motive bleiben unverändert skalierbare `.svg`-Dateien und werden direkt via `<img src="/art-*.svg">` eingebunden. Keine Konvertierung der Illustrationen zu PNG, JPEG oder WebP und keine Canvas-Rasterisierung in dieser UI.
+- [x] iPhone-CSS auf 4 Motivkacheln je Reihe umgestellt; kompakterer Hero-Bereich und drei echte Backhistorie-Karten nebeneinander wie im Layoutentwurf.
+- [x] Wenn API/Netz nicht erreichbar sind, bleibt die Startseite sichtbar und zeigt einen Fehlerhinweis statt einer leeren Lade-/Fehleransicht.
+- [x] PWA-Cacheversion aktualisiert und HTML mit no-store ausgeliefert, damit alte Ladeansichten nicht im Browser hängen bleiben.
+- [ ] Die in früheren Nachrichten gezeigten Referenzgrafiken liegen als JPEG/PNG/WebP vor, nicht als originale SVG-Dateien. Für eine **exakte** 1:1-Übernahme der Originalvektoren fehlen die SVG-Quelldateien; aus Rasterbildern wird bewusst kein verlustbehaftetes SVG vorgetäuscht.
+- [ ] Echte optische Abnahme auf iPhone/Safari bleibt offen. Der iOS-eigene systembedingte Startbildschirm liegt außerhalb der App und kann durch das Entfernen von HTML-Ladetext nicht garantiert vollständig unterbunden werden.
