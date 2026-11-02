@@ -7,7 +7,7 @@ const read=name=>readFileSync(new URL('../'+name,import.meta.url),'utf8');
 test('home screen has eight real navigation tiles with decorative watercolors',()=>{
  const html=homeView({signed:false,active:null,parked:[],history:[],favorites:[],escape:x=>String(x)});
  assert.equal((html.match(/class="home-feature"/g)||[]).length,8);
- for(const route of ['newPlan','own','import','bakingDays','stats','favorites','knowledge','calculator'])assert.ok(html.includes('data-act="'+route+'"'),route);
+ for(const route of ['newPlan','own','import','bakingDays','stats','favorites','knowledge','shopping'])assert.ok(html.includes('data-act="'+route+'"'),route);
  assert.match(html,/art-hero\.svg/);
  assert.doesNotMatch(html,/Zuletzt gebacken/);
  assert.doesNotMatch(html,/home-buddy/);
