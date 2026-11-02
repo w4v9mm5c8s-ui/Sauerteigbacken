@@ -1,0 +1,135 @@
+[
+  {
+    "id": "blog-ploetzblog",
+    "kind": "blog",
+    "name": "Plötzblog",
+    "url": "https://www.ploetzblog.de",
+    "note": "In der Quelle auch als YouTube-Kanal genannt."
+  },
+  {
+    "id": "blog-homebaking",
+    "kind": "blog",
+    "name": "Homebaking Blog",
+    "url": "https://www.homebaking.at"
+  },
+  {
+    "id": "blog-hefe-und-mehr",
+    "kind": "blog",
+    "name": "Hefe und mehr",
+    "url": "https://www.hefe-und-mehr.de"
+  },
+  {
+    "id": "blog-brotwein",
+    "kind": "blog",
+    "name": "Brotwein",
+    "url": "https://www.brotwein.net"
+  },
+  {
+    "id": "blog-brotdoc",
+    "kind": "blog",
+    "name": "Brotdoc",
+    "url": "https://brotdoc.com"
+  },
+  {
+    "id": "buch-geissler-perfektion",
+    "kind": "buch",
+    "name": "Brot backen in Perfektion mit Sauerteig",
+    "author": "Lutz Geißler",
+    "isbn": "978-3865288270"
+  },
+  {
+    "id": "buch-geissler-1",
+    "kind": "buch",
+    "name": "Brotbackbuch Nr. 1",
+    "author": "Lutz Geißler",
+    "isbn": "978-3865286733"
+  },
+  {
+    "id": "buch-geissler-2",
+    "kind": "buch",
+    "name": "Brotbackbuch Nr. 2",
+    "author": "Lutz Geißler",
+    "isbn": "978-3865286757"
+  },
+  {
+    "id": "buch-kappl-homebaking",
+    "kind": "buch",
+    "name": "Homebaking",
+    "author": "Dietmar Kappl",
+    "isbn": "978-3954531393"
+  },
+  {
+    "id": "buch-hollensteiner-brotdoc",
+    "kind": "buch",
+    "name": "Der Brotdoc – Grundlagen des Brotbackens",
+    "author": "Björn Hollensteiner",
+    "isbn": "978-3833875167"
+  },
+  {
+    "id": "yt-emmabackt",
+    "kind": "youtube",
+    "name": "Emmabackt",
+    "url": "https://www.youtube.com/@emmabackt"
+  },
+  {
+    "id": "yt-kruste-und-krume",
+    "kind": "youtube",
+    "name": "Kruste & Krume",
+    "url": "https://www.youtube.com/@krusteundkrume"
+  },
+  {
+    "id": "yt-mann-backt",
+    "kind": "youtube",
+    "name": "Mann backt",
+    "url": "https://www.youtube.com/@mannbackt"
+  },
+  {
+    "id": "yt-einfach-backen",
+    "kind": "youtube",
+    "name": "Einfach Backen – Marcel Paa",
+    "url": "https://www.youtube.com/@marcelpaa"
+  },
+  {
+    "id": "yt-ploetzblog",
+    "kind": "youtube",
+    "name": "Plötzblog",
+    "url": "https://www.youtube.com/@ploetzblog",
+    "note": "In der Quelle auch als Blog genannt."
+  },
+  {
+    "id": "ig-kraft-des-sauerteigs",
+    "kind": "instagram",
+    "name": "kraft.des.sauerteigs",
+    "url": "https://www.instagram.com/kraft.des.sauerteigs"
+  },
+  {
+    "id": "ig-sauerteigmama",
+    "kind": "instagram",
+    "name": "sauerteigmama",
+    "url": "https://www.instagram.com/sauerteigmama"
+  },
+  {
+    "id": "ig-miss_sauerteig",
+    "kind": "instagram",
+    "name": "miss_sauerteig",
+    "url": "https://www.instagram.com/miss_sauerteig"
+  },
+  {
+    "id": "ig-ellas-mr-bread",
+    "kind": "instagram",
+    "name": "ellas.mr.bread",
+    "url": "https://www.instagram.com/ellas.mr.bread"
+  },
+  {
+    "id": "ig-saraelisa-an",
+    "kind": "instagram",
+    "name": "saraelisa.an",
+    "url": "https://www.instagram.com/saraelisa.an"
+  },
+  {
+    "id": "ig-liebe_zum_sauerteig",
+    "kind": "instagram",
+    "name": "liebe_zum_sauerteig",
+    "url": "https://www.instagram.com/liebe_zum_sauerteig"
+  }
+]
