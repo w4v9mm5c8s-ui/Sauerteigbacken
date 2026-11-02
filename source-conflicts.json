@@ -1,0 +1,62 @@
+[
+  {
+    "id": "altbrot-einlage-vs-standard",
+    "title": "Altbrot: Wasseraufnahme 200 % vs. 3× Wasser",
+    "handling": "Beim Altbrot-Schalter wählst du in Planer, Rechner, Rezept und Backtag ausdrücklich 300 % (Standard) oder 200 % (Einlagen-Tabelle); die Wahl wird im Rezept und Backtag gespeichert und in allen Mengen verwendet. Ohne Entscheidung gilt sichtbar der Standard 300 %. Ist der Schalter aktiv, wird eine zusätzliche Altbrot-Einlage nicht mitgerechnet (keine Doppelzählung)."
+  },
+  {
+    "id": "starter-hydration",
+    "title": "Starter-Hydration 100 % vs. 50 %",
+    "handling": "Keine globale Starter-Hydration. Jede Rezept-/Starterversion trägt ihre eigene; unbekannt bleibt unbekannt."
+  },
+  {
+    "id": "kerntemperatur",
+    "title": "Kerntemperatur 96–97 °C vs. 97 °C",
+    "handling": "Historischer Wert bleibt im historischen Datensatz; Standardablauf bleibt 97 °C."
+  },
+  {
+    "id": "roggen-997-hydration",
+    "title": "Roggen 997: 68 % verworfen",
+    "handling": "Spätere Version ist eigener historischer Datensatz; die frühere wird nicht als gültig angeboten."
+  },
+  {
+    "id": "falt-intervalle",
+    "title": "Faltintervalle 30 Min vs. rezeptabhängige Timer",
+    "handling": "Die 30 Min sind nur Startvorschlag der Quelle, im Timer frei änderbar; bei Roggen entfallen Folds."
+  },
+  {
+    "id": "bruehstueck-kochstueck",
+    "title": "Brühstück: übergießen (S. 2) vs. aufkochen (S. 27)",
+    "handling": "Beide Beschreibungen bleiben sichtbar; die App rechnet für Brühstück/Kochstück keine festen Werte, du legst Methode und Menge selbst fest."
+  },
+  {
+    "id": "peak-20-prozent",
+    "title": "Peak: „max. ±20 %“ vs. Tabellentoleranzen",
+    "handling": "Die App zeigt die Tabellen-Toleranz je Zelle; die 20-%-Regel bleibt als Hinweis. Reifezeichen sind führend."
+  },
+  {
+    "id": "stock-minuten-rundung",
+    "title": "Stock-/Stückgare-Mehlliste: Prozent vs. Minuten gerundet",
+    "handling": "Die App rechnet mit dem Prozentfaktor der Mehltabelle; die gerundeten Minuten der Quelle weichen höchstens wenige Minuten ab (Test)."
+  },
+  {
+    "id": "koerbchen-zu-gross",
+    "title": "Gärkörbchen zu groß: „stabile Stückgare“",
+    "handling": "Wortlaut nicht korrigiert; möglicherweise Tippfehler in der Quelle – bitte klären. Die Geräteprüfung nutzt nur die Größentabelle."
+  },
+  {
+    "id": "ruch-hydration",
+    "title": "Ruchmehl: 75 % Tabelle vs. historische Ruchbrote",
+    "handling": "Tabelle bleibt 75 %; historische Rezepte behalten ihre exakten Mengen. Kein 68-%-Ruchwert wird erfunden."
+  },
+  {
+    "id": "ruch-68-roggenstarter",
+    "title": "Ruchmehl: „68 % mit Roggenstarter“ (frühere Anweisung) vs. 75 % Weizenruch (PDF)",
+    "handling": "Versionsabhängiger Konflikt. Die allgemeine Tabelle bleibt 75 %/Weizenstarter, bis du anders entscheidest; im Planer kannst du Hydration und Starter frei ändern."
+  },
+  {
+    "id": "asg-30-prozent",
+    "title": "Standard-ASG 30 % (frühere Anweisung) vs. mehlabhängig 160–250 g/500 g (PDF)",
+    "handling": "Die Tabelle bleibt Vorschlag; Startermenge ist im Rezept frei änderbar. Kein automatisches Überschreiben ohne deine Entscheidung."
+  }
+]
