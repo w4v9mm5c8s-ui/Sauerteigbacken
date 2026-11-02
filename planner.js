@@ -1,7 +1,7 @@
 const blocked=(d,from,to)=>{const h=d.getHours()*60+d.getMinutes(),a=from.split(':').map(Number),b=to.split(':').map(Number),x=a[0]*60+a[1],y=b[0]*60+b[1];return x>y?h>=x||h<y:h>=x&&h<y};
 export function makePlan(r,want,from,to,ready,preheatMinutes=45,absenceStart=null,absenceEnd=null,options={}){
  const preheat=Math.max(15,Math.min(120,Number(preheatMinutes)||45));
- const stock=(r.stock[0]+r.stock[1])*30,warmProof=(r.proof[0]+r.proof[1])*30,bake=r.bake.reduce((s,x)=>s+x.min,0),lye=/Laugen/.test(r.title);
+ const stock=(r.stock[0]+r.stock[1])*30,warmProof=(r.proof[0]+r.proof[1])*30,loads=Math.max(1,Math.min(12,Number(options.ovenLoads)||1)),bake=r.bake.reduce((s,x)=>s+x.min,0)*loads,lye=/Laugen/.test(r.title);
  const coldProof=r.cold?.[0]>0?(r.cold[0]+r.cold[1])*30:null;
  const mode=options.mode||'auto';const modes=mode==='warm'?[warmProof]:mode==='cold'&&coldProof?[coldProof]:coldProof?[warmProof,coldProof]:[warmProof];
  const starterHours=Number.isFinite(Number(options.starterHours))&&Number(options.starterHours)>0?Number(options.starterHours):9;
@@ -16,7 +16,8 @@ export function makePlan(r,want,from,to,ready,preheatMinutes=45,absenceStart=nul
  const rests=[['Stockgare',mix+15*60000,stock-15],[cold?'Kühlschrankgare':'Stückgare',shape+20*60000,proof]];
  if(r.soaker){const at=mix-(r.soaker.hours*60+10)*60000;actions.push(['Quellstück ansetzen',at,10,'Zutaten mit Quellwasser vermischen.']);rests.push(['Quellstück quellen lassen',at+10*60000,r.soaker.hours*60])}
  for(let i=1;i<=folds&&i*interval<stock-20;i++)actions.push(['Teig falten ('+i+'/'+folds+')',mix+i*interval*60000,5,'Behutsam falten.']);
- let t=oven;for(const p of r.bake){actions.push(['Backphase starten',t,2,p.temp+' °C für '+p.min+' Minuten.']);rests.push(['Backen lassen',t+2*60000,p.min-2]);t+=p.min*60000}
+ if(r.altbrot?.grams){const alt=+mix-(r.altbrot.hours||12)*3600000-10*60000;actions.push(['Altbrot-Quellstück ansetzen',alt,10,'Altbrot mit dem gewählten Quellwasser vermischen.']);rests.push(['Altbrot quellen lassen',alt+10*60000,(r.altbrot.hours||12)*60])}
+ let t=oven;for(let load=1;load<=loads;load++){for(const p of r.bake){actions.push([loads>1?'Ofenladung '+load+' starten':'Backphase starten',t,2,p.temp+' °C für '+p.min+' Minuten. '+(loads>1?'Spätere Teiglinge bis zum Einschießen kühl halten und Gare prüfen.':'')]);rests.push(['Backen lassen',t+2*60000,p.min-2]);t+=p.min*60000}}
  rests.push(['Auskühlen lassen',finish,60]);
  if(actions.some(a=>(options.earliestStart&&a[1]<+options.earliestStart)||a[1]<Date.now()+60000||Array.from({length:a[2]},(_,i)=>blocked(new Date(a[1]+i*60000),from,to)||Boolean(absenceStart&&absenceEnd&&a[1]+i*60000>=+absenceStart&&a[1]+i*60000<+absenceEnd)).some(Boolean)))continue;
  const steps=[...actions.map(a=>({title:a[0],at:a[1],detail:a[3]||'',active:true})),...rests.map(a=>({title:a[0],at:a[1],detail:'Ruhezeit – Teigzustand beachten.',active:false}))].sort((a,b)=>a.at-b.at);
