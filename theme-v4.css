@@ -177,3 +177,5 @@ body[data-page="start"] main,body:not([data-page="start"]) main{
  .home-artwork{height:56%}
  .home-feature-label{font-size:.96rem}
 }
+
+@media(max-width:679px){.home-feature{grid-template-columns:38% minmax(0,1fr);gap:2px}.home-feature-label{font-size:clamp(.84rem,3.55vw,1.13rem);line-height:1.14}.home-feature-art img{max-height:99px}}
