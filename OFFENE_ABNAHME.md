@@ -72,3 +72,15 @@ Dies ist eine veröffentlichte **Entwicklungsfassung**, keine freigegebene ferti
 - [ ] Monetarisierung und Nutzungsgrenzen der Premium-Funktionen ausdrücklich festlegen; serverseitige Entitlements erst dann durchsetzen
 - [ ] Steuer-/Rechtsprüfung, AGB/Datenschutz/Impressum und Widerruf/Kündigung prüfen
 - [ ] Echte Testzahlungen, Portal, Rechnungen und Zahlungsfehler auf dem iPhone prüfen
+
+## Folgearbeiten – Design und Funktionen, 02.11.2026
+- [x] Startseite, Rezeptsammlung, Illustrationen und mobile Navigationsabstände im Rose-Beige-Design überarbeitet.
+- [x] Aktiver Backtag und parallele Backtage werden beim persönlichen JSON-Export eingeschlossen und beim Import mit Fortschritt wiederhergestellt.
+- [x] Backup-Dateien auf Größe, Datenfelder und erlaubte Backtagstrukturen geprüft; explizite Überschreibungsbestätigung.
+- [x] HTTPS-Rezeptimport liest Schema.org-Recipe/JSON-LD-Zutaten und Anweisungen direkt aus, sofern vorhanden, ohne Grammangaben oder Garzeiten zu erfinden; anschließend manuell prüfen.
+- [x] Rezeptbibliothek mit Kategorienfilter und Suche nach Mehlart oder Gebäckname.
+- [x] Geschützte Funktionen bieten einen direkten Weg zur Anmeldung statt einer Sackgasse.
+- [ ] Die neuen Web-Importe sind mit realen Drittseiten unter angemeldetem Konto noch nicht Ende-zu-Ende getestet.
+- [ ] iPhone-Safari-Rendering und tatsächlicher Vergleich mit Referenzbild weiterhin nicht manuell abgenommen.
+- [ ] Stripe-Live-Zahlungen unverändert deaktiviert. Fehlende Render-Geheimnisse nur in gesicherter Verwaltung ergänzen.
+- [ ] Der vorige Render-Deploy blieb zeitweise bei update_in_progress; nach den Änderungen muss der live-Status erneut verifiziert werden.
