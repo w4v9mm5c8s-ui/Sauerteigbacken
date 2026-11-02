@@ -8,7 +8,7 @@ const origin='https://backen-mit-sauerteig.onrender.com';
 function setup(seed,network){
  const handlers={},items=new Map(Object.entries(seed)),requests=[];
  const cache={
-  match:async key=>items.get(key)||undefined,
+  match:async key=>items.get(key)?.clone()||undefined,
   put:async(key,response)=>{items.set(key,response);return undefined},
   addAll:async()=>undefined
  };
