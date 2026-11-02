@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "node --check server.mjs && node --check app.js && node --check planner.js && node --check hub.js && node --check icons.js && node --check stats.js && node --check calculators.js && node --check knowledge.js && node --check pantry.js && npm test",
+    "build": "node --check server.mjs && node --check app.js && node --check planner.js && node --check planning-ui.js && node --check own-recipe-parser.js && node --check starter-tracking.js && node --check onboarding.js && node --check hub.js && node --check icons.js && node --check stats.js && node --check calculators.js && node --check knowledge.js && node --check pantry.js && npm test",
     "start": "node server.mjs",
     "test": "node --test tests/*.test.mjs"
   },
