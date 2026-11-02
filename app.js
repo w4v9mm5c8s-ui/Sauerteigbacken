@@ -17,7 +17,7 @@ import {backtagView} from './backtag.js';
 import {makePlan,rescheduleRemaining} from './planner.js';
 let communityRows=[],resources=[],sourceConflicts=[],flourTable=[],recipes=[],current=null,tab='start',user=null,token='',refreshToken='',cfg={},scale=1,moderator=false,editingOwn=null,onboardingStep=0;
 const $=s=>document.querySelector(s),escape=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const actionIcons={plan:'calendar',hub:'bread',recipes:'library',community:'users',shopping:'basket',knowledge:'book',starters:'flask',pantry:'wheat',buddy:'chat',own:'book',history:'history',stats:'chart',calculator:'calculator',problem:'help',import:'upload'};
+const actionIcons={favorites:'heart',plan:'calendar',hub:'bread',recipes:'library',community:'users',shopping:'basket',knowledge:'book',starters:'flask',pantry:'wheat',buddy:'chat',own:'book',history:'history',stats:'chart',calculator:'calculator',problem:'help',import:'upload'};
 const button=(label,action)=>'<button data-act="'+action+'">'+(actionIcons[action]?icon(actionIcons[action],18)+' ':'')+escape(label)+'</button>';
 const box=s=>'<section class="card">'+s+'</section>';
 const note=t=>{const x=$('#toast');x.textContent=t;x.style.display='block';setTimeout(()=>x.style.display='none',4000)};
