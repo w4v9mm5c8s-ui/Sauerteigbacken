@@ -1,0 +1,5 @@
+import test from 'node:test';import assert from 'node:assert/strict';import {unavailableAt,makePlan} from '../planner.js';import {readFileSync} from 'node:fs';
+test('recurring work hours are blocked only on selected weekdays',()=>{const d=new Date(2026,10,2,11,30);assert.equal(d.getDay(),1);const o={recurringDays:[0],recurringFrom:'09:00',recurringTo:'17:00'};assert.equal(unavailableAt(d,'22:00','07:00',null,null,o),true);assert.equal(unavailableAt(new Date(2026,10,3,11,30),'22:00','07:00',null,null,o),false)});
+test('second absence window blocks active work',()=>{const d=new Date(2026,10,4,15,0),o={absenceWindows:[{from:new Date(2026,10,4,14,0),to:new Date(2026,10,4,16,0)}]};assert.equal(unavailableAt(d,'22:00','07:00',null,null,o),true)});
+test('recurring overnight unavailability works',()=>{const o={recurringDays:[0],recurringFrom:'18:00',recurringTo:'23:00'};assert.equal(unavailableAt(new Date(2026,10,2,19,0),'23:30','06:00',null,null,o),true)});
+test('planning UI exposes recurring weekday and second absence inputs',()=>{const s=readFileSync(new URL('../planning-ui.js',import.meta.url),'utf8');assert.match(s,/recurringDay/);assert.match(s,/awayFrom2/)});
