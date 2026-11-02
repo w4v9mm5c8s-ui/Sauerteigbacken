@@ -58,3 +58,11 @@ Quellen: https://docs.stripe.com/payments/checkout , https://docs.stripe.com/bil
 - [ ] Render-Schlüssel sicher hinterlegen und echte Sandbox-Zahlung, Verlängerung, Kündigung und Fehlzahlung prüfen
 - [ ] Plus-Leistungen und Nutzungsgrenzen verbindlich beschließen; keine bestehenden Gratis-Funktionen sperren
 - [ ] Rechtliche Angaben und Live-Zahlungsfreigabe abnehmen
+
+## Sandbox-Konfiguration (02.11.2026)
+- Produkt: `prod_VYU3gEDcFeG3XR`
+- Monat: `price_1UXNDM21ZUER5Za89OmqU6aM`, 4,90 EUR (Testvorschlag)
+- Jahr: `price_1UXNDT21ZUER5Za8cIuYfsvl`, 39,90 EUR (Testvorschlag)
+- Webhook: `we_1UXNDt21ZUER5Za8Prl1Qc1B`
+- Test-Preiskennungen und Webhook-Signatur sind in Render konfiguriert. Checkout bleibt deaktiviert.
+- Preise vor Live-Verkauf bestätigen; Test-IDs später durch Live-IDs ersetzen.
