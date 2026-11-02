@@ -8,8 +8,12 @@ for(const viewport of [{width:375,height:812},{width:390,height:844},{width:430,
  await page.goto('http://127.0.0.1:3000',{waitUntil:'networkidle'});
  await page.waitForSelector('.home-hero');
  if(!await page.locator('.home-hero').isVisible())failures.push('Homepage hero missing '+viewport.width);
+ const heroImage=await page.locator('.hero-watercolor').evaluate(img=>({loaded:img.complete&&img.naturalWidth>0,width:img.getBoundingClientRect().width})).catch(()=>({loaded:false,width:0}));
+ if(!heroImage.loaded||heroImage.width<60)failures.push('Watercolor hero not loaded '+viewport.width);
+ if(!await page.locator('nav [data-tab="hub"] .ui-icon').isVisible())failures.push('Bottom nav SVG missing '+viewport.width);
  await page.locator('[data-tab="hub"]').click();
  await page.getByRole('button',{name:/Rezeptbibliothek/}).first().click();
+ if(!await page.locator('.recipe-banner img').evaluate(img=>img.complete&&img.naturalWidth>0).catch(()=>false))failures.push('Recipe watercolor missing '+viewport.width);
  await page.locator('[data-act^="recipe:"]').first().click();
  await page.getByRole('button',{name:/Backtag planen/}).click();
  for(const id of ['roomTemp','flourTemp','starterTemp','proofMode','loaves','flourPerLoaf','finish'])if(!await page.locator('#'+id).count())failures.push(id+' missing '+viewport.width);
