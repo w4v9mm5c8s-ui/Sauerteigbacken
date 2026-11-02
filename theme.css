@@ -78,3 +78,29 @@ nav button.active{color:var(--rose-deep);background:var(--rose-mist)}
 .hub-arrow{display:inline-block;width:9px;height:9px;flex:0 0 9px;border-top:2px solid currentColor;border-right:2px solid currentColor;transform:rotate(45deg);margin:0 5px 0 0;opacity:.55}
 .back-button{display:inline-flex;align-items:center;gap:7px;min-height:42px;padding:9px 14px;border-radius:999px;font-size:.88rem;font-weight:650;color:var(--rose-deep);background:#fffaf8;border-color:var(--line);margin:2px 0 10px}
 .back-button .ui-icon{width:17px;height:17px}
+
+/* Working bake day */
+.backtag-card>progress{height:9px;margin:8px 0 20px;accent-color:var(--rose)}
+.backtag-card>h2{margin:10px 0}
+.step-scheduled{display:flex;align-items:center;gap:7px;color:var(--rose-deep);font-weight:600;font-size:.92rem}
+.bake-observation{border:1px solid var(--line);border-radius:17px;padding:8px 14px;margin:12px 0;background:#fffdfa}
+.bake-observation summary{display:flex;align-items:center;gap:10px;font-size:.96rem;color:var(--ink)}
+.bake-observation[open] summary{color:var(--rose-deep)}
+.observation-fields{padding:5px 0 10px}
+.observation-fields button{margin-top:12px}
+.timer-panel{background:var(--rose-mist);border:1px solid #e9d4dc;border-radius:20px;padding:17px;margin:16px 0}
+.timer-panel h3{display:flex;align-items:center;gap:9px;margin:0 0 14px;color:var(--rose-deep)}
+.timer-presets{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
+.timer-presets button{padding:9px 3px;font-size:.82rem;min-height:38px}
+.timer-actions{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;margin-top:10px}
+.timer-actions button{padding:9px 3px;font-size:.81rem;min-height:42px}
+.timer-actions button:first-child{background:var(--rose);color:#fff;border-color:var(--rose)}
+.timer-extras{display:flex;flex-wrap:wrap;gap:7px}
+.timer-extras button{font-size:.78rem;padding:9px 12px}
+.step-actions{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.5fr);gap:10px;margin-top:18px}
+.step-actions button{display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:12px 8px;font-size:.88rem}
+.step-list{display:grid;gap:8px}
+.step-list .item{margin:0}
+.step-list .item.current-step{border:2px solid var(--rose);background:var(--rose-mist)}
+.step-list .item.done{opacity:.65}
+@media(max-width:360px){.timer-presets,.timer-actions{grid-template-columns:repeat(2,minmax(0,1fr))}}
