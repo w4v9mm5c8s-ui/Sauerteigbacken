@@ -44,8 +44,8 @@ test('soaker input rejects an unsoaked selected seed instead of reporting a fake
 });
 test('no infinite PWA update reload and PDF originals accessible from recipe library',()=>{
  const app=read('app.js');
- assert.match(app,/sauerteig-sw-upgrade-v32/);
+ assert.match(app,/sauerteig-sw-upgrade-v33/);
  assert.doesNotMatch(app,/sessionStorage\.setItem\('sauerteig-sw-upgrade-v26'/);
  assert.match(app,/data-act="pdfRecipes"/);
- assert.match(read('sw.js'),/sauerteig-public-v32/);
+ assert.match(read('sw.js'),/sauerteig-public-v33/);
 });

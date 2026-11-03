@@ -577,4 +577,4 @@ if(user&&!authRecovery){
 }
 render()}catch(e){console.warn('Sauerteig-Server aktuell nicht erreichbar:',e?.message||e);note('Serververbindung unterbrochen. Die Backstube bleibt geöffnet.')}})();
 
-if('serviceWorker' in navigator){window.addEventListener('load',async()=>{try{const reg=await navigator.serviceWorker.register('/sw.js',{updateViaCache:'none'});reg.update().catch(()=>{});navigator.serviceWorker.addEventListener('controllerchange',()=>{try{if(!authRecovery&&!sessionStorage.getItem('sauerteig-sw-upgrade-v32')){sessionStorage.setItem('sauerteig-sw-upgrade-v32','1');location.reload()}}catch{}})}catch(e){console.warn('Offline-Modus nicht verfügbar',e)}})}
+if('serviceWorker' in navigator){window.addEventListener('load',async()=>{try{const reg=await navigator.serviceWorker.register('/sw.js',{updateViaCache:'none'});reg.update().catch(()=>{});navigator.serviceWorker.addEventListener('controllerchange',()=>{try{if(!authRecovery&&!sessionStorage.getItem('sauerteig-sw-upgrade-v33')){sessionStorage.setItem('sauerteig-sw-upgrade-v33','1');location.reload()}}catch{}})}catch(e){console.warn('Offline-Modus nicht verfügbar',e)}})}

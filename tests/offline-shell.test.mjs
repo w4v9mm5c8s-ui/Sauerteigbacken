@@ -65,7 +65,7 @@ test('fresh HTML wins over a stale cached page when the server responds',async()
  assert.match(await sw.items.get('/index.html').text(),/Aktuelle Fassung/);
 });
 test('service-worker script retains a dedicated new cache version',()=>{
- assert.match(source,/sauerteig-public-v32/);
+ assert.match(source,/sauerteig-public-v33/);
  assert.match(source,/response\.ok/);
  assert.match(source,/isRealAsset/);
 });
