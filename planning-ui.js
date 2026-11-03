@@ -62,7 +62,7 @@ export function planningView(r,esc,now,flourTable=[],starters=[]){
  '<div class="cols"><div>'+field('Schlafen ab','sleepFrom','22:00','type="time"')+'</div><div>'+field('Aufstehen um','sleepTo','07:00','type="time"')+'</div></div>'+
  field('Frühestens beginnen ab (optional)','earliestStart','','type="datetime-local"')+
  '<details><summary>Abwesenheiten berücksichtigen</summary>'+field('Abwesend von','awayFrom','','type="datetime-local"')+field('Bis','awayTo','','type="datetime-local"')+field('Weitere Abwesenheit von','awayFrom2','','type="datetime-local"')+field('Bis','awayTo2','','type="datetime-local"')+'<label>Regelmäßig nicht verfügbar (Wochentage)</label><div class="weekday-grid">'+['Mo','Di','Mi','Do','Fr','Sa','So'].map((day,i)=>'<label><input type="checkbox" id="recurringDay'+i+'" data-unavailable-day="'+i+'">'+day+'</label>').join('')+'</div>'+field('An diesen Tagen ab','recurringFrom','09:00','type="time"')+field('Bis','recurringTo','17:00','type="time"')+'</details>'+
- '</details><button class="primary" data-act="calculate">Meinen Backplan erstellen</button><div id="planResult"></div></section>';
+ '</details><label><input type="checkbox" id="planReminders"> An die Arbeitsschritte per Push erinnern (Push vorher unter Ich aktivieren)</label><button class="primary" data-act="calculate">Meinen Backplan erstellen</button><button type="button" data-act="saveRecipeProfile">Als eigene Rezeptvorgaben speichern</button><div id="planResult"></div></section>';
 }
 export function readPlanningForm(r,get){
  const val=id=>get(id)?.value??'',n=id=>num(val(id),NaN),optional=id=>val(id)===''?null:n(id);

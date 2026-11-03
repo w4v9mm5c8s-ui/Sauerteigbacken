@@ -13,9 +13,11 @@ Deno.serve(async req=>{if(req.method==='OPTIONS')return reply({});try{
   webpush.setVapidDetails(origin,secrets.sourdough_vapid_public,secrets.sourdough_vapid_private);
   const jobs=await db('rpc/claim_sourdough_push','POST',{});let sent=0;
   for(const j of jobs){const subscriptions=await db('sourdough_push_subscriptions?id=eq.'+j.subscription_id+'&user_id=eq.'+j.user_id);const sub=subscriptions[0];try{
+   const stillPending=await db('sourdough_push_jobs?id=eq.'+j.id+'&state=eq.sending&claimed_at=eq.'+encodeURIComponent(j.claimed_at));if(!stillPending.length)continue;
    if(!sub||!validEndpoint(sub.endpoint))throw Error('Invalid subscription');
-   await webpush.sendNotification({endpoint:sub.endpoint,keys:{p256dh:sub.p256dh,auth:sub.auth}},JSON.stringify({title:'Backen mit Sauerteig',body:'Dein Backtimer ist abgelaufen.',tag:j.id,url:'/'}),{TTL:600,timeout:10000});
-   await db('sourdough_push_jobs?id=eq.'+j.id,'PATCH',{state:'sent'});sent++;
+   await webpush.sendNotification({endpoint:sub.endpoint,keys:{p256dh:sub.p256dh,auth:sub.auth}},JSON.stringify({title:'Backen mit Sauerteig',body:j.message||'Dein Backtimer ist abgelaufen.',tag:j.id,url:'/'}),{TTL:600,timeout:10000});
+   const interval=Number(j.repeat_hours||0)*3600000;const next=interval?new Date(new Date(j.due_at).getTime()+(Math.floor((Date.now()-new Date(j.due_at).getTime())/interval)+1)*interval).toISOString():null;
+   await db('sourdough_push_jobs?id=eq.'+j.id+'&state=eq.sending&claimed_at=eq.'+encodeURIComponent(j.claimed_at),'PATCH',interval?{state:'pending',due_at:next,attempts:0,claimed_at:null}:{state:'sent'});sent++;
   }catch(error){const status=(error as {statusCode?:number}).statusCode;if(status===404||status===410){await db('sourdough_push_subscriptions?id=eq.'+j.subscription_id,'DELETE');}else await db('sourdough_push_jobs?id=eq.'+j.id,'PATCH',{state:j.attempts>=3?'failed':'pending'});}}
   return reply({sent});
  }

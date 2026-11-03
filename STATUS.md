@@ -7,3 +7,5 @@ Implementiert: 26 Katalogrezepte plus neun PDF-Planungsvorlagen, eigener Rezeptr
 Der ausführliche aktuelle Prüfstand einschließlich echter API-Tests mit zwei Testkonten und verbleibender Grenzen steht in [PDF_WORKFLOW_STATUS_2026-11-03.md](PDF_WORKFLOW_STATUS_2026-11-03.md). Frühere Aussagen zu pauschaler neunstündiger Starterreife und fehlender Kühlschrankgare sind überholt.
 
 Offen: E-Mail- und iPhone-Abnahme, Zahlungsfreigabe sowie fachliche Validierung aller Backabläufe. Keine vollständige Produktionsfreigabe behauptet.
+
+Weitere Funktionsumsetzung: [FEATURE_ACCEPTANCE_2026-11-03.md](FEATURE_ACCEPTANCE_2026-11-03.md).
