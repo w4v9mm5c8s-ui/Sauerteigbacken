@@ -1,7 +1,7 @@
 const MAX_BYTES=600_000;
 const MAX_ITEMS=2000;
-const lists=['history','shopping','starters','favorites','ownRecipes','pantry','communitySaved'];
-const allowed=new Set([...lists,'activeBake','parallelBakes','onboarded','updatedAt','exportedAt','backupVersion']);
+const lists=['history','shopping','starters','favorites','ownRecipes','pantry','communitySaved','chatMessages'];
+const allowed=new Set([...lists,'activeBake','parallelBakes','onboarded','updatedAt','exportedAt','backupVersion','recipeProfiles']);
 export function validateBackup(input){
  if(!input||typeof input!=='object'||Array.isArray(input))throw Error('Ungültige Sauerteig-Datensicherung');
  let raw;try{raw=JSON.stringify(input)}catch{throw Error('Datensicherung ist nicht lesbar')}
@@ -15,6 +15,7 @@ export function validateBackup(input){
  const checkBake=b=>b===null||b===undefined||typeof b==='object'&&!Array.isArray(b)&&typeof b.title==='string'&&b.title.length<=200&&Array.isArray(b.steps)&&b.steps.length>=1&&b.steps.length<=150&&b.steps.every(step=>step&&typeof step.title==='string'&&step.title.length<=180&&Number.isFinite(Number(step.at)));
  if(!checkBake(input.activeBake))throw Error('Aktiver Backtag in der Datensicherung ist ungültig');
  if(input.parallelBakes!==undefined&&(!Array.isArray(input.parallelBakes)||input.parallelBakes.length>24||!input.parallelBakes.every(b=>b!==null&&b!==undefined&&checkBake(b))))throw Error('Parallele Backtage in der Datensicherung sind ungültig');
+ if(input.recipeProfiles!==undefined&&(!input.recipeProfiles||typeof input.recipeProfiles!=='object'||Array.isArray(input.recipeProfiles)))throw Error('Ungültige Rezeptvorgaben');
  const clean=Object.fromEntries(Object.entries(JSON.parse(raw)).filter(([key])=>allowed.has(key)));
  for(const key of ['history','shopping','starters'])clean[key]??=[];
  clean.updatedAt=Date.now();
