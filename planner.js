@@ -54,13 +54,19 @@ export function makePlan(r,want,from,to,ready,preheatMinutes=45,absenceStart=nul
 }
 export function rescheduleRemaining(steps,index,delayMinutes,sleepFrom='22:00',sleepTo='07:00',options={}){
  if(!Number.isFinite(delayMinutes)||delayMinutes<0||delayMinutes>1440)throw Error('Bitte eine Verzögerung von 0 bis 1440 Minuten angeben');
- const remaining=steps.slice(index+1);
- if(!remaining.length)return steps;
- for(let extra=0;extra<7*1440;extra+=15){
- const delta=(delayMinutes+extra)*60000;
- if(remaining.some(s=>s.active&&Array.from({length:s.minutes||5},(_,i)=>unavailableAt(new Date(s.at+delta+i*60000),sleepFrom,sleepTo,options.awayFrom?new Date(options.awayFrom):null,options.awayTo?new Date(options.awayTo):null,options)).some(Boolean)))continue;
- if(remaining.some(s=>s.active&&(options.occupied||[]).some(o=>s.at+delta<o.at+(o.minutes||5)*60000&&o.at<s.at+delta+(s.minutes||5)*60000)))continue;
- return steps.map((s,i)=>i>index?{...s,at:s.at+delta}:s)
- }
- throw Error('Kein passender neuer Zeitplan gefunden. Bitte Schlafzeiten oder Backtermin ändern.');
+ const delta=delayMinutes*60000;
+ const proposed=steps.map((s,i)=>i>index&&!options.logs?.[i]?.completedAt?{...s,at:Number(s.at)+delta}:s);
+ const changed=proposed.filter((s,i)=>s!==steps[i]&&s.active);
+ if(changed.some(s=>Array.from({length:s.minutes||5},(_,i)=>unavailableAt(new Date(s.at+i*60000),sleepFrom,sleepTo,options.awayFrom?new Date(options.awayFrom):null,options.awayTo?new Date(options.awayTo):null,options)).some(Boolean)))throw Error('Die Verschiebung kollidiert mit Schlaf- oder Abwesenheitszeiten. Zeitfenster prüfen; die Gare wurde nicht verlängert.');
+ if(changed.some(s=>(options.occupied||[]).some(o=>s.at<Number(o.at)+(o.minutes||5)*60000&&Number(o.at)<s.at+(s.minutes||5)*60000)))throw Error('Die Verschiebung kollidiert mit einem anderen Backtag.');
+ return proposed;
+}
+// Only phase boundaries anchor a new schedule. Folds and checks do not restart fermentation.
+export function adjustAfterCompletion(record,index,completedAt,occupied=[]){
+ const step=record.steps[index];
+ if(record.autoAdjust===false||record.logs?.[index]?.completedAt||!['Teig mischen','Formen','Brot herausnehmen und Garzustand prüfen'].includes(step?.title))return {steps:record.steps,delay:0};
+ const delay=Math.floor((+new Date(completedAt)-(Number(step.at)+(step.minutes||0)*60000))/60000);
+ if(!Number.isFinite(delay)||delay<2)return {steps:record.steps,delay:0};
+ try{return {steps:rescheduleRemaining(record.steps,index,delay,record.sleepFrom||'22:00',record.sleepTo||'07:00',{...record.constraints,logs:record.logs,occupied}),delay}}
+ catch(e){return {steps:record.steps,delay:0,warning:e.message}}
 }

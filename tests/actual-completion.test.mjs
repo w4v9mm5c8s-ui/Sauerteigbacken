@@ -1,0 +1,13 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {adjustAfterCompletion,rescheduleRemaining} from '../planner.js';
+import {backtagView} from '../backtag.js';
+const at=+new Date('2030-06-04T10:00:00');
+const steps=[{title:'Teig mischen',at,minutes:15,active:true},{title:'Stockgare',at:at+15*60000,minutes:180,active:false},{title:'Formen',at:at+195*60000,minutes:20,active:true}];
+const record=()=>({steps,logs:{},sleepFrom:'22:00',sleepTo:'07:00'});
+test('actual mixing completion shifts fermentation and forming by exact lateness',()=>{const result=adjustAfterCompletion(record(),0,at+45*60000);assert.equal(result.delay,30);assert.equal(result.steps[1].at,at+45*60000);assert.equal(result.steps[2].at,steps[2].at+30*60000);assert.equal(result.steps[0],steps[0]);assert.equal(steps[1].at,at+15*60000)});
+test('completed future steps and repeated completion never move',()=>{const b=record();b.logs[2]={completedAt:new Date(at).toISOString()};const result=adjustAfterCompletion(b,0,at+45*60000);assert.equal(result.steps[2],steps[2]);b.logs[0]={completedAt:new Date(at).toISOString()};assert.equal(adjustAfterCompletion(b,0,at+90*60000).delay,0)});
+test('early completion and folds do not shorten or restart fermentation',()=>{assert.equal(adjustAfterCompletion(record(),0,at).steps,steps);const b=record();b.steps=[{...steps[0],title:'Stretch & Fold (1/2)'},...steps.slice(1)];assert.equal(adjustAfterCompletion(b,0,at+90*60000).steps,b.steps);b.autoAdjust=false;assert.equal(adjustAfterCompletion(b,0,at+90*60000).delay,0)});
+test('blocked windows report conflict without adding days of fermentation',()=>{const b=record();b.constraints={absenceWindows:[{from:new Date(steps[2].at+20*60000).toISOString(),to:new Date(steps[2].at+120*60000).toISOString()}]};const result=adjustAfterCompletion(b,0,at+45*60000);assert.ok(result.warning);assert.equal(result.steps,steps);assert.throws(()=>rescheduleRemaining(steps,0,30,'22:00','07:00',b.constraints),/kollidiert/)});
+test('another bake blocks exact reschedule',()=>{const result=adjustAfterCompletion(record(),0,at+45*60000,[{at:steps[2].at+30*60000,minutes:10}]);assert.match(result.warning,/anderen Backtag/);assert.equal(result.steps,steps)});
+test('photo comparison displays review action and escapes generated content',()=>{const esc=s=>String(s).replaceAll('<','&lt;').replaceAll('>','&gt;');const html=backtagView({...record(),title:'Test',logs:{0:{photoAnalysis:'<script>bad</script>'}}},esc,true);assert.match(html,/compareBefore/);assert.match(html,/compareAfter/);assert.match(html,/compareConsent/);assert.match(html,/acceptPhotoAnalysis/);assert.doesNotMatch(html,/<script>/);assert.doesNotMatch(backtagView({...record(),title:'Test'},esc,false),/compareBefore/)});

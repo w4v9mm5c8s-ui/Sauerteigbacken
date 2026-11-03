@@ -14,16 +14,22 @@ Quelle: aktuelle Sauerteigbrot.pdf, 41 Seiten, Upload vom 03.11.2026. Vollständ
 - Chatverlauf und persönliche Rezeptvorgaben gehen beim JSON-Backup nicht mehr verloren.
 - PDF-Weizenbrot: kalte Stückgare 12 h / 7 °C aus S. 26 ergänzt. Starter-Hydration 100 % ist auf S. 25 tatsächlich ausdrücklich belegt; frühere Kennzeichnung als reine Annahme korrigiert.
 
+## Ergänzung: tatsächliche Fertigzeiten und Fotovergleich
+- Verspätetes Mischen, Formen und Herausnehmen verschieben offene Folgeschritte um die tatsächliche Verspätung. Bereits erledigte Schritte bleiben unverändert. Früheres Abhaken verkürzt keine Gare. Abschaltbar pro Backtag.
+- Manuelle Verschiebungen überspringen keine Tage mehr zur Konfliktlösung; Konflikte mit Sperrzeiten oder anderen Backtagen werden angezeigt.
+- Vorher-/Nachher-Fotovergleich mit zwei Bildern, ausdrücklicher KI-Einwilligung, gespeicherter Einschätzung und separater Übernahme als Beobachtung. Keine automatische Änderung von Reifezeiten aus Bildern.
+- Automatische Tests decken tatsächliche Verzögerung, erledigte Schritte, wiederholten Abschluss, frühzeitiges Abhaken, Falten sowie Sperrzeiten und parallele Backtage ab. Der neue Fotovergleich ist noch nicht mit einem echten Testkonto gegen den KI-Dienst abgenommen.
+
 ## Bereits vorhanden
 Mehltabellen und Mischmengen, Starter-/Gärtabellen, Quellwasserbilanz, Gärkörbchengrößen, PDF-Backprogramm, neun PDF-Rezepte, drei Beispielpläne, 97 Wissenseinträge, 21 Ressourcen, sieben interaktive Lektionen mit 28 Zeichnungen; Backtage, Zeitverschiebung, private Fotos, KI, Import, Vorrat, Einkauf, Cloud-Konfliktauswahl und geplante Pushs. Vorhandensein ist kein Nachweis echter iPhone-Abnahme.
 
 ## Weiterhin nicht vollständig erfüllt
 - Physikalisch kalibrierter Wasser-Temperatur-Rechner einschließlich Knetwärme und unterschiedlichen Wärmekapazitäten.
-- Dedizierter Fotovergleich mit fachlich validierter Reifeauswertung und bestätigter Übernahme in den Backplan.
+- Fachlich validierte Reifeauswertung aus Fotos; der neue Vergleich ist eine unvalidierte KI-Einschätzung mit manueller Übernahme ins Protokoll.
 - Autor:innenprofile und vollständige mehrkontige Community-Abnahme.
 - Automatische Zusammenführung widersprüchlicher einzelner Datensätze; derzeit Bereichsauswahl.
 - Vollständig typisierte eigene Zutatenrollen, Vorstufen und Versionsvergleich; der Texteditor ersetzt keinen strukturierten Rezepteditor.
-- Flexible Ablaufabhängigkeiten und automatische Neuberechnung aller Phasen aus tatsächlichen Fertigzeiten; derzeit Vorbereitungskontrollen und manuelle Restzeitverschiebung.
+- Flexible Ablaufabhängigkeiten und automatische Neuberechnung aller Phasen aus tatsächlichen Fertigzeiten; derzeit Vorbereitungskontrollen, manuelle Restzeitverschiebung und automatische Anpassung an drei Phasengrenzen.
 - Keine Garantie eines passenden Plans bei unvereinbaren Sperrzeiten oder unbekannten Rezeptbedingungen.
 - Alle Originalbilder identisch übernommen bzw. alle Rezepte mit individuellen Fotos: nicht belegt.
 - Quellenlinks/ISBN und sämtliche FAQ fachlich unabhängig geprüft: nicht vollständig.
