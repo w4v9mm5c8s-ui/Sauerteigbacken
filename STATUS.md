@@ -9,3 +9,7 @@ Der ausführliche aktuelle Prüfstand einschließlich echter API-Tests mit zwei 
 Offen: E-Mail- und iPhone-Abnahme, Zahlungsfreigabe sowie fachliche Validierung aller Backabläufe. Keine vollständige Produktionsfreigabe behauptet.
 
 Weitere Funktionsumsetzung: [FEATURE_ACCEPTANCE_2026-11-03.md](FEATURE_ACCEPTANCE_2026-11-03.md).
+
+## Weitere Korrekturen, 03.11.2026
+
+231 automatisierte Tests bestanden. Rezeptabhängige Autolyse für Toast/Joghurt, benannte zusätzliche Quellstücke, anpassbare Quellhinweise, zwölf Stunden Auskühlzeit für PDF-Roggenbrot und Kühlschranktemperatur im Arbeitsschritt korrigiert. Quellen und Ergänzungshinweise erscheinen auch direkt beim Rezept. Fehlende PDF-Werte sind inzwischen als belegte Werte oder ausdrücklich gekennzeichnete Planungsannahmen ergänzt; die ältere Aussage zu Pflichtlücken ist überholt.

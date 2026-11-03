@@ -21,6 +21,6 @@ test('the hero stays fully visible and watercolor icons have no colored backgrou
  assert.match(html,/src="\/design\/hero-aquarell.png"/);
 });
 test('a new cache version picks up the transparent replacement files on iOS',()=>{
- assert.match(src('sw.js').toString(),/sauerteig-public-v38/);
- assert.match(src('index.html').toString(),/app\.js\?v=38/);
+ assert.match(src('sw.js').toString(),/sauerteig-public-v39/);
+ assert.match(src('index.html').toString(),/app\.js\?v=39/);
 });

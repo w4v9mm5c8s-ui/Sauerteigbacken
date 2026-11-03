@@ -18,7 +18,7 @@ test('every design graphic is an actual local PNG with valid dimensions',()=>{
   assert.ok(sw.includes("'"+path+"'"),name+' offline cache');
  }
  assert.match(server,/\.png':'image\/png'/);
- assert.match(sw,/sauerteig-public-v38/);
+ assert.match(sw,/sauerteig-public-v39/);
 });
 test('the immediately visible and dynamic home display identical PNG illustrations',()=>{
  const html=read('index.html'),live=homeView({signed:false,history:[],parked:[],active:null,recipes:[]});

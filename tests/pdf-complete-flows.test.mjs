@@ -21,3 +21,18 @@ test('researched defaults carry sources, preserve PDF quantities and produce fee
  }
  assert.match(pdfPlanRecipes().find(r=>r.id==='pdf-proteinbrot').sourceNote,/Versuchsrezept/);
 });
+test('special recipe instructions survive form conversion and scheduling',()=>{
+ for(const [id,expected] of [['pdf-toast',/Mehl, Milch und Honig/],['pdf-joghurt',/Mehle, Wasser und Joghurt/]]){
+ const f=prepare(pdfPlanRecipes().find(r=>r.id===id));const p=makePlan(f.recipe,f.finish,'00:00','00:00',true,60,null,null,f.options);
+ assert.match(p.steps.find(s=>s.title==='Autolyse ansetzen').detail,expected);
+ }
+ const f=prepare(pdfPlanRecipes().find(r=>r.id==='pdf-roggen1150'));const p=makePlan(f.recipe,f.finish,'00:00','00:00',true,60,null,null,f.options);
+ assert.equal(p.steps.find(s=>s.title==='Auskühlen lassen').minutes,720);
+ assert.match(p.steps.find(s=>s.title==='Auskühlen lassen').detail,/720/);
+});
+test('additional soaker has its actual ingredient and duration-independent cooling guidance',()=>{
+ const r=pdfPlanRecipes().find(r=>r.id==='pdf-dinkel-koerner');r.soaker.hours=8;r.additionalSoaker={name:'Haferflocken',grams:30,water:30,hours:4};
+ const p=makePlan(r,new Date('2030-01-10T20:00'),'00:00','00:00',true);
+ assert.ok(p.steps.some(s=>/30 g Haferflocken mit 30 g/.test(s.detail)));
+ assert.ok(!p.steps.some(s=>/12 Stunden/.test(s.detail)));
+});
