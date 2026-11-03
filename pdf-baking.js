@@ -38,7 +38,7 @@ function listFlours(entries){
 }
 function factorOf(entries,table,key){const byName=new Map(table.map(x=>[x.name,x]));let sum=0,total=0,unknown=[];
  for(const e of entries){const n=required(e.grams,'Mehlmenge',.1,20000),row=byName.get(e.name);if(!row||!Number.isFinite(Number(row[key]))){unknown.push(e.name);continue}sum+=n*Number(row[key]);total+=n}
- return {factor:unknown.length||!total?null:sum/total,unknown};
+ return {factor:unknown.length||!total?null:sum/total/100,unknown};
 }
 export function estimateStarterPeak({ratio='1:2:2',temperature=22,type='Weizen',observations=[]}={}){
  const temp=required(temperature,'Temperatur',-10,70),table=PDF_PEAK[ratio];if(!table)throw Error('Fütterungsverhältnis aus der PDF-Tabelle auswählen.');

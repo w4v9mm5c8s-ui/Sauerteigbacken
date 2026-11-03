@@ -18,7 +18,7 @@ test('four quality ratings are included in statistics',()=>{
 test('planner accepts user-defined starter maturity',()=>{
  const p=makePlan(recipes[0],new Date(Date.now()+6*86400000),'23:00','06:00',false,45,null,null,{starterHours:12,mode:'warm',foldCount:1,foldInterval:50});
  assert.ok(p);assert.match(p.assumptions,/12 h/);
- assert.equal(p.steps.filter(x=>x.title.startsWith('Teig falten')).length,1);
+ assert.equal(p.steps.filter(x=>/^(Stretch & Fold|Coil Fold)/.test(x.title)).length,1);
 });
 test('resource catalog includes books, blogs and channels',()=>{
  const data=JSON.parse(readFileSync(new URL('../resources.json',import.meta.url),'utf8'));
