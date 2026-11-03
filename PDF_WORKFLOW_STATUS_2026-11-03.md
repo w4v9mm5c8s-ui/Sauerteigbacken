@@ -20,3 +20,11 @@ Offene Abnahme:
 - Vollständiger authentifizierter Browserdurchlauf einschließlich E-Mail-Bestätigung, privatem Foto, KI-Auswertung und Kontolöschung.
 - Echte Stripe-Zahlungen: derzeit nur Sandbox verbunden; Live-Konto und freigegebene Preise fehlen. Keine echten Zahlungen aktiviert.
 - Interaktive Anleitungen sind schematische Lernhilfen, keine validierten Backversuche. Quellenlücken bleiben sichtbar.
+
+## Nachprüfung: Sitzungswechsel
+- Behoben: verspätete API-Antworten und Sitzungserneuerungen nach Abmeldung/Kontowechsel; parallele Erneuerungen teilen jetzt eine Anfrage.
+- Foto-Uploads prüfen das ursprüngliche Konto vor und nach dem Upload; Gäste planen keine Push-Jobs.
+- Kontolöschung leert jetzt auch Refresh-Token und Berechtigungszustand.
+- 216 Tests bestanden, darunter vier ausgeführte Tests mit gezielt verzögerten Antworten.
+- Live geprüft: Foto-Bucket privat, INSERT/SELECT/UPDATE/DELETE auf eigenen Kontopfad beschränkt. 17 erfolgreiche Cron-Ausführungen im betrachteten Zeitraum.
+- Weiterhin offen: Kontodurchlauf mit Anmeldung und tatsächlich zugestellter iPhone-Push. Passwort-Leak-Prüfung laut Supabase Advisor nicht aktiviert; keine passende Konfigurationsfunktion im verfügbaren Connector.
