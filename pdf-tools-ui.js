@@ -1,3 +1,4 @@
+import {lessonsMenu} from './interactive-lessons.js';
 import {PDF_PEAK,PDF_STOCK,PDF_PROOF,PDF_COLD_PROOF,PDF_BANNETON,PDF_SOAKER_RATIOS,PDF_LESSONS,estimateStarterPeak,estimateFermentation,checkBanneton,calculateStarterFeed,waterBalance,standardBakePhases,seedWaterRatio} from './pdf-baking.js';
 const escDefault=x=>String(x).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const field=(id,label,value,type='number',other='')=>'<label for="'+id+'">'+label+'</label><input id="'+id+'" type="'+type+'" '+other+' value="'+value+'">';
@@ -8,7 +9,7 @@ export function pdfToolsView(flourTable=[],esc=escDefault){
  const soakers=PDF_SOAKER_RATIOS.flatMap(g=>g.names.map(name=>[name,name+' ('+g.label+')']));
  const lessons=PDF_LESSONS.map(g=>'<details class="pdf-lesson"><summary>'+esc(g.name)+' <small>PDF S. '+g.pages+'</small></summary><p>'+esc(g.intro)+'</p><ol>'+g.steps.map(s=>'<li>'+esc(s)+'</li>').join('')+'</ol></details>').join('');
  const opts=['1:1:1','1:2:2','1:3:3','1:5:5','1:10:10'];
- return '<header class="pdf-tool-intro"><span class="studio-overline">DEIN SAUERTEIG-WERKZEUGKASTEN</span><h2>Backwissen & Rechner</h2><p>Originalwerte aus der Sauerteig-PDF, nachvollziehbar gerechnet. Reife und Temperaturen immer am Teig kontrollieren.</p></header>'+
+ return lessonsMenu()+'<header class="pdf-tool-intro"><span class="studio-overline">DEIN SAUERTEIG-WERKZEUGKASTEN</span><h2>Backwissen & Rechner</h2><p>Originalwerte aus der Sauerteig-PDF, nachvollziehbar gerechnet. Reife und Temperaturen immer am Teig kontrollieren.</p></header>'+
  '<section class="card pdf-tool-card"><h3>Starter richtig füttern</h3><p>Ermittelt die neue Hydration und einen Reife-Richtwert aus dem PDF (S. 11–12).</p>'+
  field('pdfOldMass','Altes Anstellgut (g)',50)+field('pdfOldHyd','Bisherige Hydration (%)',100)+
  select('pdfRatio','Fütterungsverhältnis',opts)+select('pdfStarterKind','Starterart',['Weizen','Roggen'])+field('pdfStarterTemp','Reifetemperatur (18–24 °C)',21)+

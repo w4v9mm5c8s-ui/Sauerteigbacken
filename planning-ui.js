@@ -9,9 +9,10 @@ const num=(v,f=0)=>Number.isFinite(Number(v))?Number(v):f;
 export function planningView(r,esc,now,flourTable=[],starters=[]){
  if(!r)return '<section class="card">Bitte zuerst ein Rezept auswählen.</section>';
  const date=new Date(now.getTime()+2*86400000),pad=n=>String(n).padStart(2,'0'),local=date.getFullYear()+'-'+pad(date.getMonth()+1)+'-'+pad(date.getDate())+'T'+pad(date.getHours())+':'+pad(date.getMinutes());
- const field=(label,id,value,opts='')=>'<label for="'+id+'">'+label+'</label><input id="'+id+'" '+opts+' value="'+esc(value)+'">';
+ const field=(label,id,value,opts='')=>'<label for="'+id+'">'+label+'</label><input id="'+id+'" '+opts+' value="'+esc(value??'')+'">';
+ const mean=values=>values?.[0]==null?'':(values[0]+values[1])/2;
  const flour=r.flours.reduce((a,f)=>a+f.grams,0),total=doughWeight(r);
- return '<section class="card"><h2>'+esc(r.title)+'</h2><p class="muted">Du kannst die vorgeschlagenen Mengen und Zeiten anpassen.</p><details open><summary>1. Gebäck und Menge</summary>'+
+ return '<section class="card"><h2>'+esc(r.title)+'</h2>'+(r.sourceNote?'<p>'+esc(r.sourceNote)+'</p>':'')+'<p class="muted">Du kannst die vorgeschlagenen Mengen und Zeiten anpassen.</p><details open><summary>1. Gebäck und Menge</summary>'+
  field('Name deines Backtags','bakeName',r.title,'maxlength="120"')+
  field('Anzahl fertige Brote','loaves',1,'type="number" min="1" max="24"')+
  field('Mehlmenge je Brot (g)','flourPerLoaf',Math.round(flour),'type="number" min="50" max="10000"')+field('Gewünschtes fertiges Brotgewicht je Brot (g, optional)','finishedWeight','','type="number" min="100" max="10000"')+field('Angenommener Backverlust (%)','bakeLoss',12,'type="number" min="0" max="30" step="0.5"')+
@@ -19,7 +20,7 @@ export function planningView(r,esc,now,flourTable=[],starters=[]){
  '<details open><summary>2. Mehl und Zutaten</summary>'+
  '<div id="planFlours">'+r.flours.map((f,i)=>planFlourRow(f,i,flourTable,esc)).join('')+'</div>'+
  '<button type="button" class="plan-flour-add" data-act="planFlourAdd">+ Weiteres Mehl hinzufügen</button>'+
- '<label class="plan-ingredients-automatic"><input id="planAutoIngredients" type="checkbox" checked> Bei Änderungen der Mehle Wasser, Starter und Salz nach Mehltabelle berechnen</label>'+
+ '<label class="plan-ingredients-automatic"><input id="planAutoIngredients" type="checkbox" '+(r.source==='PDF'?'':'checked')+'> Bei Änderungen der Mehle Wasser, Starter und Salz nach Mehltabelle berechnen</label>'+
  
  field('Gesamtes Rezeptwasser inklusive Quell- und Brühwasser (g)','waterAmount',r.water,'type="number" min="0" max="30000"')+
  field('Salz (g)','saltAmount',r.salt,'type="number" min="0" max="1000"')+
@@ -28,7 +29,7 @@ export function planningView(r,esc,now,flourTable=[],starters=[]){
  field('Reifer Starter (g)','starterAmount',r.starter.grams,'type="number" min="0" max="10000"')+
  (starters.length?'<label for="starterProfile">Gespeicherten Starter aus „Ich“ auswählen</label><select id="starterProfile"><option value="">Ohne gespeicherten Starter</option>'+starters.map((st,i)=>'<option value="'+i+'">'+esc(st.name||'Starter')+' ('+esc(st.type||'Weizen')+')</option>').join('')+'</select>':'')+
  '<label>Starter oder Anstellgut</label><select id="starterType"><option '+(r.starter.type==='Weizen'?'selected':'')+'>Weizen</option><option '+(r.starter.type==='Roggen'?'selected':'')+'>Roggen</option><option>Dinkel</option></select>'+
- field('Hydration des Starters (%)','starterHydration',r.starter.hydration||100,'type="number" min="20" max="250"')+
+ field('Hydration des Starters (%)','starterHydration',r.source==='PDF'?(r.starter.hydration??''):(r.starter.hydration||100),'type="number" min="20" max="250"')+
  '<label>Fütterungsverhältnis</label><select id="feedRatio"><option>1:2:2</option><option>1:1:1</option><option>1:3:3</option><option>1:5:5</option></select>'+
  '<label><input id="starterReady" type="checkbox" style="width:auto"> Starter ist bereits reif</label>'+
  field('Starter-Reifezeit in Stunden (optional)','starterHours','','type="number" min="1" max="72" step="0.5" placeholder="Aus PDF-Tabelle oder persönliche Erfahrung"')+'<div id="pdfStarterPeakHint" class="muted small"></div>'+
@@ -40,13 +41,17 @@ export function planningView(r,esc,now,flourTable=[],starters=[]){
  field('Kühlschranktemperatur (°C, optional)','fridgeTemp','','type="number" min="0" max="15" step="0.5"')+
  '</details><details><summary>5. Gare und Equipment</summary>'+
  '<label>Gare</label><select id="proofMode"><option value="auto">Passende Gare automatisch wählen</option><option value="warm">Stückgare</option><option value="cold" '+(!r.cold?'disabled':'')+'>Kühlschrankgare'+(!r.cold?' (für dieses Rezept nicht hinterlegt)':'')+'</option></select>'+
- field('Stockgare (Stunden)','stockHours',((r.stock[0]+r.stock[1])/2),'type="number" min="0.5" max="48" step="0.25"')+
- field('Stückgare (Stunden)','proofHours',((r.proof[0]+r.proof[1])/2),'type="number" min="0.25" max="48" step="0.25"')+
+ (r.saltNote?'<p>'+esc(r.saltNote)+'</p>':'')+(r.liquidNote?'<p>'+esc(r.liquidNote)+'</p>':'')+
+ (r.requiresColdBulk?field('Kalte Stockgare über Nacht (Stunden; eigene Angabe)','coldBulkHours','','type="number" min="1" max="48"'): '')+
+ (r.soaker?field('Quellzeit des Rezept-Quellstücks (Stunden)','recipeSoakerHours',r.soaker.hours,'type="number" min="0.25" max="48" step="0.25"'):'')+
+ (!r.bake.length?field('Backtemperatur (°C; eigene Angabe)','recipeBakeTemp','','type="number" min="80" max="300"')+field('Backdauer (Minuten; eigene Angabe)','recipeBakeMinutes','','type="number" min="5" max="240"'):'')+
+ field('Stockgare (Stunden)','stockHours',mean(r.stock),'type="number" min="0.5" max="48" step="0.25"')+
+ field('Stückgare (Stunden)','proofHours',mean(r.proof),'type="number" min="0.25" max="48" step="0.25"')+
  '<label class="pdf-reference-toggle"><input id="planAutoTimes" type="checkbox"> PDF-Referenzzeiten nach Mehl/Temperatur vorschlagen (nur Referenzbedingungen)</label><div class="muted small" id="pdfTimingReference" aria-live="polite">PDF-Zeitvergleich nach Eingabe der Temperaturen verfügbar.</div>'+
- field('Faltabstand (Minuten)','foldInterval',40,'type="number" min="10" max="240"')+
- field('Anzahl Faltvorgänge','foldCount',r.starter.type==='Weizen'?2:0,'type="number" min="0" max="8"')+
+ field('Faltabstand (Minuten)','foldInterval',r.foldInterval||40,'type="number" min="10" max="240"')+
+ field('Anzahl Faltvorgänge','foldCount',r.foldCount??(r.starter.type==='Weizen'?2:0),'type="number" min="0" max="8"')+
  field('Vorheizen (Minuten)','preheat',60,'type="number" min="15" max="120"')+
- '<label>Backgerät</label><select id="equipment"><option>Backblech</option><option>Backstein</option><option>Gusseisentopf</option><option>Backform</option><option>Airfryer</option></select>'+
+ '<label>Backgerät</label><select id="equipment"><option>Backblech</option><option>Backstein</option><option>Gusseisentopf</option><option>Backform</option><option'+(r.equipment==='Airfryer'?' selected':'')+'>Airfryer</option></select>'+
  '<label>Gärkörbchen</label><select id="basketShape"><option value="round">Rund</option><option value="oval">Oval</option><option value="none">Keines</option></select><div id="basketHint" class="muted small"></div>'+
  '<label class="pdf-reference-toggle"><input id="pdfBakeStandard" type="checkbox"> PDF-Standardbackprogramm 230/210 °C und 97 °C Kerntemperatur verwenden (nur geeignete Brote)</label>'+
  '<label>Ofenladungen</label><input id="ovenLoads" type="number" min="1" max="12" value="1"></details><details><summary>Altbrot und Quellstück</summary>'+field('Altbrot (g, optional)','altbrot',0,'type="number" min="0" max="1000"')+'<label>Quellwasser für Altbrot</label><select id="altbrotRatio"><option value="3">3 × Altbrot (Standard)</option><option value="2">2 × Altbrot (Einlagen-Tabelle)</option></select>'+'<label for="soakerKind">Saaten-/Schrotart für Quellstück</label><select id="soakerKind"><option value="">Keine Saat/kein Schrot</option>'+PDF_SOAKER_RATIOS.flatMap(group=>group.names.map(name=>'<option value="'+esc(name)+'">'+esc(name)+' ('+group.label+')</option>')).join('')+'</select>'+field('Zusätzliches Quellstück (g)','soakerAmount',0,'type="number" min="0" max="5000"')+field('Zusätzliches Quellwasser (g)','soakerWater',0,'type="number" min="0" max="5000"')+'<label class="pdf-reference-toggle"><input id="autoSoakerWater" type="checkbox" checked> Quellwasser automatisch nach PDF-Tabelle berechnen (50–200 %)</label>'+field('Quellzeit (Stunden)','soakerHours',12,'type="number" min="0.25" max="48" step="0.25"')+
@@ -73,6 +78,11 @@ export function readPlanningForm(r,get){
  if([altbrot,soakerAmount,soakerWater,brewFlour,brewWater].some(x=>!Number.isFinite(x)||x<0))throw Error('Bitte Quell-/Brühstückmengen prüfen.');
  const soakerKind=val('soakerKind');
  if(soakerAmount>0&&!soakerKind)throw Error('Bitte eine Quellstück-Art auswählen.');if(!soakerAmount&&soakerWater>0)throw Error('Quellwasser ohne Quellstück ist nicht möglich.');
+ if(val('saltAmount')===''||val('starterHydration')==='')throw Error('Bitte Salzmenge und Starter-Hydration ergänzen.');
+ if(!(n('stockHours')>0)||!(n('proofHours')>0))throw Error('Bitte Stock- und Stückgare aus deiner Erfahrung ergänzen.');
+ if(r.requiresColdBulk&&!(n('coldBulkHours')>=1&&n('coldBulkHours')<=48))throw Error('Bitte Dauer der kalten Stockgare angeben.');
+ if(r.soaker&&!(n('recipeSoakerHours')>0&&n('recipeSoakerHours')<=48))throw Error('Bitte Quellzeit angeben.');
+ if(!r.bake.length&&!(n('recipeBakeTemp')>=80&&n('recipeBakeTemp')<=300&&n('recipeBakeMinutes')>=5&&n('recipeBakeMinutes')<=240))throw Error('Bitte Backtemperatur und Backdauer ergänzen.');
  const baseWater=n('waterAmount'),salt=n('saltAmount'),starter=n('starterAmount'),starterHydration=n('starterHydration');
  const inheritedSeeds=r.soaker?.items||[],inheritedMass=inheritedSeeds.reduce((sum,x)=>sum+x.grams,0),inheritedWater=inheritedMass?Number(r.soaker.water)||0:0;
  const balance=waterBalance({flours,totalWater:baseWater,starter,starterHydration,altbrot,altbrotRatio:n('altbrotRatio'),
@@ -83,7 +93,7 @@ export function readPlanningForm(r,get){
  if(targetRaw!==null&&targetRaw<=0)throw Error('Das Zielgewicht muss positiv sein.');
  const factor=targetRaw!==null?targetRaw/rawTotal:per*loaves/original;
  if(!Number.isFinite(factor)||factor<=0)throw Error('Die Zielmenge lässt sich nicht berechnen.');
- const ingredients={...r,flours:flours.map(f=>({...f,grams:Math.round(f.grams*factor*10)/10})),water:Math.round(balance.mainWater*factor*10)/10,salt:Math.round(n('saltAmount')*factor*10)/10,starter:{...r.starter,type:val('starterType'),hydration:starterHydration,grams:Math.round(n('starterAmount')*factor*10)/10},extras:[...(inheritedWater?[{name:'Rezept-Quellwasser',grams:inheritedWater*factor,role:'teig'}]:[]),...(r.extras||[]).map(x=>({...x,grams:Math.round(x.grams*factor*10)/10})), ...(altbrot?[{name:'Altbrot',grams:altbrot*factor,role:'teig'},{name:'Altbrot-Quellwasser',grams:balance.altbrotWater*factor,role:'teig'}]:[]), ...(soakerAmount?[{name:soakerKind,grams:soakerAmount*factor,role:'teig'},{name:'Quellwasser',grams:soakerWater*factor,role:'teig'}]:[]), ...(brewFlour?[{name:'Brühwasser',grams:brewWater*factor,role:'teig'}]:[])],altbrot:altbrot?{grams:altbrot*factor,water:balance.altbrotWater*factor,hours:12}:null,soaker:soakerAmount?{hours:n('soakerHours'),water:soakerWater*factor,grams:soakerAmount*factor,name:soakerKind}:r.soaker?{...r.soaker,water:inheritedWater*factor,items:inheritedSeeds.map(x=>({...x,grams:x.grams*factor}))}:null,additionalSoaker:soakerAmount&&r.soaker?{...r.soaker,water:inheritedWater*factor,items:inheritedSeeds.map(x=>({...x,grams:x.grams*factor}))}:null,brew:brewFlour?{flour:brewFlour*factor,water:brewWater*factor,coolMinutes:n('brewCoolMinutes')}:null,waterBalance:{...balance,...Object.fromEntries(['flourMass','totalRecipeWater','mainWater','soakerWater','altbrotWater','brewWater','starterWater','starterFlour','doughMass','reserve'].map(key=>[key,Math.round(balance[key]*factor*10)/10]))},stock:[n('stockHours'),n('stockHours')],proof:[n('proofHours'),n('proofHours')]};
+ const ingredients={...r,coldBulkHours:r.requiresColdBulk?n('coldBulkHours'):null,bake:r.bake.length?r.bake:[{temp:n('recipeBakeTemp'),min:n('recipeBakeMinutes')}],flours:flours.map(f=>({...f,grams:Math.round(f.grams*factor*10)/10})),water:Math.round(balance.mainWater*factor*10)/10,salt:Math.round(n('saltAmount')*factor*10)/10,starter:{...r.starter,type:val('starterType'),hydration:starterHydration,grams:Math.round(n('starterAmount')*factor*10)/10},extras:[...(inheritedWater?[{name:'Rezept-Quellwasser',grams:inheritedWater*factor,role:'teig'}]:[]),...(r.extras||[]).map(x=>({...x,grams:Math.round(x.grams*factor*10)/10})), ...(altbrot?[{name:'Altbrot',grams:altbrot*factor,role:'teig'},{name:'Altbrot-Quellwasser',grams:balance.altbrotWater*factor,role:'teig'}]:[]), ...(soakerAmount?[{name:soakerKind,grams:soakerAmount*factor,role:'teig'},{name:'Quellwasser',grams:soakerWater*factor,role:'teig'}]:[]), ...(brewFlour?[{name:'Brühwasser',grams:brewWater*factor,role:'teig'}]:[])],altbrot:altbrot?{grams:altbrot*factor,water:balance.altbrotWater*factor,hours:12}:null,soaker:soakerAmount?{hours:n('soakerHours'),water:soakerWater*factor,grams:soakerAmount*factor,name:soakerKind}:r.soaker?{...r.soaker,hours:n('recipeSoakerHours'),water:inheritedWater*factor,items:inheritedSeeds.map(x=>({...x,grams:x.grams*factor}))}:null,additionalSoaker:soakerAmount&&r.soaker?{...r.soaker,hours:n('recipeSoakerHours'),water:inheritedWater*factor,items:inheritedSeeds.map(x=>({...x,grams:x.grams*factor}))}:null,brew:brewFlour?{flour:brewFlour*factor,water:brewWater*factor,coolMinutes:n('brewCoolMinutes')}:null,waterBalance:{...balance,...Object.fromEntries(['flourMass','totalRecipeWater','mainWater','soakerWater','altbrotWater','brewWater','starterWater','starterFlour','doughMass','reserve'].map(key=>[key,Math.round(balance[key]*factor*10)/10]))},stock:[n('stockHours'),n('stockHours')],proof:[n('proofHours'),n('proofHours')]};
  if(n('starterHydration')<20||n('starterHydration')>250)throw Error('Starter-Hydration muss zwischen 20 und 250 % liegen');if([ingredients.water,ingredients.salt,ingredients.starter.grams].some(x=>!Number.isFinite(x)||x<0))throw Error('Bitte die Zutatenmengen prüfen');
  const finish=new Date(val('finish'));if(!Number.isFinite(+finish))throw Error('Bitte ein gültiges Datum eingeben');
  const awayFrom=val('awayFrom')?new Date(val('awayFrom')):null,awayTo=val('awayTo')?new Date(val('awayTo')):null;

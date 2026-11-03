@@ -1,0 +1,9 @@
+import {PDF_LESSONS} from './pdf-baking.js';
+const esc=x=>String(x).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+export function lessonView(id,index=0){
+ const lesson=PDF_LESSONS.find(x=>x.id===id)||PDF_LESSONS[0];const step=Math.max(0,Math.min(lesson.steps.length-1,Number(index)||0));
+ const height=[18,38,66,28][step%4];
+ const diagram=lesson.id==='falten'?'<path d="M60 65 Q150 5 240 65" fill="none" stroke="#a96f73" stroke-width="7"/><path d="M225 40 L240 65 L215 67" fill="none" stroke="#a96f73" stroke-width="7"/>':lesson.id==='ofen'?'<path d="M30 30 H105 V60 H270" fill="none" stroke="#a96f73" stroke-width="7"/>':'<path d="M50 90 V15 M250 15 V90 H50" fill="none" stroke="#8b7768" stroke-width="3"/><path d="M52 88 V'+(88-height)+' Q150 '+(65-height)+' 248 '+(88-height)+' V88Z" fill="#dfba8d"/>';
+ return '<section class="card"><h3>'+esc(lesson.name)+'</h3><p>Schritt '+(step+1)+' von '+lesson.steps.length+' · PDF S. '+lesson.pages+'</p><svg viewBox="0 0 300 110" role="img" aria-label="Schematische Lernillustration">'+diagram+'</svg><p aria-live="polite"><strong>'+esc(lesson.steps[step])+'</strong></p><progress max="'+lesson.steps.length+'" value="'+(step+1)+'"></progress><div class="cols"><button data-act="lesson:'+lesson.id+':'+Math.max(0,step-1)+'" '+(!step?'disabled':'')+'>Zurück</button><button data-act="lesson:'+lesson.id+':'+Math.min(lesson.steps.length-1,step+1)+'" '+(step===lesson.steps.length-1?'disabled':'')+'>Weiter</button></div><label><input type="checkbox" data-lesson-done="'+lesson.id+'"> Anleitung ausprobiert</label><p>Die Darstellung ist schematisch. Entscheidend ist der tatsächliche Teigzustand.</p></section>';
+}
+export function lessonsMenu(){return '<section class="card"><h3>Interaktiv üben</h3>'+PDF_LESSONS.map(l=>'<button data-act="lesson:'+l.id+':0">'+esc(l.name)+'</button>').join('')+'</section><div id="lessonStage">'+lessonView('kneten')+'</div>';}

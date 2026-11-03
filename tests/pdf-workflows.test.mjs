@@ -60,3 +60,7 @@ test('catalog flours resolve to the PDF table and original seed soakers survive 
  const plan=makePlan(out,new Date('2030-01-10T20:00'),'00:00','00:00',true);
  assert.match(plan.steps.find(s=>s.title==='Quellstück ansetzen').detail,/120 g Sonnenblumenkerne/);
 });
+
+test('missing starter observations cannot silently turn into a nine hour forecast',()=>{
+ assert.throws(()=>makePlan(recipe,new Date('2030-01-10T20:00'),'00:00','00:00',false),/Keine passende Starterprognose/);
+});
