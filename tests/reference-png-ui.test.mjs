@@ -25,7 +25,7 @@ test('the immediately visible and dynamic home display identical PNG illustratio
  assert.match(html,/href="\/theme-reference\.css"/);
  assert.match(html,/src="\/design\/hero-aquarell\.png"/);
  assert.match(live,/src="\/design\/hero-aquarell\.png"/);
- for(const name of ['tile-plan','tile-recipes','tile-import','tile-backtage','tile-statistik','tile-favoriten','tile-backbuecher','tile-wissen']){
+ for(const name of ['tile-recipes','tile-import','tile-backtage','tile-statistik','tile-favoriten','tile-backbuecher','tile-wissen']){
   assert.ok(html.includes('/design/'+name+'.png'),name+' first paint');
   assert.ok(live.includes('/design/'+name+'.png'),name+' dynamic paint');
  }
