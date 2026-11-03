@@ -3,7 +3,7 @@ export function ingredientPhases(r){
  const phases={};const add=(phase,name,grams)=>{if(Number(grams)>0)(phases[phase]??=[]).push({name,grams:Math.round(grams*10)/10})};
  const flourTotal=r.flours.reduce((n,f)=>n+f.grams,0),basePhase=r.autolyse?'Autolyse ansetzen':'Teig mischen';
  for(const f of r.flours)add(basePhase,f.name,f.grams-(r.brew?.flour||0)*f.grams/flourTotal);
- add(basePhase,'Wasser für den Hauptteig',r.water);
+ const autoWater=r.autolyse?r.water*(r.autolyseWaterFraction??1):0;add(basePhase,'Wasser für den Hauptteig',r.autolyse?autoWater:r.water);if(r.autolyse)add('Teig mischen','Zurückbehaltenes Wasser',r.water-autoWater);
  add('Teig mischen','Reifer '+r.starter.type+'starter',r.starter.grams);add('Teig mischen','Salz',r.salt);
  for(const x of r.extras||[]){if(/wasser/i.test(x.name)||r.altbrot&&x.name==='Altbrot'||x.name===r.soaker?.name||x.name===r.additionalSoaker?.name)continue;add(['fuellung','füllung','belag','topping'].includes(x.role)?'Formen':r.autolyse&&/Milch|Honig|Joghurt/i.test(x.name)?basePhase:'Teig mischen',x.name,x.grams)}
  for(const s of [r.soaker,r.additionalSoaker].filter(Boolean)){for(const x of s.items||[{name:s.name,grams:s.grams}])add('Quellstück ansetzen',x.name,x.grams);add('Quellstück ansetzen','Quellwasser',s.water)}

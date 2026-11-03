@@ -36,3 +36,8 @@ test('starter log controls address original indices and expose the complete PDF 
  const html=starterListView([{logs:Array.from({length:7},(_,i)=>({date:String(i),peakHours:3,ratio:'1:1:1',temperature:22}))}]);
  assert.match(html,/starterLogEdit:0:6/);assert.match(html,/starterLogDelete:0:2/);assert.doesNotMatch(html,/starterLogDelete:0:0/);assert.match(html,/1:10:10/);
 });
+import {readFileSync} from 'node:fs';
+test('recipe water reserved for later mixing is not added during autolyse',()=>{
+ const r=JSON.parse(readFileSync(new URL('../recipes.json',import.meta.url))).find(r=>r.id==='starter-weizen-landbrot');const p=ingredientPhases(r);
+ assert.equal(p['Autolyse ansetzen'].find(x=>x.name.includes('Wasser')).grams,330);assert.equal(p['Teig mischen'].find(x=>x.name==='Zurückbehaltenes Wasser').grams,20);
+});
