@@ -5,7 +5,7 @@ import {homeView} from '../home.js';
 import {recipePhotoPath} from '../recipe-gallery.js';
 
 const read=name=>readFileSync(new URL('../'+name,import.meta.url),'utf8');
-const names=['hero-aquarell','tile-plan','tile-recipes','tile-import','tile-backtage','tile-statistik','tile-favoriten','tile-backbuecher','tile-wissen','tile-einkauf','photo-landbrot','photo-vollkorn','photo-bauernbrot','photo-helles','photo-saaten','photo-kasten','photo-krume','photo-rustikal','photo-brezeln','photo-baguette','photo-bagels','photo-focaccia','photo-pizza','photo-zimtschnecken'];
+const names=['hero-aquarell','tile-recipes','tile-import','tile-backtage','tile-statistik','tile-favoriten','tile-backbuecher','tile-wissen','tile-einkauf','photo-landbrot','photo-vollkorn','photo-bauernbrot','photo-helles','photo-saaten','photo-kasten','photo-krume','photo-rustikal','photo-brezeln','photo-baguette','photo-bagels','photo-focaccia','photo-pizza','photo-zimtschnecken'];
 
 test('every design graphic is an actual local PNG with valid dimensions',()=>{
  const server=read('server.mjs'),sw=read('sw.js');
