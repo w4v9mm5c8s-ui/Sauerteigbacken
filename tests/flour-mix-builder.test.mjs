@@ -84,5 +84,6 @@ test('the actual app sends its starter management under Ich and keeps the two fl
  assert.match(app,/recipeBuilder:\(\)=>recipeBuilderView/);
  assert.match(app,/bakeChoice:\(\)=>bakeChoiceView/);
  assert.match(app,/planFlourAdd/);
+ assert.match(readFileSync(new URL('../hub.js',import.meta.url),'utf8'),/data-act="planFromRecipe"/);
  assert.match(app,/refreshPlanBlendPreview/);
 });
