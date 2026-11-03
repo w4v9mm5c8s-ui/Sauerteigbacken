@@ -7,6 +7,7 @@ export const isDoughIngredient=item=>!NON_DOUGH_ROLES.has(String(item?.role||'te
 export function doughWeight(recipe){
  if(!recipe||!Array.isArray(recipe.flours)||!recipe.starter)return null;
  const parts=[...recipe.flours.map(f=>Number(f.grams)),Number(recipe.water),Number(recipe.salt),Number(recipe.starter.grams),
+  ...(recipe.soaker?.items||[]).map(x=>Number(x.grams)),...(recipe.additionalSoaker?.items||[]).map(x=>Number(x.grams)),
   ...(recipe.extras||[]).filter(isDoughIngredient).map(x=>Number(x.grams))];
  return parts.every(v=>Number.isFinite(v)&&v>=0)?parts.reduce((a,b)=>a+b,0):null;
 }

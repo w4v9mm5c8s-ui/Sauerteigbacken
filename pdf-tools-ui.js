@@ -36,7 +36,7 @@ export function pdfToolsView(flourTable=[],esc=escDefault){
  '<p class="pdf-source-note">PDF-Quellen sind als Seitenangaben hinterlegt. Die Tabelle ist eine Praxishilfe, kein Messgerät; fehlende Werte werden nicht erfunden. Abweichende Altbrot-Angaben bleiben wählbar.</p>';
 }
 export function pdfToolCalculation(action,form,flourTable=[],esc=escDefault){
- const num=id=>Number(form[id]??0),s=id=>String(form[id]??''),one=name=>({name,grams:500}),grams=id=>num(id);
+ const num=id=>Number(form[id]??0),s=id=>String(form[id]??''),one=name=>[{name,grams:500}],grams=id=>num(id);
  if(action==='pdfFeed'){const feed=calculateStarterFeed({oldStarter:num('pdfOldMass'),oldHydration:num('pdfOldHyd'),ratio:s('pdfRatio')});
   const peak=estimateStarterPeak({ratio:s('pdfRatio'),temperature:num('pdfStarterTemp'),type:s('pdfStarterKind')});
   return '<strong>Fütterung:</strong> '+feed.oldStarter+' g alter Starter + '+feed.addedFlour+' g Mehl + '+feed.addedWater+' g Wasser = '+feed.total+' g. Neue Hydration: <strong>'+feed.newHydration+' %</strong>.'+
