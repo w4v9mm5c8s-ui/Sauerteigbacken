@@ -1,5 +1,6 @@
 import {doughWeight} from './dough-weight.js';
 import {readBackup,makeBackup} from './backup.js';
+import {AUTH_REDIRECT_URL,normalizedAuthEmail,validateAuthFields,readableAuthError,parseAuthReturn,authView} from './auth-ui.js';
 import {recipeCards,recipePicker,filterRecipeLibrary,recipeCategoryOptions,recipePhotoPath} from './recipe-gallery.js';
 import {homeView,bakingDaysView} from './home.js';
 import {bakeCalendar} from './calendar.js';
@@ -25,7 +26,7 @@ import {knowledgeView,problemsView,setKnowledgeCards,knowledgeResults} from './k
 import {ownRecipesView,normalizeExtractedRecipe} from './own-recipes.js';
 import {backtagView} from './backtag.js';
 import {makePlan,rescheduleRemaining} from './planner.js';
-let historicalRecipes=[],communityRows=[],resources=[],sourceConflicts=[],flourTable=[],recipes=[],current=null,tab='start',user=null,token='',refreshToken='',cfg={},scale=1,moderator=false,editingOwn=null,onboardingStep=0,planOrigin='recipeSelect',blendDraft=null;
+let historicalRecipes=[],communityRows=[],resources=[],sourceConflicts=[],flourTable=[],recipes=[],current=null,tab='start',user=null,token='',refreshToken='',cfg={},scale=1,moderator=false,editingOwn=null,onboardingStep=0,planOrigin='recipeSelect',blendDraft=null,authMode='login',authEmail='',authError='',authNotice='',authRecovery=false,authPending=false;
 const $=s=>document.querySelector(s),escape=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const actionIcons={favorites:'heart',plan:'calendar',hub:'bread',recipes:'library',community:'users',shopping:'basket',knowledge:'book',starters:'flask',pantry:'wheat',buddy:'chat',own:'book',history:'history',stats:'chart',calculator:'calculator',problem:'help',import:'upload'};
 const button=(label,action)=>'<button data-act="'+action+'">'+(actionIcons[action]?icon(actionIcons[action],18)+' ':'')+escape(label)+'</button>';
@@ -34,8 +35,129 @@ const signInGate=message=>box('<h2>Anmeldung erforderlich</h2><p>'+escape(messag
 
 const note=t=>{const x=$('#toast');x.textContent=t;x.style.display='block';setTimeout(()=>x.style.display='none',4000)};
 async function request(url,method='GET',data,retry=true){const r=await fetch(url,{method,headers:{'Content-Type':'application/json',...(token?{Authorization:'Bearer '+token}:{})},...(data?{body:JSON.stringify(data)}:{})});const j=await r.json().catch(()=>({}));if(r.status===401&&retry&&refreshToken){await renewSession();return request(url,method,data,false)}if(!r.ok)throw Error(j.error||j.error_description||j.msg||'Fehler');return j}
-async function auth(path,data){const u=cfg.supabaseUrl+'/auth/v1/'+path;const r=await fetch(u,{method:'POST',headers:{apikey:cfg.supabaseKey,'Content-Type':'application/json'},body:JSON.stringify(data)});const j=await r.json().catch(()=>({}));if(!r.ok)throw Error(j.error_description||j.msg||j.message||'Anmeldung fehlgeschlagen');return j}
-async function renewSession(){const j=await auth('token?grant_type=refresh_token',{refresh_token:refreshToken});if(!j.access_token)throw Error('Sitzung abgelaufen. Bitte neu anmelden.');token=j.access_token;refreshToken=j.refresh_token||refreshToken;user=j.user||user;sessionStorage.setItem('sauerteig-session',JSON.stringify({token,refreshToken,user}));return j}
+const AUTH_SESSION_KEY='sauerteig-session';
+function saveAuthSession(){const saved=JSON.stringify({token,refreshToken,user});sessionStorage.setItem(AUTH_SESSION_KEY,saved);localStorage.setItem(AUTH_SESSION_KEY,saved)}
+function clearAuthSession(){sessionStorage.removeItem(AUTH_SESSION_KEY);localStorage.removeItem(AUTH_SESSION_KEY);sessionStorage.removeItem('sauerteig-recovery-pending')}
+function readAuthSession(){try{return JSON.parse(sessionStorage.getItem(AUTH_SESSION_KEY)||localStorage.getItem(AUTH_SESSION_KEY)||'null')}catch{return null}}
+let authConfigPromise=null;
+async function ensureAuthConfig(){
+ if(cfg.supabaseUrl&&cfg.supabaseKey)return cfg;
+ if(!authConfigPromise)authConfigPromise=loadApiConfig().then(value=>{cfg=value;return value}).finally(()=>{authConfigPromise=null});
+ return authConfigPromise;
+}
+async function auth(path,data){
+ const config=await ensureAuthConfig(),u=config.supabaseUrl+'/auth/v1/'+path;
+ let response;
+ try{response=await fetch(u,{method:'POST',headers:{apikey:config.supabaseKey,'Content-Type':'application/json'},body:JSON.stringify(data),signal:AbortSignal.timeout(25000)})}
+ catch(e){throw Error('Serververbindung unterbrochen: '+(e.message||'Netzwerkfehler'))}
+ const result=await response.json().catch(()=>({}));
+ if(!response.ok){const e=new Error(result.error_description||result.msg||result.message||'Authentifizierung fehlgeschlagen');e.code=result.code||result.error_code||result.error||'';throw e}
+ return result;
+}
+async function renewSession(){const j=await auth('token?grant_type=refresh_token',{refresh_token:refreshToken});if(!j.access_token)throw Error('Sitzung abgelaufen. Bitte neu anmelden.');token=j.access_token;refreshToken=j.refresh_token||refreshToken;user=j.user||user;saveAuthSession();return j}
+async function acceptAuthSession(result){
+ if(!result?.access_token||!result?.refresh_token)throw Error('Bestätigungslink enthält keine gültige Sitzung.');
+ const config=await ensureAuthConfig();
+ const check=await fetch(config.supabaseUrl+'/auth/v1/user',{headers:{apikey:config.supabaseKey,Authorization:'Bearer '+result.access_token},signal:AbortSignal.timeout(20000)});
+ if(!check.ok)throw Error('Die Sitzung konnte nicht bestätigt werden.');
+ const verifiedUser=await check.json();
+ if(!verifiedUser?.id)throw Error('Die Benutzerinformationen konnten nicht geladen werden.');
+ token=result.access_token;refreshToken=result.refresh_token;user=verifiedUser;
+ saveAuthSession();
+}
+async function submitAuthForm(){
+ if(authPending)return;
+ const mode=authMode,email=normalizedAuthEmail($('#email')?.value||authEmail);
+ const password=$('#password')?.value||'',confirmation=$('#confirmPassword')?.value||'';
+ authEmail=email;
+ const validation=validateAuthFields(mode,{email,password,confirmation});
+ if(validation){authError=validation;authNotice='';render();return}
+ authError='';authNotice='';
+ const submitButton=document.querySelector('#authForm button[type="submit"]');
+ authPending=true;if(submitButton){submitButton.disabled=true;submitButton.textContent='Wird verarbeitet …'}
+ try{
+  if(mode==='login'){
+   const result=await auth('token?grant_type=password',{email,password});
+   await acceptAuthSession(result);
+   authMode='login';authRecovery=false;tab='account';authNotice='Erfolgreich angemeldet.';
+   await syncOnLogin();await refreshBilling();render();return
+  }
+  if(mode==='signup'){
+   const result=await auth('signup?redirect_to='+encodeURIComponent(AUTH_REDIRECT_URL),{email,password});
+   if(result.access_token&&result.refresh_token){
+    await acceptAuthSession(result);authMode='login';tab='account';authRecovery=false;authNotice='Konto erstellt und angemeldet.';
+    await syncOnLogin();await refreshBilling()
+   }else{
+    authMode='pendingSignup';tab='account';authNotice='Die Bestätigungsmail wurde angefordert. Prüfe auch den Spamordner.'
+   }
+   render();return
+  }
+  if(mode==='forgot'){
+   await auth('recover?redirect_to='+encodeURIComponent(AUTH_REDIRECT_URL),{email});
+   authMode='pendingReset';tab='account';authNotice='Falls ein Konto existiert, wird eine E-Mail versendet.';
+   render();return
+  }
+  if(mode==='newPassword'){
+   if(!authRecovery||!token)throw Error('Der Passwort-Link wurde noch nicht bestätigt oder ist abgelaufen.');
+   const config=await ensureAuthConfig();
+   const response=await fetch(config.supabaseUrl+'/auth/v1/user',{
+    method:'PUT',headers:{apikey:config.supabaseKey,Authorization:'Bearer '+token,'Content-Type':'application/json'},
+    body:JSON.stringify({password}),signal:AbortSignal.timeout(20000)
+   });
+   const result=await response.json().catch(()=>({}));
+   if(!response.ok){const error=new Error(result.msg||result.message||'Passwort konnte nicht geändert werden.');error.code=result.code||result.error;throw error}
+   authRecovery=false;sessionStorage.removeItem('sauerteig-recovery-pending');authMode='login';tab='account';authNotice='Dein neues Passwort wurde gespeichert. Du bist angemeldet.';
+   saveAuthSession();render();return
+  }
+ }catch(e){authError=readableAuthError(e);authNotice='';render()}
+ finally{authPending=false}
+}
+async function resendAuthConfirmation(){
+ if(authPending)return;
+ const email=normalizedAuthEmail($('#email')?.value||authEmail);
+ authEmail=email;
+ const validation=validateAuthFields('forgot',{email});
+ if(validation){authError=validation;render();return}
+ authPending=true;
+ try{
+  await auth('resend?redirect_to='+encodeURIComponent(AUTH_REDIRECT_URL),{email,type:'signup'});
+  authMode='pendingSignup';authError='';authNotice='Ein neuer Bestätigungslink wurde angefordert. Prüfe dein Postfach und den Spamordner.';
+ }catch(e){authError=readableAuthError(e);authNotice=''}
+ finally{authPending=false;render()}
+}
+function scrubAuthReturnFromAddress(){
+ try{const next=new URL(location.href);next.hash='';
+  for(const key of ['access_token','refresh_token','token_hash','token','type','error','error_code','error_description','code'])next.searchParams.delete(key);
+  history.replaceState(null,'',next.pathname+next.search)
+ }catch{}
+}
+async function processAuthReturn(){
+ const callback=parseAuthReturn(location.hash,location.search);
+ if(callback.kind==='none')return false;
+ if(callback.kind==='error'){
+  authMode='linkError';authError=readableAuthError({code:callback.errorCode,message:callback.errorDescription});authNotice='';tab='account';
+  scrubAuthReturnFromAddress();return true
+ }
+ if(callback.kind==='unsupported-code'){
+  authMode='linkError';authError='Dieser Link stammt aus einem nicht unterstützten Bestätigungsablauf. Fordere bitte einen neuen Bestätigungs- oder Passwort-Link an.';authNotice='';tab='account';
+  scrubAuthReturnFromAddress();return true
+ }
+ try{
+  const result=callback.kind==='verify'?
+   await auth('verify',{type:callback.type,token_hash:callback.tokenHash}):
+   {access_token:callback.accessToken,refresh_token:callback.refreshToken};
+  await acceptAuthSession(result);
+  authRecovery=callback.type==='recovery';
+  if(authRecovery)sessionStorage.setItem('sauerteig-recovery-pending','1');else sessionStorage.removeItem('sauerteig-recovery-pending');
+  authMode=authRecovery?'newPassword':'login';tab='account';authError='';
+  authNotice=authRecovery?'':'E-Mail-Adresse bestätigt. Du bist jetzt angemeldet.';
+  scrubAuthReturnFromAddress();
+  if(!authRecovery){await syncOnLogin();await refreshBilling()}
+ }catch(e){
+  authMode='linkError';authError=readableAuthError(e);authNotice='';tab='account';scrubAuthReturnFromAddress()
+ }
+ return true;
+}
 function localDateInput(d){const pad=n=>String(n).padStart(2,'0');return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate())+'T'+pad(d.getHours())+':'+pad(d.getMinutes())}
 function render(){document.body.dataset.page=tab;document.querySelectorAll('[data-icon]').forEach(e=>{e.innerHTML=icon(e.dataset.icon,24)});const activeNav=['start','hub','buddy','account'].includes(tab)?tab:['shopping','pantry','starters','onboarding','billing'].includes(tab)?'account':'hub';document.querySelectorAll('nav button').forEach(b=>{const active=b.dataset.tab===activeNav;b.classList.toggle('active',active);if(active)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current')});$('#pageTitle').textContent=({start:'Start',recipes:current?.title||'Rezepte',plan:'Dein Backplan',buddy:'KI-Buddy',account:'Ich',billing:'Sauerteig Plus',shopping:'Einkaufsliste',starters:'Meine Starter',community:'Community-Backbuch',hub:'Womit legen wir los?',bakingDays:'Meine Backtage',recipeSelect:'Rezept auswählen',bakeChoice:'Jetzt backen',recipeBuilder:'Eigenes Rezept berechnen',onboarding:'Einrichtung',calculator:'Rechner',knowledge:'Wissen',favorites:'Favoriten',historical:'Historische Rezepte',resources:'Weiterführende Quellen',conflicts:'Quellenkonflikte',problem:'Problem lösen',stats:'Meine Backstatistik',import:'Rezept importieren',history:'Meine Brote',pantry:'Meine Mehle & Vorrat',moderation:'Community prüfen',own:'Meine Rezepte',backtag:'Dein Backtag'})[tab]||'Backen mit Sauerteig';$('#main').innerHTML=(tab==='start'?'':'<button class="back-button" data-act="back">'+icon('arrow-left',18)+' Zurück</button>')+pages[tab]();if(tab==='backtag'){updateTimer();loadStepPhoto()}if(tab==='recipeBuilder'){restoreBlendDraft();refreshBlendPreview()}if(tab==='plan'){try{const draft=JSON.parse(sessionStorage.getItem('sauerteig-plan-draft')||'{}');for(const [id,v] of Object.entries(draft)){const el=document.getElementById(id);if(el){if(el.type==='checkbox')el.checked=!!v;else el.value=v}}}catch{}}}
 const activeKey=()=>user?.id?'sourdough-active-'+user.id:'sourdough-active-guest';
@@ -71,7 +193,7 @@ recipeSelect:()=>recipePicker(recipesForPlanning(),escape),
 recipes:()=>current?button('← Alle Rezepte','clear')+box('<img class="recipe-detail-photo" src="'+recipePhotoPath(current)+'" alt="KI-generiertes Beispielbild" loading="lazy"><h2>'+escape(current.title)+'</h2><p class="muted">'+escape(current.yieldLabel)+' · '+escape(current.category)+'</p><label>Mengenfaktor</label><select id="scale"><option value="1">Normal</option><option value="0.5">Halb</option><option value="2">Doppelt</option></select><h3>Zutaten</h3>'+[...current.flours.map(x=>[x.name,x.grams]),['Wasser',current.water],['Salz',current.salt],[current.starter.type+'starter',current.starter.grams],...current.extras.map(x=>[x.name,x.grams])].map(x=>'<div class="row line"><span>'+escape(x[0])+'</span><strong>'+Math.round(x[1]*scale)+' g</strong></div>').join('')+'<h3>Zubereitung</h3>'+current.steps.map((s,i)=>'<div class="step">'+(i+1)+'. '+escape(s)+'</div>').join('')+'<p class="muted">Gärzeiten sind Richtwerte. Beurteile den Teigzustand.</p>'+button('Backtag planen','plan')+button('Rezept drucken','printRecipe')+(user?button('Zur Einkaufsliste','addShopping')+'<button class="favorite-toggle '+((local().favorites||[]).includes(current.id)?'is-favorite':'')+'" data-act="favorite:'+escape(current.id)+'">'+icon('heart',18)+' '+((local().favorites||[]).includes(current.id)?'Aus Favoriten entfernen':'Als Favorit merken')+'</button>':'')):(box('<div class="illustrated-section"><div><span class="hero-kicker">REZEPTSAMMLUNG</span><h2>Meine Rezepte</h2></div><div class="recipe-toolbar"><button type="button" data-act="focusRecipeSearch" aria-label="Rezepte suchen">'+icon('search',20)+'</button><button type="button" data-act="own" aria-label="Eigenes Rezept hinzufügen">'+icon('plus',20)+'</button></div><img src="/design/tile-backtage.png" alt="" loading="lazy" width="70" height="65"></div>','recipe-banner')+box('<label for="search">Rezept suchen</label><input id="search" placeholder="Rezept oder Mehl suchen …">'+recipeCategoryOptions(recipesForPlanning(),escape)+(!recipes.length?'<button class="studio-retry" data-act="reloadCatalog">Rezeptbibliothek erneut laden</button>':'')+'<div id="recipeResults" class="recipe-gallery">'+recipeCards(recipesForPlanning(),escape,'recipe',user?(local().favorites||[]):[])+'</div>')),
 plan:()=>planningView(current||recipes[0],escape,new Date(),flourTable,local().starters||[]),
 buddy:()=>user?box('<img class="buddy-watercolor" src="/art-buddy.svg" alt="" loading="lazy" decoding="async"><div class="chat" id="messages"></div><label>Stelle dem KI-Buddy eine Frage</label><textarea id="question" placeholder="Was möchtest du wissen?"></textarea><label>Foto (optional)</label><input id="photo" type="file" accept="image/jpeg,image/png,image/webp"><label><input type="checkbox" id="consent" style="width:auto"> Ich stimme der KI-Auswertung meiner Angaben zu.</label>'+button('Senden','sendBuddy')+'<details><summary>Rezeptfoto importieren</summary><input type="file" id="recipePhoto" accept="image/jpeg,image/png,image/webp">'+button('Rezept auslesen','extract')+'</details>'):box('<p>Für den KI-Buddy ist eine Anmeldung nötig.</p>'+button('Anmelden','account')),
-account:()=>user?personalStartersPreview(local().starters,escape)+box('<h2>Angemeldet</h2><p>'+escape(user.email)+'</p>'+'<div class="stack">'+button('Meine Mehle & Vorrat','pantry')+button('Einkaufsliste','shopping')+button('Wissen','knowledge')+button('Sauerteig Plus','billing')+'</div>'+button('Cloud-Sicherung','push')+button('Cloud-Daten laden','pull')+button('Daten exportieren','exportData')+'<label for="backupFile">Datensicherung importieren</label><input id="backupFile" type="file" accept=".json,application/json">'+button('Datensicherung laden','importData')+button('Konto und Daten löschen','deleteAccount')+button('Abmelden','logout')):box('<h2>Anmelden</h2><label>E-Mail</label><input id="email" type="email"><label>Passwort</label><input id="password" type="password">'+button('Anmelden','login')+button('Registrieren','signup')+button('Passwort zurücksetzen','reset')),
+account:()=>user&&!authRecovery?(authNotice?'<p class="auth-feedback auth-notice" role="status">'+escape(authNotice)+'</p>':'')+personalStartersPreview(local().starters,escape)+box('<h2>Angemeldet</h2><p>'+escape(user.email)+'</p>'+'<div class="stack">'+button('Meine Mehle & Vorrat','pantry')+button('Einkaufsliste','shopping')+button('Wissen','knowledge')+button('Sauerteig Plus','billing')+'</div>'+button('Cloud-Sicherung','push')+button('Cloud-Daten laden','pull')+button('Daten exportieren','exportData')+'<label for="backupFile">Datensicherung importieren</label><input id="backupFile" type="file" accept=".json,application/json">'+button('Datensicherung laden','importData')+button('Konto und Daten löschen','deleteAccount')+button('Abmelden','logout')):authView(authMode,{email:authEmail,error:authError,notice:authNotice},escape),
 shopping:()=>user?box('<div class="illustrated-section"><div><span class="hero-kicker">DEIN EINKAUF</span><h2>Einkaufsliste</h2></div><img src="/design/tile-einkauf.png" alt="" width="150" height="115" loading="lazy"></div><div class="shopping-add"><label for="shopNewName" class="sr-only">Zutat hinzufügen</label><input id="shopNewName" placeholder="Zutat hinzufügen …" maxlength="100"><label for="shopNewGrams" class="sr-only">Menge in Gramm</label><input id="shopNewGrams" type="number" min="1" step="1" placeholder="g" aria-label="Menge in Gramm" style="max-width:64px"><button data-act="addShoppingManual" aria-label="Zutat hinzufügen">+</button></div><div id="shop"></div>'+button('Liste teilen','share')):signInGate('Diese Funktion speichert persönliche Backdaten. Bitte melde dich an.'),
 starters:()=>user?box('<img class="section-watercolor" src="/art-starter.svg" alt="Aquarell eines Sauerteigglases"><h2>Meine Starter</h2><div id="starters"></div><label>Name</label><input id="starterName" placeholder="z. B. Wilma">'+'<label>Starterart</label><select id="newStarterType"><option>Weizen</option><option>Roggen</option><option>Dinkel</option></select><label>Verwendetes Mehl (optional)</label><input id="newStarterFlour" maxlength="90" placeholder="z. B. Weizenmehl Type 550"><label>Hydration (%)</label><input id="newStarterHydration" type="number" min="20" max="250" value="100"><label>Fütterungsverhältnis</label><select id="starterRatio"><option>1:2:2</option><option>1:1:1</option><option>1:3:3</option><option>1:5:5</option></select>'+button('Starter hinzufügen','addStarter')):signInGate('Diese Funktion speichert persönliche Backdaten. Bitte melde dich an.'),
 backtag:()=>backtagView(getActive(),escape,!!user)+(getParked().length?box('<h3>Weitere laufende Backtage</h3>'+getParked().map((b,i)=>'<button class="item" data-act="switchBake:'+i+'">'+escape(b.title)+' · Schritt '+(b.index+1)+' von '+b.steps.length+'</button>').join('')):''),
@@ -213,12 +335,27 @@ if(a.startsWith('ownDelete:')){const d=local();d.ownRecipes=d.ownRecipes||[];d.o
 if(a==='ownFetchUrl'){const url=$('#ownImportUrl')?.value?.trim();if(!url)throw Error('Bitte Rezeptlink eingeben');const j=await request('/api/recipe-url','POST',{url});$('#ownImportText').value=j.text;if(j.structuredRecipe){$('#ownTitle').value=j.structuredRecipe.title;$('#ownIngredients').value=j.structuredRecipe.ingredients.join('\n');$('#ownSteps').value=j.structuredRecipe.steps.join('\n');note('Rezeptdaten übernommen. Mengen, Gärzeiten und Backtemperatur vor dem Speichern prüfen.')}else note('Rezepttext geladen. Prüfe ihn und starte bei Bedarf die KI-Auswertung.');return}
 if(a==='ownImport'){if(!$('#ownImportConsent').checked)throw Error('Bitte KI-Auswertung erlauben');const text=$('#ownImportText').value.trim(),image=await readImage($('#ownImportPhoto').files[0]);if(!text&&!image)throw Error('Bitte Rezepttext oder Foto auswählen');const j=await request('/api/recipe-extract','POST',{text,image});const r=normalizeExtractedRecipe(j.recipe);$('#ownTitle').value=r.title;$('#ownIngredients').value=r.ingredients;$('#ownSteps').value=r.steps;note('Rezept ausgelesen. Bitte vor dem Speichern überprüfen.');return}
 if(a==='addStarter'){const name=$('#starterName').value.trim(),hydration=Number($('#newStarterHydration').value);if(!name||!Number.isFinite(hydration)||hydration<20||hydration>250)throw Error('Bitte Name und gültige Starter-Hydration eingeben');const d=local();d.starters.push({name,type:$('#newStarterType').value,flourName:$('#newStarterFlour')?.value.trim().slice(0,90)||'',hydration,ratio:$('#starterRatio').value,logs:[]});save(d);render();starters();return}
-if(a==='login'||a==='signup'){const email=$('#email').value,password=$('#password').value;const j=await auth(a==='login'?'token?grant_type=password':'signup?redirect_to='+encodeURIComponent(location.origin+'/'),{email,password});if(j.access_token){token=j.access_token;refreshToken=j.refresh_token||'';user=j.user;sessionStorage.setItem('sauerteig-session',JSON.stringify({token,refreshToken,user}))}if(j.access_token){await syncOnLogin();await refreshBilling();if(!local().onboarded)tab='onboarding'}note(a==='signup'?'Bitte Bestätigungsmail prüfen':'Angemeldet');render();return}
-if(a==='reset'){await auth('recover?redirect_to='+encodeURIComponent(location.origin+'/'),{email:$('#email').value});note('Wenn die Adresse registriert ist, wird eine E-Mail versendet.');return}
+if(a.startsWith('authMode:')){
+ authEmail=normalizedAuthEmail($('#email')?.value||authEmail);
+ authMode=a.slice('authMode:'.length);authError='';authNotice='';tab='account';render();return
+}
+if(a.startsWith('authToggle:')){
+ const id=a.slice('authToggle:'.length);
+ const input=document.getElementById(id),button=originElement?.closest('button');
+ if(!input||!button)return;
+ const visible=input.type==='password';input.type=visible?'text':'password';
+ button.textContent=visible?'Verbergen':'Anzeigen';button.setAttribute('aria-label',visible?'Passwort verbergen':'Passwort anzeigen');button.setAttribute('aria-pressed',String(visible));
+ return
+}
+if(a==='authSubmit'){await submitAuthForm();return}
+if(a==='authResend'){await resendAuthConfirmation();return}
+if(a==='login'||a==='signup'||a==='reset'){
+ authMode=a==='reset'?'forgot':a==='signup'?'signup':'login';authError='';authNotice='';tab='account';render();return
+}
 if(a==='importData'){if(!user)throw Error('Bitte anmelden');const data=await readBackup(document.getElementById('backupFile')?.files?.[0]);if(!confirm('Die importierten Daten ersetzen deine bisherigen persönlichen Backdaten. Möchtest du fortfahren?'))return;if(data.activeBake)localStorage.setItem(activeKey(),JSON.stringify(data.activeBake));else localStorage.removeItem(activeKey());if(data.parallelBakes?.length)localStorage.setItem(parkedKey(),JSON.stringify(data.parallelBakes));else localStorage.removeItem(parkedKey());save(data);note('Datensicherung importiert. Cloud-Abgleich wird gestartet.');tab='account';render();return}
 if(a==='exportData'){const snapshot=makeBackup(local(),getActive(),getParked());const blob=new Blob([JSON.stringify(snapshot,null,2)],{type:'application/json'});const u=URL.createObjectURL(blob);const link=document.createElement('a');link.href=u;link.download='sauerteig-daten.json';link.click();setTimeout(()=>URL.revokeObjectURL(u),5000);return}
-if(a==='deleteAccount'){if(prompt('Zum endgültigen Löschen deines Kontos und deiner Daten schreibe: KONTO LÖSCHEN')!=='KONTO LÖSCHEN')return;const r=await fetch(cfg.supabaseUrl+'/functions/v1/delete-sourdough-account',{method:'POST',headers:{Authorization:'Bearer '+token,apikey:cfg.supabaseKey,'Content-Type':'application/json'},body:JSON.stringify({confirm:'KONTO LÖSCHEN'})});if(!r.ok){const j=await r.json().catch(()=>({}));throw Error(j.error||'Konto konnte nicht gelöscht werden. Bitte später erneut versuchen.')}localStorage.removeItem(storageKey());sessionStorage.removeItem('sauerteig-session');user=null;token='';render();note('Konto gelöscht');return}
-if(a==='logout'){try{await fetch(cfg.supabaseUrl+'/auth/v1/logout',{method:'POST',headers:{apikey:cfg.supabaseKey,Authorization:'Bearer '+token}})}catch{}user=null;token='';refreshToken='';billingStatus={enabled:false,plus:false,status:'unavailable'};sessionStorage.removeItem('sauerteig-session');render();return}
+if(a==='deleteAccount'){if(prompt('Zum endgültigen Löschen deines Kontos und deiner Daten schreibe: KONTO LÖSCHEN')!=='KONTO LÖSCHEN')return;const r=await fetch(cfg.supabaseUrl+'/functions/v1/delete-sourdough-account',{method:'POST',headers:{Authorization:'Bearer '+token,apikey:cfg.supabaseKey,'Content-Type':'application/json'},body:JSON.stringify({confirm:'KONTO LÖSCHEN'})});if(!r.ok){const j=await r.json().catch(()=>({}));throw Error(j.error||'Konto konnte nicht gelöscht werden. Bitte später erneut versuchen.')}localStorage.removeItem(storageKey());clearAuthSession();user=null;token='';render();note('Konto gelöscht');return}
+if(a==='logout'){try{await fetch(cfg.supabaseUrl+'/auth/v1/logout',{method:'POST',headers:{apikey:cfg.supabaseKey,Authorization:'Bearer '+token}})}catch{}user=null;token='';refreshToken='';billingStatus={enabled:false,plus:false,status:'unavailable'};clearAuthSession();render();return}
 if(a==='push'){await request('/api/sync','PUT',{payload:local()});note('Cloud-Sicherung abgeschlossen');return}
 if(a==='pull'){const j=await request('/api/sync');if(j.payload){save(j.payload);note('Cloud-Daten geladen')}return}
 if(a==='sendBuddy'){if(!$('#consent').checked)throw Error('Bitte der KI-Auswertung zustimmen');const question=$('#question').value,image=await readImage($('#photo').files[0]);const active=getActive();const context=active?'\nAktueller Backtag: '+active.title+'\nAktueller Schritt: '+(active.steps?.[active.index]?.title||'')+'\nRaumtemperatur: '+(active.temperatures?.room??'unbekannt')+' °C\nLetzte Beobachtung: '+(active.logs?.[active.index]?.note||'keine'):'';const j=await request('/api/buddy','POST',{question:question+context,image});$('#messages').innerHTML+='<div class="msg user">'+escape(question)+'</div><div class="msg">'+escape(j.answer)+'</div>';$('#question').value='';return}
@@ -235,6 +372,8 @@ function showCommunity(){const el=$('#community');if(!el)return;el.innerHTML=ren
 async function community(){try{const j=await request('/api/community');communityRows=j.recipes||[];showCommunity()}catch{$('#community').textContent='Community gerade nicht erreichbar'}}
 document.addEventListener('input',e=>{if(['communitySearch','communityBreadType','communityHydMin','communityHydMax','communityMaxHours'].includes(e.target.id))showCommunity()});
 document.addEventListener('change',e=>{if(['communityFlour','communityDifficulty','communitySort','communitySavedOnly','communityStarter'].includes(e.target.id))showCommunity()});
+document.addEventListener('submit',e=>{if(e.target.id==='authForm'){e.preventDefault();action('authSubmit')}});
+document.addEventListener('input',e=>{if(e.target.id==='email'&&e.target.closest('#authForm'))authEmail=normalizedAuthEmail(e.target.value)});
 document.addEventListener('click',e=>{const a=e.target.closest('[data-act]')?.dataset.act||e.target.closest('[data-tab]')?.dataset.tab;if(a)action(a,e.target)});
 document.addEventListener('input',e=>{if(e.target.id==='pickRecipeSearch'){const needle=e.target.value.toLocaleLowerCase('de-DE');const found=recipesForPlanning().filter(r=>r.title.toLocaleLowerCase('de-DE').includes(needle));const list=document.getElementById('pickRecipeResults');if(list)list.innerHTML=recipeCards(found,escape,'selectForPlan')}});
 const refreshRecipeResults=()=>{const category=document.getElementById('recipeCategory')?.value||'',gallery=document.getElementById('recipeResults');if(gallery)gallery.innerHTML=recipeCards(filterRecipeLibrary(recipesForPlanning(),document.getElementById('search')?.value||'',category),escape,'recipe',user?(local().favorites||[]):[]);document.querySelectorAll('.recipe-category-chip').forEach(chip=>chip.setAttribute('aria-pressed',String(chip.dataset.act==='recipeCat:'+category)))};
@@ -353,6 +492,22 @@ async function loadApiConfig(){
  }
  throw Error('Der Server ist noch nicht erreichbar');
 }
-(async()=>{try{render();try{const response=await fetch('/recipes.json',{cache:'no-cache'});if(response.ok){const list=await response.json();if(Array.isArray(list))recipes=list;}}catch{console.warn('Rezeptdaten aktuell nicht verfügbar')}try{flourTable=await(await fetch('/flour-table.json')).json()}catch{}try{resources=await(await fetch('/resources.json')).json();sourceConflicts=await(await fetch('/source-conflicts.json')).json();historicalRecipes=await(await fetch('/historical-recipes.json')).json()}catch{}try{setKnowledgeCards(await(await fetch('/knowledge-data.json')).json())}catch{}render();cfg=await loadApiConfig();const s=JSON.parse(sessionStorage.getItem('sauerteig-session')||'null');if(s){token=s.token;refreshToken=s.refreshToken||'';user=s.user;if(refreshToken){try{await renewSession()}catch{token='';user=null;refreshToken='';sessionStorage.removeItem('sauerteig-session')}}}const hash=new URLSearchParams(location.hash.slice(1));if(hash.get('access_token')){token=hash.get('access_token');refreshToken=hash.get('refresh_token')||'';const rr=await fetch(cfg.supabaseUrl+'/auth/v1/user',{headers:{apikey:cfg.supabaseKey,Authorization:'Bearer '+token}});if(rr.ok){user=await rr.json();sessionStorage.setItem('sauerteig-session',JSON.stringify({token,refreshToken,user}));history.replaceState(null,'',location.pathname);note('E-Mail bestätigt und angemeldet');await syncOnLogin();if(!local().onboarded)tab='onboarding'}}else if(user){await syncOnLogin()}if(user){await refreshBilling();const returned=new URLSearchParams(location.search).get('billing');if(returned==='success'||returned==='cancel'){tab='billing';history.replaceState(null,'',location.pathname);note(returned==='success'?'Zahlung wird geprüft. Dein Abo wird nach Bestätigung aktiviert.':'Zahlung abgebrochen.')}}render()}catch(e){console.warn('Sauerteig-Server aktuell nicht erreichbar:',e?.message||e);note('Serververbindung unterbrochen. Die Backstube bleibt geöffnet.')}})();
+(async()=>{try{render();try{const response=await fetch('/recipes.json',{cache:'no-cache'});if(response.ok){const list=await response.json();if(Array.isArray(list))recipes=list;}}catch{console.warn('Rezeptdaten aktuell nicht verfügbar')}try{flourTable=await(await fetch('/flour-table.json')).json()}catch{}try{resources=await(await fetch('/resources.json')).json();sourceConflicts=await(await fetch('/source-conflicts.json')).json();historicalRecipes=await(await fetch('/historical-recipes.json')).json()}catch{}try{setKnowledgeCards(await(await fetch('/knowledge-data.json')).json())}catch{}render();cfg=await loadApiConfig();const incoming=parseAuthReturn(location.hash,location.search);
+if(incoming.kind!=='none'){
+ await processAuthReturn();
+}else{
+ const saved=readAuthSession();
+ if(saved?.refreshToken&&saved?.user){
+  token=saved.token||'';refreshToken=saved.refreshToken;user=saved.user;
+  try{await renewSession();await syncOnLogin();if(sessionStorage.getItem('sauerteig-recovery-pending')==='1'){authRecovery=true;authMode='newPassword';tab='account'}}
+  catch(e){token='';refreshToken='';user=null;clearAuthSession();authMode='login';sessionStorage.removeItem('sauerteig-recovery-pending');authNotice='Bitte erneut anmelden.'}
+ }
+}
+if(user&&!authRecovery){
+ await refreshBilling();
+ const returned=new URLSearchParams(location.search).get('billing');
+ if(returned==='success'||returned==='cancel'){tab='billing';history.replaceState(null,'',location.pathname);note(returned==='success'?'Zahlung wird geprüft. Dein Abo wird nach Bestätigung aktiviert.':'Zahlung abgebrochen.')}
+}
+render()}catch(e){console.warn('Sauerteig-Server aktuell nicht erreichbar:',e?.message||e);note('Serververbindung unterbrochen. Die Backstube bleibt geöffnet.')}})();
 
-if('serviceWorker' in navigator){window.addEventListener('load',async()=>{try{const reg=await navigator.serviceWorker.register('/sw.js',{updateViaCache:'none'});reg.update().catch(()=>{});navigator.serviceWorker.addEventListener('controllerchange',()=>{try{if(!sessionStorage.getItem('sauerteig-sw-upgrade-v26')){sessionStorage.setItem('sauerteig-sw-upgrade-v26','1');location.reload()}}catch{}})}catch(e){console.warn('Offline-Modus nicht verfügbar',e)}})}
+if('serviceWorker' in navigator){window.addEventListener('load',async()=>{try{const reg=await navigator.serviceWorker.register('/sw.js',{updateViaCache:'none'});reg.update().catch(()=>{});navigator.serviceWorker.addEventListener('controllerchange',()=>{try{if(!authRecovery&&!sessionStorage.getItem('sauerteig-sw-upgrade-v28')){sessionStorage.setItem('sauerteig-sw-upgrade-v26','1');location.reload()}}catch{}})}catch(e){console.warn('Offline-Modus nicht verfügbar',e)}})}
