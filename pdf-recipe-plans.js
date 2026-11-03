@@ -1,3 +1,4 @@
+import {completePdfRecipe} from './recipe-research.js';
 import {PDF_SOURCE_RECIPES} from './pdf-recipes.js';
 const flour=(name,grams)=>({name,grams});
 const base=(id,flours,water,salt,grams,type='Weizen')=>({...PDF_SOURCE_RECIPES.find(x=>x.id===id),id,flours,water,salt,starter:{type,grams},extras:[],stock:[null,null],proof:[null,null],bake:[],autolyse:0,cold:null,category:'PDF-Rezepte',difficulty:'Nach eigenen Reifeangaben',yieldLabel:'1 Laib',source:'PDF',needsTiming:true});
@@ -13,5 +14,5 @@ export function pdfPlanRecipes(){
  {...base('pdf-joghurt',[flour('Weizenmehl Type 500',400),flour('Weizenvollkornmehl',80)],220,null,50),extras:[flour('Joghurt',80)],saltNote:'PDF: 1½ TL. Bitte deine abgewogene Salzmenge in Gramm eintragen.',stock:[4,6],proof:[1,2],coldBulkHours:null,requiresColdBulk:true,autolyse:30,foldCount:4,foldInterval:30,yieldLabel:'9 Semmeln',bake:[{temp:230,min:10,detail:'Einschießen, Dampf nach Geräteanleitung.'},{temp:230,min:10,detail:'Dampf ablassen, ohne Dampf fertig backen.'}],preheatTemp:250,shapeDetail:'Nach der kalten Stockgare in neun Stücke teilen und länglich formen.'},
  {...base('pdf-toast',[flour('Weizenmehl Type 550',500)],0,9,50),extras:[flour('Butter',60),flour('Honig',15),flour('Milch',270)],stock:[3.5,4.5],proof:[2,4],autolyse:30,foldCount:4,foldInterval:30,yieldLabel:'1 Kastenform',bake:[{temp:195,min:45,detail:'PDF: 190–200 °C, 40–50 Minuten. Bei starker Bräunung abdecken; Kerntemperatur etwa 96 °C.'}],shapeDetail:'In fünf Stücke teilen, zu Rollen formen und nebeneinander in die gefettete Kastenform legen.',mixDetail:'Nach der Autolyse Starter, Salz und weiche Butter einarbeiten.',liquidNote:'Milch ist eine eigene Zutat; die Wasser-Hydration allein beschreibt diesen Teig nicht.'}
  ];
- return rows.map(r=>({...r,steps:r.method,needsTiming:!r.stock[0]||!r.proof[0]||!r.bake.length,sourceNote:r.note+(r.id==='pdf-ruch-altbrot'?' Für diese Vorlage: 380 g Hauptwasser + 75 g Quellwasser = 455 g Gesamtwasser.':''),starter:{hydration:null,...r.starter}}));
+ return rows.map(r=>completePdfRecipe({...r,steps:r.method}));
 }

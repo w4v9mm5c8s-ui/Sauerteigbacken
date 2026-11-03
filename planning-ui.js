@@ -1,3 +1,4 @@
+import {recipeResearchView} from './recipe-research.js';
 import {canonicalFlourName} from './flour-table.js';
 import {doughWeight,isDoughIngredient} from './dough-weight.js';
 import {waterBalance,PDF_SOAKER_RATIOS,checkBanneton} from './pdf-baking.js';
@@ -12,7 +13,7 @@ export function planningView(r,esc,now,flourTable=[],starters=[]){
  const field=(label,id,value,opts='')=>'<label for="'+id+'">'+label+'</label><input id="'+id+'" '+opts+' value="'+esc(value??'')+'">';
  const mean=values=>values?.[0]==null?'':(values[0]+values[1])/2;
  const flour=r.flours.reduce((a,f)=>a+f.grams,0),total=doughWeight(r);
- return '<section class="card"><h2>'+esc(r.title)+'</h2>'+(r.sourceNote?'<p>'+esc(r.sourceNote)+'</p>':'')+'<p class="muted">Du kannst die vorgeschlagenen Mengen und Zeiten anpassen.</p><details open><summary>1. Gebäck und Menge</summary>'+
+ return '<section class="card"><h2>'+esc(r.title)+'</h2>'+(r.sourceNote?'<p>'+esc(r.sourceNote)+'</p>':'')+recipeResearchView(r,esc)+'<p class="muted">Du kannst die vorgeschlagenen Mengen und Zeiten anpassen.</p><details open><summary>1. Gebäck und Menge</summary>'+
  field('Name deines Backtags','bakeName',r.title,'maxlength="120"')+
  field('Anzahl fertige Brote','loaves',1,'type="number" min="1" max="24"')+
  field('Mehlmenge je Brot (g)','flourPerLoaf',Math.round(flour),'type="number" min="50" max="10000"')+field('Gewünschtes fertiges Brotgewicht je Brot (g, optional)','finishedWeight','','type="number" min="100" max="10000"')+field('Angenommener Backverlust (%)','bakeLoss',12,'type="number" min="0" max="30" step="0.5"')+
@@ -34,15 +35,15 @@ export function planningView(r,esc,now,flourTable=[],starters=[]){
  '<label><input id="starterReady" type="checkbox" style="width:auto"> Starter ist bereits reif</label>'+
  field('Starter-Reifezeit in Stunden (optional)','starterHours','','type="number" min="1" max="72" step="0.5" placeholder="Aus PDF-Tabelle oder persönliche Erfahrung"')+'<div id="pdfStarterPeakHint" class="muted small"></div>'+
  '</details><details><summary>4. Temperaturen</summary>'+
- field('Raumtemperatur (°C)','roomTemp',22,'type="number" min="5" max="40" step="0.5"')+
+ field('Raumtemperatur (°C)','roomTemp',r.roomTemp??22,'type="number" min="5" max="40" step="0.5"')+
  field('Mehltemperatur (°C)','flourTemp',22,'type="number" min="5" max="40" step="0.5"')+
  field('Startertemperatur (°C, optional)','starterTemp','','type="number" min="5" max="40" step="0.5"')+
  field('Gewünschte Teigtemperatur (°C)','targetTemp',24,'type="number" min="15" max="35" step="0.5"')+'<div id="waterSuggestion" class="muted small"></div>'+
- field('Kühlschranktemperatur (°C, optional)','fridgeTemp','','type="number" min="0" max="15" step="0.5"')+
+ field('Kühlschranktemperatur (°C, optional)','fridgeTemp',r.fridgeTemp??'','type="number" min="0" max="15" step="0.5"')+
  '</details><details><summary>5. Gare und Equipment</summary>'+
  '<label>Gare</label><select id="proofMode"><option value="auto">Passende Gare automatisch wählen</option><option value="warm">Stückgare</option><option value="cold" '+(!r.cold?'disabled':'')+'>Kühlschrankgare'+(!r.cold?' (für dieses Rezept nicht hinterlegt)':'')+'</option></select>'+
  (r.saltNote?'<p>'+esc(r.saltNote)+'</p>':'')+(r.liquidNote?'<p>'+esc(r.liquidNote)+'</p>':'')+
- (r.requiresColdBulk?field('Kalte Stockgare über Nacht (Stunden; eigene Angabe)','coldBulkHours','','type="number" min="1" max="48"'): '')+
+ (r.requiresColdBulk?field('Kalte Stockgare über Nacht (Stunden)','coldBulkHours',r.coldBulkHours??'','type="number" min="1" max="48"'): '')+
  (r.soaker?field('Quellzeit des Rezept-Quellstücks (Stunden)','recipeSoakerHours',r.soaker.hours,'type="number" min="0.25" max="48" step="0.25"'):'')+
  (!r.bake.length?field('Backtemperatur (°C; eigene Angabe)','recipeBakeTemp','','type="number" min="80" max="300"')+field('Backdauer (Minuten; eigene Angabe)','recipeBakeMinutes','','type="number" min="5" max="240"'):'')+
  field('Stockgare (Stunden)','stockHours',mean(r.stock),'type="number" min="0.5" max="48" step="0.25"')+
