@@ -13,6 +13,8 @@ const groups=[
  ]},
  {title:'MEHR ENTDECKEN',items:[
   ['Rechner & Helfer','Hydration, Mengen und Zeiten','calculator','calculator'],
+  ['PDF-Backwissen & Spezialrechner','Gärzeiten, Quellwasser und Gärkörbchen','pdfTools','book'],
+  ['Rezepte aus der PDF','Originalmengen und Besonderheiten','pdfRecipes','book'],
   ['Community-Backbuch','Rezepte aus der Community','community','users'],
   ['Historische Rezepte','Überlieferte Rezepte entdecken','historical','book']
  ]}
