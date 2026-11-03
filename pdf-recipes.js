@@ -12,8 +12,36 @@ export const PDF_SOURCE_RECIPES=[
  {id:'pdf-joghurt',title:'Sauerteig-Joghurtbrötchen',page:40,yield:'9 Semmeln',ingredients:['400 g Weizenmehl Type 500','80 g Weizenvollkornmehl','220 g Wasser','80 g Joghurt','50 g aktiver Sauerteigstarter','1½ TL Salz'],method:['Mehle, Wasser und Joghurt 30 Minuten autolysieren.','Starter und Salz einarbeiten; 4–6 Stunden Stockgare bei Raumtemperatur.','Nach 30 Minuten falten; noch 2–3 Faltvorgänge im Abstand von ca. 30 Minuten.','Nach sichtbarem Aufgang über Nacht in den Kühlschrank stellen.','In neun Stücke teilen, formen, 1–2 Stunden ruhen lassen.','Auf 250 °C vorheizen, nach dem Einschießen auf 230 °C senken.','10 Minuten mit Dampf und weitere 10 Minuten ohne Dampf backen.'],note:'Die PDF enthält 1½ TL Salz, keine Grammzahl. Keine Grammzahl erfinden.'},
  {id:'pdf-toast',title:'Sauerteig-Toastbrot',page:41,yield:'1 Kastenform',ingredients:['500 g Weizenmehl Type 550','60 g weiche Butter','15 g Honig','9 g Salz','50 g aktives Weizen-Anstellgut','270 g Milch (leicht warm)'],method:['Mehl, Milch, Honig etwa 30 Minuten stehen lassen.','Starter, Salz und Butter einarbeiten.','3,5–4,5 Stunden bei 24–25 °C führen, anfangs insgesamt 3–4 Mal falten.','In fünf Stücke teilen, aufrollen und nebeneinander in die gefettete Kastenform legen.','2–4 Stunden Stückgare, bis knapp über den Formrand.','Bei 190–200 °C etwa 40–50 Minuten backen, gegebenenfalls abdecken.','Kerntemperatur etwa 96 °C prüfen.'],note:'Milch wird als Milch erfasst und nicht fälschlich als reines Wasser gerechnet.'}
 ];
+export const PDF_EXAMPLE_PLANS=[
+ {id:'pdf-same-day',title:'Backen an einem Tag',page:25,reference:'500 g Weizenmehl 550 · 320 g Wasser · 10 g Salz · 170 g reifer Starter',events:[
+  ['07:00','Starter aus dem Kühlschrank nehmen, 1:1:1 füttern (57 g Starter, 57 g Mehl, 57 g Wasser)'],
+  ['13:00','Mehl und Wasser autolysieren (ca. 30–60 Minuten)'],
+  ['13:45','Reifen Starter und Salz einarbeiten'],
+  ['14:15–16:15','Zweimal Stretch & Fold, anschließend Coil Folds nach Teigzustand'],
+  ['17:45','Formen und Stückgare beobachten'],
+  ['19:30','Backen nach dem mehrstufigen Standardprogramm']
+ ],note:'21 °C, individuelle Reifezeichen haben Vorrang. Die Zeitangaben sind Beispiele, keine Zusage.'},
+ {id:'pdf-overnight-proof',title:'Kühlschrankgare über Nacht',page:26,reference:'500 g Weizenmehl 550 · 320 g Wasser · 10 g Salz · 170 g reifer Starter',events:[
+  ['07:00','Starter 1:1:1 füttern, bei 21 °C Reife beobachten'],
+  ['13:30','Autolyse vorbereiten'],
+  ['14:15','Hauptteig mischen und salzen'],
+  ['14:45–16:45','Faltphase durchführen'],
+  ['18:15','Formen und abgedeckt bei ca. 7 °C in die kalte Stückgare stellen'],
+  ['Folgetag 07:15','Backen; zuvor Ofen gut vorheizen']
+ ],note:'Die PDF nennt etwa 12 Stunden bei 7 °C. Real gemessene Kühlschranktemperatur und Reife entscheiden.'},
+ {id:'pdf-overnight-starter',title:'Starter über Nacht ansetzen',page:27,reference:'500 g Weizenmehl 550 · 320 g Wasser · 10 g Salz · 170 g reifer Starter',events:[
+  ['Vorabend 20:00','Starter 1:5:5 füttern (17 g Starter, 85 g Mehl, 85 g Wasser)'],
+  ['Morgen 08:30','Autolyse, aber nur falls Starter reif ist'],
+  ['09:15','Starter und Salz in den Hauptteig'],
+  ['09:45–11:45','Faltphase und Ruhe'],
+  ['13:15','Formen und Stückgare beobachten'],
+  ['15:00','Backen nach Rezept']
+ ],note:'Widerspruch in der PDF: Die 1:5:5-Reifetabelle nennt bei 21 °C ungefähr 21 Stunden, der Beispieltagesplan setzt aber nach 12,5 Stunden an. Deshalb nicht automatisch als sicheren Zeitplan verwenden.'}
+];
 export function pdfRecipesView(esc=x=>String(x).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))){
  return '<section class="pdf-recipe-intro"><span class="studio-overline">AUS DER ORIGINAL-PDF</span><h2>Alle Rezeptvorlagen der PDF</h2><p>Neun Zutatenvorlagen von S. 37–41 – mit Hinweisen zu fehlenden Zeiten und widersprüchlichen Angaben, ohne erfundene Zutaten.</p></section>'+
+ '<section class="pdf-sample-plans"><h3>Drei Beispiel-Zeitpläne (PDF S. 25–27)</h3><p>Wiedergegebene Quellenbeispiele, keine automatisch errechneten, verbindlichen Termine.</p>'+
+ PDF_EXAMPLE_PLANS.map(plan=>'<details class="card pdf-recipe"><summary><strong>'+esc(plan.title)+'</strong><small>PDF S. '+plan.page+'</small></summary><p>'+esc(plan.reference)+'</p><ol>'+plan.events.map(([when,what])=>'<li><strong>'+esc(when)+':</strong> '+esc(what)+'</li>').join('')+'</ol><p class="pdf-recipe-note">'+esc(plan.note)+'</p></details>').join('')+'</section>'+
  PDF_SOURCE_RECIPES.map(r=>'<details class="card pdf-recipe"><summary><strong>'+esc(r.title)+'</strong><small>PDF S. '+r.page+' · '+esc(r.yield)+'</small></summary><h3>Zutaten</h3><ul>'+r.ingredients.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul><h3>Schritte / Hinweise</h3><ol>'+r.method.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ol><p class="pdf-recipe-note">'+esc(r.note)+'</p></details>').join('')+
  '<p class="pdf-source-note">Die vollständigen PDF-Originalseiten werden nicht als öffentlich zugängliche Datei kopiert. Die Rezepte hier sind anhand ihrer Originalmengen aufbereitet und nicht als testgebacken markiert.</p>';
 }

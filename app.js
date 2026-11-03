@@ -1,5 +1,5 @@
 import {doughWeight} from './dough-weight.js';
-import {estimateStarterPeak,estimateFermentation,checkBanneton,waterBalance,PDF_SOAKER_RATIOS,seedWaterRatio} from './pdf-baking.js';
+import {estimateStarterPeak,estimateFermentation,checkBanneton,waterBalance,PDF_SOAKER_RATIOS,seedWaterRatio,calculateStarterFeed} from './pdf-baking.js';
 import {pdfToolsView,pdfToolCalculation} from './pdf-tools-ui.js';
 import {pdfRecipesView} from './pdf-recipes.js';
 import {readBackup,makeBackup} from './backup.js';
@@ -327,7 +327,21 @@ if(a==='addShopping'){const d=local(),r=current;for(const x of [...r.flours.map(
 if(a.startsWith('starterUpdate:')){const i=Number(a.slice(14)),d=local(),st=d.starters[i],name=$('#starterEditName'+i).value.trim(),hydration=Number($('#starterEditHydration'+i).value);if(!st||!name||hydration<20||hydration>250)throw Error('Bitte gültige Starterdaten eingeben');st.name=name;st.hydration=hydration;st.type=$('#starterEditType'+i)?.value||st.type;st.flourName=$('#starterEditFlour'+i)?.value.trim().slice(0,90)||'';save(d);starters();note('Starter aktualisiert');return}
 if(a.startsWith('starterDelete:')){const i=Number(a.slice(14));if(!confirm('Diesen Starter wirklich löschen?'))return;const d=local();d.starters.splice(i,1);save(d);starters();return}
 if(a.startsWith('starterRecord:')){const i=Number(a.slice(14)),d=local(),st=d.starters[i];if(!st)throw Error('Starter nicht gefunden');const temperature=Number($('#starterLogTemp'+i).value),peakHours=Number($('#starterLogHours'+i).value),ratio=$('#starterLogRatio'+i).value;if(temperature<5||temperature>40||peakHours<0.5||peakHours>72||!Number.isFinite(peakHours))throw Error('Bitte gültige Temperatur und Peakzeit eingeben');st.logs=st.logs||[];st.logs.push({date:new Date().toLocaleDateString('de-DE'),temperature,peakHours,ratio});st.ratio=ratio;save(d);starters();note('Startermessung gespeichert');return}
-if(a.startsWith('feed:')){const st=local().starters[Number(a.slice(5))];if(!st)throw Error('Starter nicht gefunden');const total=Number(prompt('Wie viel reifen Starter brauchst du insgesamt (g)?','180'));if(!Number.isFinite(total)||total<=0)return;const parts=(st.ratio||'1:2:2').split(':').map(Number),factor=parts.reduce((a,b)=>a+b,0),seed=Math.ceil(total*parts[0]/factor),flour=Math.ceil(total*parts[1]/factor),water=Math.ceil(total*parts[2]/factor);alert('Für ca. '+(seed+flour+water)+' g Starter bei '+(st.ratio||'1:2:2')+':\n'+seed+' g Anstellgut\n'+flour+' g Mehl\n'+water+' g Wasser\nReifezeit hängt von Temperatur und Starteraktivität ab.');return}
+if(a.startsWith('feed:')){
+ const i=Number(a.slice(5)),d=local(),st=d.starters?.[i];if(!st)throw Error('Starter nicht gefunden');
+ const amount=prompt('Wie viel reifen Starter möchtest du insgesamt herstellen (g)?','180');
+ if(amount===null)return;
+ const target=Number(amount),parts=(st.ratio||'1:2:2').split(':').map(Number);
+ if(!Number.isFinite(target)||target<=0||target>10000||parts.length!==3||parts.some(x=>!Number.isFinite(x)||x<=0))throw Error('Bitte Zielmenge und Fütterungsverhältnis prüfen.');
+ const oldStarter=Math.round(target*parts[0]/parts.reduce((a,b)=>a+b,0)*10)/10;
+ const fed=calculateStarterFeed({oldStarter,oldHydration:st.hydration,ratio:st.ratio||'1:2:2'});
+ const msg='Fütterung nach Verhältnis '+(st.ratio||'1:2:2')+':\n'+fed.oldStarter+' g alter Starter\n'+fed.addedFlour+' g Mehl\n'+fed.addedWater+' g Wasser\nGesamt: '+fed.total+' g\nNeue Hydration: '+fed.newHydration+' % (bei tatsächlich verwendeten Mengen).';
+ if(confirm(msg+'\n\nHast du die Fütterung genau so durchgeführt und möchtest sie protokollieren?')){
+  st.hydration=fed.newHydration;st.logs=st.logs||[];
+  st.logs.push({date:new Date().toLocaleDateString('de-DE'),ratio:st.ratio||'1:2:2',oldStarter:fed.oldStarter,flourAdded:fed.addedFlour,waterAdded:fed.addedWater,hydration:fed.newHydration,temperature:null,peakHours:null});
+  save(d);starters();note('Fütterung protokolliert; Hydration aktualisiert.')
+ }return
+}
 if(a==='approve' || a==='reject'){throw Error('Bitte Rezept auswählen')}
 if(a.startsWith('moderate:')){const parts=a.split(':');await request('/api/moderation/decision','POST',{id:parts[2],status:parts[1]==='approve'?'published':'rejected'});await loadPending();note('Entscheidung gespeichert');return}
 if(a==='ownSave'){
@@ -461,7 +475,13 @@ function updatePdfPlanningHints(){
   const weight=(mass+n('waterAmount')+n('starterAmount')+n('saltAmount'))/Math.max(1,n('loaves')||1);
   const shape=v('basketShape'),basket=shape!=='none'?checkBanneton(weight,shape):null;
   const b=document.getElementById('basketHint');if(b)b.textContent=basket?.size?'PDF S. 23: '+basket.size.join('–')+' cm '+(shape==='round'?'Durchmesser':'Länge'):basket?.warning||'Kein Gärkörbchen erforderlich.';
-  const soaker=n('soakerAmount'),ratio=soaker? n('soakerWater')/soaker:0;
+  const soaker=n('soakerAmount'),name=v('soakerKind'),autoSoaker=document.getElementById('autoSoakerWater');
+  if(autoSoaker?.checked){
+   const absorption=seedWaterRatio(name);
+   if(soaker>0&&absorption!==null){document.getElementById('soakerWater').value=Math.round(soaker*absorption*10)/10}
+   else if(soaker===0&&document.getElementById('soakerWater'))document.getElementById('soakerWater').value=0;
+  }
+  const ratio=soaker?n('soakerWater')/soaker:0;
   const balance=waterBalance({flours,totalWater:n('waterAmount'),starter:n('starterAmount'),starterHydration:n('starterHydration'),
    altbrot:n('altbrot'),altbrotRatio:n('altbrotRatio')||3,
    soakers:soaker?[{name:v('soakerKind'),grams:soaker,ratio}]:[],brewFlour:n('brewFlour'),brewWater:n('brewWater')});
@@ -492,8 +512,10 @@ function refreshPlanBlendPreview(){
 document.addEventListener('input',e=>{
  if(e.target.closest('#blendRows')||['blendSaltPct','blendHydration','blendWater','blendStarter','blendSalt'].includes(e.target.id)){refreshBlendPreview();captureBlendDraft()}
  if(e.target.closest('#planFlours')&&e.target.classList.contains('plan-flour-grams')){refreshPlanBlendPreview();updatePdfPlanningHints()}
+ if(e.target.id==='soakerWater'&&e.isTrusted&&document.getElementById('autoSoakerWater'))document.getElementById('autoSoakerWater').checked=false;
  if(['roomTemp','starterAmount','starterHydration','altbrot','soakerAmount','soakerWater','waterAmount','brewFlour','brewWater','loaves'].includes(e.target.id))updatePdfPlanningHints();
  if(e.target.id==='starterHours'&&e.isTrusted)e.target.dataset.pdfAuto='0';
+ 
  if(e.target.closest('#blendRecipeDetails'))captureBlendDraft();
 });
 document.addEventListener('change',e=>{
@@ -518,7 +540,7 @@ document.addEventListener('change',e=>{
   refreshPlanBlendPreview();
  }
  if(e.target.id==='planAutoIngredients'&&e.target.checked)refreshPlanBlendPreview();
- if(['planAutoTimes','feedRatio','starterType','soakerKind','altbrotRatio','basketShape','pdfBakeStandard'].includes(e.target.id))updatePdfPlanningHints();
+ if(['planAutoTimes','feedRatio','starterType','soakerKind','autoSoakerWater','altbrotRatio','basketShape','pdfBakeStandard'].includes(e.target.id))updatePdfPlanningHints();
 });
 
 async function loadApiConfig(){
@@ -550,4 +572,4 @@ if(user&&!authRecovery){
 }
 render()}catch(e){console.warn('Sauerteig-Server aktuell nicht erreichbar:',e?.message||e);note('Serververbindung unterbrochen. Die Backstube bleibt geöffnet.')}})();
 
-if('serviceWorker' in navigator){window.addEventListener('load',async()=>{try{const reg=await navigator.serviceWorker.register('/sw.js',{updateViaCache:'none'});reg.update().catch(()=>{});navigator.serviceWorker.addEventListener('controllerchange',()=>{try{if(!authRecovery&&!sessionStorage.getItem('sauerteig-sw-upgrade-v28')){sessionStorage.setItem('sauerteig-sw-upgrade-v26','1');location.reload()}}catch{}})}catch(e){console.warn('Offline-Modus nicht verfügbar',e)}})}
+if('serviceWorker' in navigator){window.addEventListener('load',async()=>{try{const reg=await navigator.serviceWorker.register('/sw.js',{updateViaCache:'none'});reg.update().catch(()=>{});navigator.serviceWorker.addEventListener('controllerchange',()=>{try{if(!authRecovery&&!sessionStorage.getItem('sauerteig-sw-upgrade-v31')){sessionStorage.setItem('sauerteig-sw-upgrade-v26','1');location.reload()}}catch{}})}catch(e){console.warn('Offline-Modus nicht verfügbar',e)}})}

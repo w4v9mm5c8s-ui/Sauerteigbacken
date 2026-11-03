@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {PDF_PEAK,estimateStarterPeak,estimateFermentation,checkBanneton,seedWaterRatio,calculateStarterFeed,waterBalance,standardBakePhases,PDF_LESSONS,PDF_BANNETON} from '../pdf-baking.js';
 import {pdfToolsView,pdfToolCalculation} from '../pdf-tools-ui.js';
-import {PDF_SOURCE_RECIPES,pdfRecipesView} from '../pdf-recipes.js';
+import {PDF_SOURCE_RECIPES,PDF_EXAMPLE_PLANS,pdfRecipesView} from '../pdf-recipes.js';
 import {makePlan} from '../planner.js';
 const get=p=>readFileSync(new URL('../'+p,import.meta.url),'utf8');
 const table=JSON.parse(get('flour-table.json'));
@@ -123,4 +123,26 @@ test('back-planner maintains single-use total recipe water including soak and br
  assert.match(src,/waterBalance:\{\.\.\.balance/);
  assert.match(src,/PDF_SOAKER_RATIOS/);
  assert.match(src,/n\('brewWater'\)/);
+});
+
+test('the three original PDF schedule examples are preserved without turning a contradiction into a guarantee',()=>{
+ assert.equal(PDF_EXAMPLE_PLANS.length,3);
+ assert.deepEqual(PDF_EXAMPLE_PLANS.map(x=>x.page),[25,26,27]);
+ const warning=PDF_EXAMPLE_PLANS.find(x=>x.id==='pdf-overnight-starter');
+ assert.match(warning.note,/21 Stunden/);
+ assert.match(warning.note,/12,5 Stunden/);
+ const html=pdfRecipesView();
+ for(const x of ['Backen an einem Tag','Kühlschrankgare über Nacht','Starter über Nacht ansetzen'])assert.ok(html.includes(x));
+});
+test('selected PDF seed/soaker requires a clearly toggleable automatic water calculation',()=>{
+ const view=get('planning-ui.js'),app=get('app.js');
+ assert.match(view,/id="autoSoakerWater"/);
+ assert.match(app,/seedWaterRatio\(name\)/);
+ assert.match(app,/document\.getElementById\('soakerWater'\)\.checked=false|document\.getElementById\('autoSoakerWater'\)\.checked=false/);
+});
+test('feeding a personal starter logs calculated new hydration only after explicit confirmation',()=>{
+ const app=get('app.js');
+ assert.match(app,/calculateStarterFeed\(\{oldStarter,oldHydration:st\.hydration/);
+ assert.match(app,/if\(confirm\(msg/);
+ assert.match(app,/st\.hydration=fed\.newHydration/);
 });

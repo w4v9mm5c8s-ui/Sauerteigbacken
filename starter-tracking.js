@@ -28,7 +28,7 @@ export function starterListView(items,esc=x=>String(x)){
  '<label for="starterLogTemp'+i+'">Temperatur (°C)</label><input type="number" id="starterLogTemp'+i+'" min="5" max="40" value="22" step="0.5">'+
  '<label for="starterLogHours'+i+'">Stunden bis zum Peak</label><input type="number" id="starterLogHours'+i+'" min="0.5" max="72" step="0.25" placeholder="Gemessenen Wert eingeben">'+
  '<button data-act="starterRecord:'+i+'">Messung speichern</button>'+
- (logs.length?'<h4>Letzte Fütterungen</h4>'+logs.slice(-5).reverse().map(l=>'<div class="starter-log-row">'+textValue(l.date,esc)+' · '+textValue(l.temperature,esc)+' °C · '+textValue(l.ratio,esc)+' · '+textValue(l.peakHours,esc)+' h</div>').join(''):'<p class="muted small">Noch keine Fütterung protokolliert.</p>')+'</details>'+
+ (logs.length?'<h4>Letzte Fütterungen</h4>'+logs.slice(-5).reverse().map(l=>'<div class="starter-log-row">'+textValue(l.date,esc)+' · '+textValue(l.ratio,esc)+(Number(l.peakHours)>0?' · Peak nach '+textValue(l.peakHours,esc)+' h':' · Fütterung dokumentiert')+(l.hydration?' · '+textValue(l.hydration,esc)+' % Hydration':'')</div>').join(''):'<p class="muted small">Noch keine Fütterung protokolliert.</p>')+'</details>'+
  '<details class="starter-profile-details"><summary>Starter bearbeiten</summary>'+
  '<label for="starterEditName'+i+'">Name</label><input id="starterEditName'+i+'" value="'+name+'" maxlength="90">'+
  '<label for="starterEditType'+i+'">Starterart</label>'+select('starterEditType'+i,['Weizen','Roggen','Dinkel'],x.type||'Weizen')+
