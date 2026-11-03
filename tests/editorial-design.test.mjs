@@ -14,8 +14,8 @@ test('a small viewport uses readable full-width rows, not eight narrow tiles',()
 });
 test('the start and baking hub preserve every core destination',()=>{
  const home=homeView({signed:false}),hub=hubView(()=>'',false,0,0);
- for(const key of ['planFromRecipe','newRecipe','recipes','own','bakingDays','favorites','import','stats','community','knowledge'])assert.match(home,new RegExp('data-act="'+key+'"'));
- for(const key of ['newPlan','recipes','own','bakingDays','favorites','history','stats','calculator','community','historical'])assert.match(hub,new RegExp('data-act="'+key+'"'));
+ for(const key of ['newPlan','newRecipe','recipes','own','bakingDays','favorites','import','stats','community','knowledge'])assert.match(home,new RegExp('data-act="'+key+'"'));
+ for(const key of ['planFromRecipe','newRecipe','recipes','own','bakingDays','favorites','history','stats','calculator','community','historical'])assert.match(hub,new RegExp('data-act="'+key+'"'));
 });
 test('suggested images are example recipes, never fabricated user history',()=>{
  const html=homeView({signed:false,history:[]});
