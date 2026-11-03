@@ -24,7 +24,7 @@ test('the signed-out home provides grouped actions without displaying fake histo
 test('baking navigation uses semantic rows with accessible action buttons',()=>{
  const html=hubView(()=>'',true,0,0);
  assert.equal((html.match(/class="studio-hub-row"/g)||[]).length,10);
- assert.equal((html.match(/<svg/g)||[]).length,10);
+ assert.equal((html.match(/<svg/g)||[]).length,11);
  assert.match(html,/data-act="newPlan"/);
 });
 test('illustrated data modules remain linked',()=>{

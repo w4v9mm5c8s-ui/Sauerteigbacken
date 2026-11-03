@@ -5,7 +5,7 @@ export function parseOwnRecipe(input){
  const lines=String(input.ingredients||'').split(/\n+/).map(x=>x.trim()).filter(Boolean),parsed=lines.map(amount);
  if(parsed.some(x=>!x||!x.name||x.grams<=0))throw Error('Jede Zutat braucht eine Grammangabe, z. B. 500 g Weizenmehl');
  const flours=[],extras=[];let water=0,salt=0,starter=0;
- for(const x of parsed){if(/(?:mehl|schrot|vollkorn|grieß|griess)/i.test(x.name))flours.push(x);else if(/(?:wasser|water)/i.test(x.name))water+=x.grams;else if(/(?:salz|salt)/i.test(x.name))salt+=x.grams;else if(/(?:starter|anstellgut|sauerteig)/i.test(x.name))starter+=x.grams;else extras.push(x)}
+ for(const x of parsed){if(/(?:mehl|schrot|vollkorn|grieß|griess|emmer|einkorn|kamut|manitoba|graham|ruch)/i.test(x.name))flours.push(x);else if(/(?:wasser|water)/i.test(x.name))water+=x.grams;else if(/(?:salz|salt)/i.test(x.name))salt+=x.grams;else if(/(?:starter|anstellgut|sauerteig)/i.test(x.name))starter+=x.grams;else extras.push(x)}
  if(!flours.length||!water||!starter)throw Error('Für den Backplan werden Mehl, Wasser und reifer Starter mit Grammangaben benötigt');
  const bakeTemp=Number(input.bakeTemp),bakeMin=Number(input.bakeMin),stock=Number(input.stockHours),proof=Number(input.proofHours);
  if(![bakeTemp,bakeMin,stock,proof].every(Number.isFinite)||bakeTemp<80||bakeTemp>300||bakeMin<5||bakeMin>240||stock<=0||proof<=0)throw Error('Bitte Backtemperatur, Backzeit, Stock- und Stückgare ergänzen');

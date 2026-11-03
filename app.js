@@ -11,9 +11,11 @@ import {communityView,renderCommunityRows} from './community-ui.js';
 import {resourcesView,conflictsView} from './resources.js';
 import {flourSuggestion,waterTempSuggestion} from './flour-table.js';
 import {onboardingView,onboardingSteps} from './onboarding.js';
-import {starterListView,starterForecast} from './starter-tracking.js';
+import {starterListView,starterForecast,personalStartersPreview} from './starter-tracking.js';
+import {bakeChoiceView,flourBlendRow,recipeBuilderView,readBlendEntries,readBlendQuantities,readBlendRecipe,blendSummary} from './recipe-builder.js';
+import {flourBlendSuggestion} from './flour-mix.js';
 import {parseOwnRecipe,recipeToRaw} from './own-recipe-parser.js';
-import {planningView,readPlanningForm} from './planning-ui.js';
+import {planningView,readPlanningForm,planFlourRow} from './planning-ui.js';
 import {statsView,statsCsv} from './stats.js';
 import {icon} from './icons.js';
 import {pantryView} from './pantry.js';
@@ -23,7 +25,7 @@ import {knowledgeView,problemsView,setKnowledgeCards,knowledgeResults} from './k
 import {ownRecipesView,normalizeExtractedRecipe} from './own-recipes.js';
 import {backtagView} from './backtag.js';
 import {makePlan,rescheduleRemaining} from './planner.js';
-let historicalRecipes=[],communityRows=[],resources=[],sourceConflicts=[],flourTable=[],recipes=[],current=null,tab='start',user=null,token='',refreshToken='',cfg={},scale=1,moderator=false,editingOwn=null,onboardingStep=0;
+let historicalRecipes=[],communityRows=[],resources=[],sourceConflicts=[],flourTable=[],recipes=[],current=null,tab='start',user=null,token='',refreshToken='',cfg={},scale=1,moderator=false,editingOwn=null,onboardingStep=0,planOrigin='recipeSelect',blendDraft=null;
 const $=s=>document.querySelector(s),escape=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const actionIcons={favorites:'heart',plan:'calendar',hub:'bread',recipes:'library',community:'users',shopping:'basket',knowledge:'book',starters:'flask',pantry:'wheat',buddy:'chat',own:'book',history:'history',stats:'chart',calculator:'calculator',problem:'help',import:'upload'};
 const button=(label,action)=>'<button data-act="'+action+'">'+(actionIcons[action]?icon(actionIcons[action],18)+' ':'')+escape(label)+'</button>';
@@ -35,7 +37,7 @@ async function request(url,method='GET',data,retry=true){const r=await fetch(url
 async function auth(path,data){const u=cfg.supabaseUrl+'/auth/v1/'+path;const r=await fetch(u,{method:'POST',headers:{apikey:cfg.supabaseKey,'Content-Type':'application/json'},body:JSON.stringify(data)});const j=await r.json().catch(()=>({}));if(!r.ok)throw Error(j.error_description||j.msg||j.message||'Anmeldung fehlgeschlagen');return j}
 async function renewSession(){const j=await auth('token?grant_type=refresh_token',{refresh_token:refreshToken});if(!j.access_token)throw Error('Sitzung abgelaufen. Bitte neu anmelden.');token=j.access_token;refreshToken=j.refresh_token||refreshToken;user=j.user||user;sessionStorage.setItem('sauerteig-session',JSON.stringify({token,refreshToken,user}));return j}
 function localDateInput(d){const pad=n=>String(n).padStart(2,'0');return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate())+'T'+pad(d.getHours())+':'+pad(d.getMinutes())}
-function render(){document.body.dataset.page=tab;document.querySelectorAll('[data-icon]').forEach(e=>{e.innerHTML=icon(e.dataset.icon,24)});const activeNav=['start','hub','buddy','account'].includes(tab)?tab:['shopping','pantry','starters','onboarding','billing'].includes(tab)?'account':'hub';document.querySelectorAll('nav button').forEach(b=>{const active=b.dataset.tab===activeNav;b.classList.toggle('active',active);if(active)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current')});$('#pageTitle').textContent=({start:'Start',recipes:current?.title||'Rezepte',plan:'Dein Backplan',buddy:'KI-Buddy',account:'Ich',billing:'Sauerteig Plus',shopping:'Einkaufsliste',starters:'Meine Starter',community:'Community-Backbuch',hub:'Womit legen wir los?',bakingDays:'Meine Backtage',recipeSelect:'Rezept auswählen',onboarding:'Einrichtung',calculator:'Rechner',knowledge:'Wissen',favorites:'Favoriten',historical:'Historische Rezepte',resources:'Weiterführende Quellen',conflicts:'Quellenkonflikte',problem:'Problem lösen',stats:'Meine Backstatistik',import:'Rezept importieren',history:'Meine Brote',pantry:'Meine Mehle & Vorrat',moderation:'Community prüfen',own:'Meine Rezepte',backtag:'Dein Backtag'})[tab]||'Backen mit Sauerteig';$('#main').innerHTML=(tab==='start'?'':'<button class="back-button" data-act="back">'+icon('arrow-left',18)+' Zurück</button>')+pages[tab]();if(tab==='backtag'){updateTimer();loadStepPhoto()}if(tab==='plan'){try{const draft=JSON.parse(sessionStorage.getItem('sauerteig-plan-draft')||'{}');for(const [id,v] of Object.entries(draft)){const el=document.getElementById(id);if(el){if(el.type==='checkbox')el.checked=!!v;else el.value=v}}}catch{}}}
+function render(){document.body.dataset.page=tab;document.querySelectorAll('[data-icon]').forEach(e=>{e.innerHTML=icon(e.dataset.icon,24)});const activeNav=['start','hub','buddy','account'].includes(tab)?tab:['shopping','pantry','starters','onboarding','billing'].includes(tab)?'account':'hub';document.querySelectorAll('nav button').forEach(b=>{const active=b.dataset.tab===activeNav;b.classList.toggle('active',active);if(active)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current')});$('#pageTitle').textContent=({start:'Start',recipes:current?.title||'Rezepte',plan:'Dein Backplan',buddy:'KI-Buddy',account:'Ich',billing:'Sauerteig Plus',shopping:'Einkaufsliste',starters:'Meine Starter',community:'Community-Backbuch',hub:'Womit legen wir los?',bakingDays:'Meine Backtage',recipeSelect:'Rezept auswählen',bakeChoice:'Jetzt backen',recipeBuilder:'Eigenes Rezept berechnen',onboarding:'Einrichtung',calculator:'Rechner',knowledge:'Wissen',favorites:'Favoriten',historical:'Historische Rezepte',resources:'Weiterführende Quellen',conflicts:'Quellenkonflikte',problem:'Problem lösen',stats:'Meine Backstatistik',import:'Rezept importieren',history:'Meine Brote',pantry:'Meine Mehle & Vorrat',moderation:'Community prüfen',own:'Meine Rezepte',backtag:'Dein Backtag'})[tab]||'Backen mit Sauerteig';$('#main').innerHTML=(tab==='start'?'':'<button class="back-button" data-act="back">'+icon('arrow-left',18)+' Zurück</button>')+pages[tab]();if(tab==='backtag'){updateTimer();loadStepPhoto()}if(tab==='recipeBuilder'){restoreBlendDraft();refreshBlendPreview()}if(tab==='plan'){try{const draft=JSON.parse(sessionStorage.getItem('sauerteig-plan-draft')||'{}');for(const [id,v] of Object.entries(draft)){const el=document.getElementById(id);if(el){if(el.type==='checkbox')el.checked=!!v;else el.value=v}}}catch{}}}
 const activeKey=()=>user?.id?'sourdough-active-'+user.id:'sourdough-active-guest';
 const getActive=()=>{try{return JSON.parse(localStorage.getItem(activeKey())||'null')||(user?local().activeBake:null)}catch{return user?local().activeBake:null}};
 const setActive=v=>{if(v)localStorage.setItem(activeKey(),JSON.stringify(v));else localStorage.removeItem(activeKey());if(user){const d=local();d.activeBake=v;save(d)}};
@@ -46,6 +48,8 @@ let billingStatus={enabled:false,plus:false,status:'unavailable'};
 async function refreshBilling(){if(!user)return;try{const status=await request('/api/billing/status');const plans=status.enabled?await request('/api/billing/plans'):{enabled:false,plans:[]};billingStatus={...status,enabled:status.enabled&&plans.enabled,plans:plans.plans||[]};if(tab==='billing')render()}catch{billingStatus={enabled:false,plus:false,status:'unavailable'}}}
 const recipesForPlanning=()=>[...recipes,...(user?(local().ownRecipes||[]).map(x=>x.recipe).filter(Boolean):[])];
 const pages={
+bakeChoice:()=>bakeChoiceView(),
+recipeBuilder:()=>recipeBuilderView(flourTable,escape,user?(local().starters||[]):[]),
 billing:()=>billingView(user,billingStatus,escape),
 onboarding:()=>onboardingView(onboardingStep,escape),
 hub:()=>hubView(button,!!user,local().history.length,(local().ownRecipes||[]).length),
@@ -67,9 +71,9 @@ recipeSelect:()=>recipePicker(recipesForPlanning(),escape),
 recipes:()=>current?button('← Alle Rezepte','clear')+box('<img class="recipe-detail-photo" src="'+recipePhotoPath(current)+'" alt="KI-generiertes Beispielbild" loading="lazy"><h2>'+escape(current.title)+'</h2><p class="muted">'+escape(current.yieldLabel)+' · '+escape(current.category)+'</p><label>Mengenfaktor</label><select id="scale"><option value="1">Normal</option><option value="0.5">Halb</option><option value="2">Doppelt</option></select><h3>Zutaten</h3>'+[...current.flours.map(x=>[x.name,x.grams]),['Wasser',current.water],['Salz',current.salt],[current.starter.type+'starter',current.starter.grams],...current.extras.map(x=>[x.name,x.grams])].map(x=>'<div class="row line"><span>'+escape(x[0])+'</span><strong>'+Math.round(x[1]*scale)+' g</strong></div>').join('')+'<h3>Zubereitung</h3>'+current.steps.map((s,i)=>'<div class="step">'+(i+1)+'. '+escape(s)+'</div>').join('')+'<p class="muted">Gärzeiten sind Richtwerte. Beurteile den Teigzustand.</p>'+button('Backtag planen','plan')+button('Rezept drucken','printRecipe')+(user?button('Zur Einkaufsliste','addShopping')+'<button class="favorite-toggle '+((local().favorites||[]).includes(current.id)?'is-favorite':'')+'" data-act="favorite:'+escape(current.id)+'">'+icon('heart',18)+' '+((local().favorites||[]).includes(current.id)?'Aus Favoriten entfernen':'Als Favorit merken')+'</button>':'')):(box('<div class="illustrated-section"><div><span class="hero-kicker">REZEPTSAMMLUNG</span><h2>Meine Rezepte</h2></div><div class="recipe-toolbar"><button type="button" data-act="focusRecipeSearch" aria-label="Rezepte suchen">'+icon('search',20)+'</button><button type="button" data-act="own" aria-label="Eigenes Rezept hinzufügen">'+icon('plus',20)+'</button></div><img src="/design/tile-backtage.png" alt="" loading="lazy" width="70" height="65"></div>','recipe-banner')+box('<label for="search">Rezept suchen</label><input id="search" placeholder="Rezept oder Mehl suchen …">'+recipeCategoryOptions(recipesForPlanning(),escape)+(!recipes.length?'<button class="studio-retry" data-act="reloadCatalog">Rezeptbibliothek erneut laden</button>':'')+'<div id="recipeResults" class="recipe-gallery">'+recipeCards(recipesForPlanning(),escape,'recipe',user?(local().favorites||[]):[])+'</div>')),
 plan:()=>planningView(current||recipes[0],escape,new Date(),flourTable,local().starters||[]),
 buddy:()=>user?box('<img class="buddy-watercolor" src="/art-buddy.svg" alt="" loading="lazy" decoding="async"><div class="chat" id="messages"></div><label>Stelle dem KI-Buddy eine Frage</label><textarea id="question" placeholder="Was möchtest du wissen?"></textarea><label>Foto (optional)</label><input id="photo" type="file" accept="image/jpeg,image/png,image/webp"><label><input type="checkbox" id="consent" style="width:auto"> Ich stimme der KI-Auswertung meiner Angaben zu.</label>'+button('Senden','sendBuddy')+'<details><summary>Rezeptfoto importieren</summary><input type="file" id="recipePhoto" accept="image/jpeg,image/png,image/webp">'+button('Rezept auslesen','extract')+'</details>'):box('<p>Für den KI-Buddy ist eine Anmeldung nötig.</p>'+button('Anmelden','account')),
-account:()=>user?box('<h2>Angemeldet</h2><p>'+escape(user.email)+'</p>'+'<div class="stack">'+button('Meine Starter','starters')+button('Meine Mehle & Vorrat','pantry')+button('Einkaufsliste','shopping')+button('Wissen','knowledge')+button('Sauerteig Plus','billing')+'</div>'+button('Cloud-Sicherung','push')+button('Cloud-Daten laden','pull')+button('Daten exportieren','exportData')+'<label for="backupFile">Datensicherung importieren</label><input id="backupFile" type="file" accept=".json,application/json">'+button('Datensicherung laden','importData')+button('Konto und Daten löschen','deleteAccount')+button('Abmelden','logout')):box('<h2>Anmelden</h2><label>E-Mail</label><input id="email" type="email"><label>Passwort</label><input id="password" type="password">'+button('Anmelden','login')+button('Registrieren','signup')+button('Passwort zurücksetzen','reset')),
+account:()=>user?personalStartersPreview(local().starters,escape)+box('<h2>Angemeldet</h2><p>'+escape(user.email)+'</p>'+'<div class="stack">'+button('Meine Mehle & Vorrat','pantry')+button('Einkaufsliste','shopping')+button('Wissen','knowledge')+button('Sauerteig Plus','billing')+'</div>'+button('Cloud-Sicherung','push')+button('Cloud-Daten laden','pull')+button('Daten exportieren','exportData')+'<label for="backupFile">Datensicherung importieren</label><input id="backupFile" type="file" accept=".json,application/json">'+button('Datensicherung laden','importData')+button('Konto und Daten löschen','deleteAccount')+button('Abmelden','logout')):box('<h2>Anmelden</h2><label>E-Mail</label><input id="email" type="email"><label>Passwort</label><input id="password" type="password">'+button('Anmelden','login')+button('Registrieren','signup')+button('Passwort zurücksetzen','reset')),
 shopping:()=>user?box('<div class="illustrated-section"><div><span class="hero-kicker">DEIN EINKAUF</span><h2>Einkaufsliste</h2></div><img src="/design/tile-einkauf.png" alt="" width="150" height="115" loading="lazy"></div><div class="shopping-add"><label for="shopNewName" class="sr-only">Zutat hinzufügen</label><input id="shopNewName" placeholder="Zutat hinzufügen …" maxlength="100"><label for="shopNewGrams" class="sr-only">Menge in Gramm</label><input id="shopNewGrams" type="number" min="1" step="1" placeholder="g" aria-label="Menge in Gramm" style="max-width:64px"><button data-act="addShoppingManual" aria-label="Zutat hinzufügen">+</button></div><div id="shop"></div>'+button('Liste teilen','share')):signInGate('Diese Funktion speichert persönliche Backdaten. Bitte melde dich an.'),
-starters:()=>user?box('<img class="section-watercolor" src="/art-starter.svg" alt="Aquarell eines Sauerteigglases"><h2>Meine Starter</h2><div id="starters"></div><label>Name</label><input id="starterName" placeholder="z. B. Wilma">'+'<label>Starterart</label><select id="newStarterType"><option>Weizen</option><option>Roggen</option><option>Dinkel</option></select><label>Hydration (%)</label><input id="newStarterHydration" type="number" min="20" max="250" value="100"><label>Fütterungsverhältnis</label><select id="starterRatio"><option>1:2:2</option><option>1:1:1</option><option>1:3:3</option><option>1:5:5</option></select>'+button('Starter hinzufügen','addStarter')):signInGate('Diese Funktion speichert persönliche Backdaten. Bitte melde dich an.'),
+starters:()=>user?box('<img class="section-watercolor" src="/art-starter.svg" alt="Aquarell eines Sauerteigglases"><h2>Meine Starter</h2><div id="starters"></div><label>Name</label><input id="starterName" placeholder="z. B. Wilma">'+'<label>Starterart</label><select id="newStarterType"><option>Weizen</option><option>Roggen</option><option>Dinkel</option></select><label>Verwendetes Mehl (optional)</label><input id="newStarterFlour" maxlength="90" placeholder="z. B. Weizenmehl Type 550"><label>Hydration (%)</label><input id="newStarterHydration" type="number" min="20" max="250" value="100"><label>Fütterungsverhältnis</label><select id="starterRatio"><option>1:2:2</option><option>1:1:1</option><option>1:3:3</option><option>1:5:5</option></select>'+button('Starter hinzufügen','addStarter')):signInGate('Diese Funktion speichert persönliche Backdaten. Bitte melde dich an.'),
 backtag:()=>backtagView(getActive(),escape,!!user)+(getParked().length?box('<h3>Weitere laufende Backtage</h3>'+getParked().map((b,i)=>'<button class="item" data-act="switchBake:'+i+'">'+escape(b.title)+' · Schritt '+(b.index+1)+' von '+b.steps.length+'</button>').join('')):''),
 own:()=>user?ownRecipesView(local().ownRecipes||[],escape,editingOwn):signInGate('Diese Funktion speichert persönliche Backdaten. Bitte melde dich an.'),
 moderation:()=>moderator?box('<h2>Rezeptfreigaben</h2><div id="pendingRecipes"></div>'):box('Kein Zugriff.'),
@@ -81,7 +85,7 @@ const local=()=>{try{return normalizeLocal(JSON.parse((storageKey()&&localStorag
 function activeAt(date,from,to){const h=date.getHours()*60+date.getMinutes(),a=from.split(':').map(Number),b=to.split(':').map(Number),x=a[0]*60+a[1],y=b[0]*60+b[1];return x>y?(h>=x||h<y):(h>=x&&h<y)}
 function plan(recipe,want,from,to,ready){const stock=(recipe.stock[0]+recipe.stock[1])*30,proof=(recipe.proof[0]+recipe.proof[1])*30,bake=recipe.bake.reduce((s,x)=>s+x.min,0);for(let shift=0;shift<21*1440;shift+=15){const finish=+want+shift*60000,oven=finish-bake*60000,shape=oven-(proof+20)*60000,mix=shape-stock*60000,autolyse=mix-(recipe.autolyse||0)*60000,feed=autolyse-9*3600000;const steps=[...(!ready?[['Starter füttern',feed,10]]:[]),...(recipe.autolyse?[['Autolyse ansetzen',autolyse,10]]:[]),['Teig mischen',mix,15],['Stockgare prüfen',shape-10*60000,5],['Formen',shape,20],['Vorheizen',oven-45*60000,5],['Stückgare prüfen',oven-10*60000,5],['Backen',oven,5]];if(recipe.soaker)steps.push(['Quellstück ansetzen',mix-(recipe.soaker.hours*60+10)*60000,10]);if(recipe.starter.type==='Weizen')steps.push(['Teig falten',mix+40*60000,5],['Teig falten',mix+80*60000,5]);if(steps.some(s=>s[1]<Date.now()||Array.from({length:s[2]},(_,i)=>activeAt(new Date(s[1]+i*60000),from,to)).some(Boolean)))continue;return {finish,steps:steps.sort((a,b)=>a[1]-b[1]),shift}}return null}
 function readImage(file){return new Promise((ok,no)=>{if(!file)return ok(null);if(file.size>12000000)return no(Error('Bild zu groß (max. 12 MB)'));const url=URL.createObjectURL(file),img=new Image();img.onload=()=>{try{const size=Math.min(1,1280/Math.max(img.width,img.height)),canvas=document.createElement('canvas');canvas.width=Math.max(1,Math.round(img.width*size));canvas.height=Math.max(1,Math.round(img.height*size));canvas.getContext('2d').drawImage(img,0,0,canvas.width,canvas.height);const data=canvas.toDataURL('image/jpeg',0.76);if(data.length>2100000)throw Error('Bild nach Verkleinerung noch zu groß');ok(data)}catch(e){no(e)}finally{URL.revokeObjectURL(url)}};img.onerror=()=>{URL.revokeObjectURL(url);no(Error('Bild konnte nicht gelesen werden'))};img.src=url})}
-async function action(a){try{
+async function action(a,originElement=null){try{
 if(a.startsWith('problem:')){const topic=a.slice(8);tab='buddy';render();if(user){$('#question').value='Hilf mir bei folgendem Sauerteigproblem: '+topic}else note('Bitte anmelden, um den KI-Buddy zu nutzen.');return}
 if(a.startsWith('communitySave:')){const id=a.slice(14),d=local();d.communitySaved=d.communitySaved||[];d.communitySaved=d.communitySaved.includes(id)?d.communitySaved.filter(x=>x!==id):[...d.communitySaved,id];save(d);showCommunity();return}
 if(a.startsWith('communityReport:')){const reason=prompt('Warum möchtest du dieses Rezept melden?');if(!reason)return;if(reason.trim().length<5)throw Error('Bitte den Grund genauer beschreiben');await request('/api/community/report','POST',{id:a.slice(16),reason});note('Meldung eingereicht');return}
@@ -98,12 +102,59 @@ if(a.startsWith('billingCheckout:')){if(!billingStatus.enabled)throw Error('Zahl
 if(a==='billingPortal'){const j=await request('/api/billing/portal','POST',{});location.assign(j.url);return}
 if(a==='focusRecipeSearch'){document.getElementById('search')?.focus();return}
 if(a==='reloadCatalog'){try{const r=await fetch('/recipes.json',{cache:'no-store'});if(!r.ok)throw Error();const list=await r.json();if(!Array.isArray(list))throw Error();recipes=list;render();note('Rezepte geladen')}catch{note('Rezepte noch nicht erreichbar. Bitte erneut versuchen.')}return}
-if(a==='newPlan'){current=null;tab='recipeSelect';render();window.scrollTo(0,0);return}
-if(a.startsWith('selectForPlan:')){const recipe=recipesForPlanning().find(r=>r.id===a.slice(14));if(!recipe)throw Error('Rezept nicht gefunden');current=recipe;tab='plan';render();return}
-if(a==='back'){if(tab==='backtag'){const b=getActive();if(b&&b.index>0){b.index--;setActive(b);render();return}tab='plan'}else if(tab==='plan'){tab='recipes'}else if(tab==='recipes'&&current){current=null}else{tab='start'}render();return}
-if(pages[a]){if(a==='recipes')current=null;tab=a;render();window.scrollTo(0,0);if(a==='shopping')shop();if(a==='starters')starters();if(a==='community')community();if(a==='moderation')loadPending();if(a==='billing')refreshBilling();return}
+if(a==='newPlan'){current=null;tab='bakeChoice';render();window.scrollTo(0,0);return}
+if(a==='planFromRecipe'){current=null;planOrigin='recipeSelect';tab='recipeSelect';render();window.scrollTo(0,0);return}
+if(a==='newRecipe'){blendDraft=null;tab='recipeBuilder';render();window.scrollTo(0,0);return}
+if(a.startsWith('selectForPlan:')){const recipe=recipesForPlanning().find(r=>r.id===a.slice(14));if(!recipe)throw Error('Rezept nicht gefunden');current=recipe;planOrigin='recipeSelect';tab='plan';render();window.scrollTo(0,0);return}
+if(a==='back'){if(tab==='backtag'){const b=getActive();if(b&&b.index>0){b.index--;setActive(b);render();return}tab='plan'}
+else if(tab==='plan')tab=planOrigin==='recipeBuilder'?'recipeBuilder':planOrigin==='own'?'own':planOrigin==='recipes'?'recipes':'recipeSelect';
+else if(tab==='recipeBuilder'||tab==='recipeSelect')tab='bakeChoice';
+else if(tab==='bakeChoice')tab='hub';
+else if(tab==='starters')tab='account';
+else if(tab==='recipes'&&current)current=null;
+else tab='start';
+render();window.scrollTo(0,0);return}
+if(pages[a]){if(a==='recipes')current=null;if(a==='plan')planOrigin='recipes';tab=a;render();window.scrollTo(0,0);if(a==='shopping')shop();if(a==='starters')starters();if(a==='community')community();if(a==='moderation')loadPending();if(a==='billing')refreshBilling();return}
 if(a==='clear'){current=null;tab='recipes';render();return}
 if(a.startsWith('recipe:')){current=[...recipes,...(local().ownRecipes||[]).map(x=>x.recipe).filter(Boolean)].find(x=>x.id===a.slice(7));if(!current){note('Rezept noch nicht verfügbar. Öffne die Rezeptbibliothek erneut.');return}scale=1;tab='recipes';render();window.scrollTo(0,0);return}
+if(a==='blendAdd'){
+ const container=$('#blendRows'),rows=container?.querySelectorAll('[data-flour-row]');
+ if(!container||!rows)throw Error('Mehlauswahl nicht verfügbar');
+ if(rows.length>=16)throw Error('Maximal 16 Mehlsorten möglich');
+ container.insertAdjacentHTML('beforeend',flourBlendRow(flourTable,escape,'','',rows.length));
+ refreshBlendPreview();captureBlendDraft();return
+}
+if(a==='blendRemove'){
+ const container=$('#blendRows'),row=originElement?.closest('[data-flour-row]');
+ if(!container||!row)return;
+ if(container.querySelectorAll('[data-flour-row]').length<=1)throw Error('Mindestens eine Mehlsorte muss bleiben');
+ row.remove();refreshBlendPreview();captureBlendDraft();return
+}
+if(a==='planFlourAdd'){
+ const container=$('#planFlours');if(!container)return;
+ const items=[...container.querySelectorAll('[data-plan-flour-row]')];
+ if(items.length>=16)throw Error('Maximal 16 Mehlsorten möglich');
+ const n=Math.max(-1,...items.map(row=>Number(row.querySelector('.plan-flour-preset')?.id.replace('flourPreset',''))).filter(Number.isFinite))+1;
+ container.insertAdjacentHTML('beforeend',planFlourRow({name:'',grams:0},n,flourTable,escape));return
+}
+if(a==='planFlourRemove'){
+ const container=$('#planFlours'),row=originElement?.closest('[data-plan-flour-row]');
+ if(!container||!row)return;
+ if(container.querySelectorAll('[data-plan-flour-row]').length<=1)throw Error('Mindestens eine Mehlsorte muss bleiben');
+ row.remove();refreshPlanBlendPreview();return
+}
+if(a==='blendSave'||a==='blendPlan'){
+ captureBlendDraft();
+ const {raw,suggested}=readBlendRecipe(document,flourTable);
+ const parsed=parseOwnRecipe(raw);parsed.starter.hydration=suggested.starterHydration;
+ if(a==='blendSave'){
+  if(!user)throw Error('Für das Speichern melde dich bitte unter „Ich“ an. Die Berechnung ist auch ohne Konto möglich.');
+  const data=local();data.ownRecipes=data.ownRecipes||[];
+  data.ownRecipes.push({...raw,recipe:parsed});save(data);
+  blendDraft=null;editingOwn=null;tab='own';render();note('Dein Rezept wurde gespeichert');return
+ }
+ current=parsed;planOrigin='recipeBuilder';tab='plan';render();window.scrollTo(0,0);return
+}
 if(a==='calculate'){
  const data=readPlanningForm(current||recipes[0],id=>document.getElementById(id));
  const p=makePlan(data.recipe,data.finish,data.from,data.to,data.ready,data.preheat,data.awayFrom,data.awayTo,data.options);
@@ -140,7 +191,7 @@ if(a.startsWith('favorite:')){if(!user){tab='account';render();note('Zum Speiche
 if(a.startsWith('recipeCat:')){const value=a.slice('recipeCat:'.length),select=document.getElementById('recipeCategory');if(select){select.value=value;refreshRecipeResults()}return}
 if(a==='addShoppingManual'){const name=String(document.getElementById('shopNewName')?.value||'').trim(),grams=Number(document.getElementById('shopNewGrams')?.value);if(!name||!Number.isFinite(grams)||grams<=0||grams>100000){note('Bitte Zutat und gültige Menge in Gramm eingeben');return}const d=local(),entry=d.shopping.find(x=>String(x.name).toLocaleLowerCase('de-DE')===name.toLocaleLowerCase('de-DE'));if(entry)entry.grams=(Number(entry.grams)||0)+Math.round(grams);else d.shopping.push({name,grams:Math.round(grams),done:false});save(d);const input=document.getElementById('shopNewName'),amount=document.getElementById('shopNewGrams');if(input)input.value='';if(amount)amount.value='';shop();note('Zutat hinzugefügt');return}
 if(a==='addShopping'){const d=local(),r=current;for(const x of [...r.flours.map(x=>[x.name,x.grams]),['Wasser',r.water],['Salz',r.salt],['Starter',r.starter.grams],...r.extras.map(x=>[x.name,x.grams])]){let row=d.shopping.find(y=>y.name===x[0]);if(row)row.grams+=Math.round(x[1]*scale);else d.shopping.push({name:x[0],grams:Math.round(x[1]*scale)})}save(d);note('Zutaten hinzugefügt');return}
-if(a.startsWith('starterUpdate:')){const i=Number(a.slice(14)),d=local(),st=d.starters[i],name=$('#starterEditName'+i).value.trim(),hydration=Number($('#starterEditHydration'+i).value);if(!st||!name||hydration<20||hydration>250)throw Error('Bitte gültige Starterdaten eingeben');st.name=name;st.hydration=hydration;save(d);starters();note('Starter aktualisiert');return}
+if(a.startsWith('starterUpdate:')){const i=Number(a.slice(14)),d=local(),st=d.starters[i],name=$('#starterEditName'+i).value.trim(),hydration=Number($('#starterEditHydration'+i).value);if(!st||!name||hydration<20||hydration>250)throw Error('Bitte gültige Starterdaten eingeben');st.name=name;st.hydration=hydration;st.type=$('#starterEditType'+i)?.value||st.type;st.flourName=$('#starterEditFlour'+i)?.value.trim().slice(0,90)||'';save(d);starters();note('Starter aktualisiert');return}
 if(a.startsWith('starterDelete:')){const i=Number(a.slice(14));if(!confirm('Diesen Starter wirklich löschen?'))return;const d=local();d.starters.splice(i,1);save(d);starters();return}
 if(a.startsWith('starterRecord:')){const i=Number(a.slice(14)),d=local(),st=d.starters[i];if(!st)throw Error('Starter nicht gefunden');const temperature=Number($('#starterLogTemp'+i).value),peakHours=Number($('#starterLogHours'+i).value),ratio=$('#starterLogRatio'+i).value;if(temperature<5||temperature>40||peakHours<0.5||peakHours>72||!Number.isFinite(peakHours))throw Error('Bitte gültige Temperatur und Peakzeit eingeben');st.logs=st.logs||[];st.logs.push({date:new Date().toLocaleDateString('de-DE'),temperature,peakHours,ratio});st.ratio=ratio;save(d);starters();note('Startermessung gespeichert');return}
 if(a.startsWith('feed:')){const st=local().starters[Number(a.slice(5))];if(!st)throw Error('Starter nicht gefunden');const total=Number(prompt('Wie viel reifen Starter brauchst du insgesamt (g)?','180'));if(!Number.isFinite(total)||total<=0)return;const parts=(st.ratio||'1:2:2').split(':').map(Number),factor=parts.reduce((a,b)=>a+b,0),seed=Math.ceil(total*parts[0]/factor),flour=Math.ceil(total*parts[1]/factor),water=Math.ceil(total*parts[2]/factor);alert('Für ca. '+(seed+flour+water)+' g Starter bei '+(st.ratio||'1:2:2')+':\n'+seed+' g Anstellgut\n'+flour+' g Mehl\n'+water+' g Wasser\nReifezeit hängt von Temperatur und Starteraktivität ab.');return}
@@ -157,11 +208,11 @@ if(a==='ownSave'){
 }
 if(a.startsWith('ownEdit:')){editingOwn=Number(a.slice(8));render();return}
 if(a.startsWith('ownDuplicate:')){const d=local(),i=Number(a.slice(13));if(!d.ownRecipes?.[i])return;const copy=structuredClone(d.ownRecipes[i]);copy.title+=' (Kopie)';if(copy.recipe){copy.recipe.title=copy.title;copy.recipe.id='own-'+Date.now()}d.ownRecipes.push(copy);save(d);render();return}
-if(a.startsWith('ownPlan:')){const r=local().ownRecipes?.[Number(a.slice(8))]?.recipe;if(!r)throw Error('Bitte zuerst Rezeptangaben vervollständigen');current=r;tab='plan';render();return}
+if(a.startsWith('ownPlan:')){const r=local().ownRecipes?.[Number(a.slice(8))]?.recipe;if(!r)throw Error('Bitte zuerst Rezeptangaben vervollständigen');current=r;planOrigin='own';tab='plan';render();return}
 if(a.startsWith('ownDelete:')){const d=local();d.ownRecipes=d.ownRecipes||[];d.ownRecipes.splice(Number(a.slice(10)),1);save(d);editingOwn=null;render();return}
 if(a==='ownFetchUrl'){const url=$('#ownImportUrl')?.value?.trim();if(!url)throw Error('Bitte Rezeptlink eingeben');const j=await request('/api/recipe-url','POST',{url});$('#ownImportText').value=j.text;if(j.structuredRecipe){$('#ownTitle').value=j.structuredRecipe.title;$('#ownIngredients').value=j.structuredRecipe.ingredients.join('\n');$('#ownSteps').value=j.structuredRecipe.steps.join('\n');note('Rezeptdaten übernommen. Mengen, Gärzeiten und Backtemperatur vor dem Speichern prüfen.')}else note('Rezepttext geladen. Prüfe ihn und starte bei Bedarf die KI-Auswertung.');return}
 if(a==='ownImport'){if(!$('#ownImportConsent').checked)throw Error('Bitte KI-Auswertung erlauben');const text=$('#ownImportText').value.trim(),image=await readImage($('#ownImportPhoto').files[0]);if(!text&&!image)throw Error('Bitte Rezepttext oder Foto auswählen');const j=await request('/api/recipe-extract','POST',{text,image});const r=normalizeExtractedRecipe(j.recipe);$('#ownTitle').value=r.title;$('#ownIngredients').value=r.ingredients;$('#ownSteps').value=r.steps;note('Rezept ausgelesen. Bitte vor dem Speichern überprüfen.');return}
-if(a==='addStarter'){const name=$('#starterName').value.trim();if(!name)throw Error('Name fehlt');const d=local();d.starters.push({name,type:$('#newStarterType').value,hydration:Number($('#newStarterHydration').value)||100,ratio:$('#starterRatio').value,logs:[]});save(d);starters();return}
+if(a==='addStarter'){const name=$('#starterName').value.trim(),hydration=Number($('#newStarterHydration').value);if(!name||!Number.isFinite(hydration)||hydration<20||hydration>250)throw Error('Bitte Name und gültige Starter-Hydration eingeben');const d=local();d.starters.push({name,type:$('#newStarterType').value,flourName:$('#newStarterFlour')?.value.trim().slice(0,90)||'',hydration,ratio:$('#starterRatio').value,logs:[]});save(d);render();starters();return}
 if(a==='login'||a==='signup'){const email=$('#email').value,password=$('#password').value;const j=await auth(a==='login'?'token?grant_type=password':'signup?redirect_to='+encodeURIComponent(location.origin+'/'),{email,password});if(j.access_token){token=j.access_token;refreshToken=j.refresh_token||'';user=j.user;sessionStorage.setItem('sauerteig-session',JSON.stringify({token,refreshToken,user}))}if(j.access_token){await syncOnLogin();await refreshBilling();if(!local().onboarded)tab='onboarding'}note(a==='signup'?'Bitte Bestätigungsmail prüfen':'Angemeldet');render();return}
 if(a==='reset'){await auth('recover?redirect_to='+encodeURIComponent(location.origin+'/'),{email:$('#email').value});note('Wenn die Adresse registriert ist, wird eine E-Mail versendet.');return}
 if(a==='importData'){if(!user)throw Error('Bitte anmelden');const data=await readBackup(document.getElementById('backupFile')?.files?.[0]);if(!confirm('Die importierten Daten ersetzen deine bisherigen persönlichen Backdaten. Möchtest du fortfahren?'))return;if(data.activeBake)localStorage.setItem(activeKey(),JSON.stringify(data.activeBake));else localStorage.removeItem(activeKey());if(data.parallelBakes?.length)localStorage.setItem(parkedKey(),JSON.stringify(data.parallelBakes));else localStorage.removeItem(parkedKey());save(data);note('Datensicherung importiert. Cloud-Abgleich wird gestartet.');tab='account';render();return}
@@ -184,7 +235,7 @@ function showCommunity(){const el=$('#community');if(!el)return;el.innerHTML=ren
 async function community(){try{const j=await request('/api/community');communityRows=j.recipes||[];showCommunity()}catch{$('#community').textContent='Community gerade nicht erreichbar'}}
 document.addEventListener('input',e=>{if(['communitySearch','communityBreadType','communityHydMin','communityHydMax','communityMaxHours'].includes(e.target.id))showCommunity()});
 document.addEventListener('change',e=>{if(['communityFlour','communityDifficulty','communitySort','communitySavedOnly','communityStarter'].includes(e.target.id))showCommunity()});
-document.addEventListener('click',e=>{const a=e.target.closest('[data-act]')?.dataset.act||e.target.closest('[data-tab]')?.dataset.tab;if(a)action(a)});
+document.addEventListener('click',e=>{const a=e.target.closest('[data-act]')?.dataset.act||e.target.closest('[data-tab]')?.dataset.tab;if(a)action(a,e.target)});
 document.addEventListener('input',e=>{if(e.target.id==='pickRecipeSearch'){const needle=e.target.value.toLocaleLowerCase('de-DE');const found=recipesForPlanning().filter(r=>r.title.toLocaleLowerCase('de-DE').includes(needle));const list=document.getElementById('pickRecipeResults');if(list)list.innerHTML=recipeCards(found,escape,'selectForPlan')}});
 const refreshRecipeResults=()=>{const category=document.getElementById('recipeCategory')?.value||'',gallery=document.getElementById('recipeResults');if(gallery)gallery.innerHTML=recipeCards(filterRecipeLibrary(recipesForPlanning(),document.getElementById('search')?.value||'',category),escape,'recipe',user?(local().favorites||[]):[]);document.querySelectorAll('.recipe-category-chip').forEach(chip=>chip.setAttribute('aria-pressed',String(chip.dataset.act==='recipeCat:'+category)))};
 document.addEventListener('input',e=>{if(e.target.id==='search')refreshRecipeResults()});
@@ -208,6 +259,89 @@ document.addEventListener('change',e=>{
  if(/^flourAmount\d+$/.test(id)){const rows=[...document.querySelectorAll('[id^="flourAmount"]')],total=rows.reduce((a,x)=>a+Number(x.value||0),0);if($('#flourPerLoaf')&&total>0)$('#flourPerLoaf').value=total}
 });
 document.addEventListener('change',e=>{if(e.target.id==='scale'){scale=Number(e.target.value);render();$('#scale').value=String(scale)}});
+
+function captureBlendDraft(){
+ const root=$('#blendRows');if(!root)return;
+ const ids=['blendSaltPct','blendHydration','blendWater','blendStarter','blendSalt','blendStarterType','blendSavedStarter','blendTitle','blendSteps','blendBakeTemp','blendBakeMin','blendStockHours','blendProofHours'];
+ const values={};for(const id of ids){const el=document.getElementById(id);if(el)values[id]=el.value}
+ blendDraft={rows:readBlendEntries(document),values,auto:!!$('#blendAuto')?.checked,
+  manualStarter:$('#blendStarterType')?.dataset.userSelected==='1',
+  details:!!$('#blendRecipeDetails')?.open};
+}
+function restoreBlendDraft(){
+ const saved=blendDraft,root=$('#blendRows');if(!saved||!root)return;
+ if(saved.rows.length&&flourTable.length)root.innerHTML=saved.rows.map((row,i)=>flourBlendRow(flourTable,escape,row.name,row.grams,i)).join('');
+ for(const [id,value] of Object.entries(saved.values||{})){const el=document.getElementById(id);if(el)el.value=value}
+ if($('#blendAuto'))$('#blendAuto').checked=saved.auto;
+ if($('#blendStarterType'))$('#blendStarterType').dataset.userSelected=saved.manualStarter?'1':'';
+ if($('#blendRecipeDetails'))$('#blendRecipeDetails').open=saved.details;
+}
+function refreshBlendPreview(){
+ const el=$('#blendResult');if(!el)return;
+ const auto=$('#blendAuto')?.checked;
+ for(const id of ['blendWater','blendStarter','blendSalt']){const field=document.getElementById(id);if(field)field.readOnly=!!auto}
+ try{
+  const mixture=flourBlendSuggestion(flourTable,readBlendEntries(document),{saltPercent:Number($('#blendSaltPct')?.value),starterHydration:Number($('#blendHydration')?.value)});
+  if(auto){
+   $('#blendWater').value=mixture.water;
+   $('#blendStarter').value=mixture.starter;
+   $('#blendSalt').value=mixture.salt;
+   if($('#blendStarterType')?.dataset.userSelected!=='1')$('#blendStarterType').value=mixture.suggestedStarter.charAt(0).toUpperCase()+mixture.suggestedStarter.slice(1);
+  }
+  const water=Number($('#blendWater')?.value),starter=Number($('#blendStarter')?.value),salt=Number($('#blendSalt')?.value);
+  el.innerHTML=blendSummary(mixture,water,starter,salt);
+ }catch(e){el.textContent=e.message||'Bitte Mehlmengen prüfen.'}
+}
+function refreshPlanBlendPreview(){
+ const container=$('#planFlours'),preview=$('#doughPreview');
+ if(!container||!preview)return;
+ const rows=[...container.querySelectorAll('[data-plan-flour-row]')];
+ const entries=rows.map(row=>({name:(row.querySelector('.plan-flour-name')?.value||row.querySelector('.plan-flour-preset')?.value||'').trim(),grams:Number(row.querySelector('.plan-flour-grams')?.value)})).filter(x=>x.grams>0);
+ const total=entries.reduce((a,x)=>a+x.grams,0);
+ if(total>0&&$('#flourPerLoaf'))$('#flourPerLoaf').value=Math.round(total*10)/10;
+ try{
+  if(!entries.length)throw Error('Bitte mindestens eine Mehlmenge eingeben.');
+  const hydration=Number($('#starterHydration')?.value)||100;
+  const mixture=flourBlendSuggestion(flourTable,entries,{starterHydration:hydration});
+  if($('#planAutoIngredients')?.checked){
+   if($('#waterAmount'))$('#waterAmount').value=mixture.water;
+   if($('#starterAmount'))$('#starterAmount').value=mixture.starter;
+   if($('#saltAmount'))$('#saltAmount').value=mixture.salt;
+   if($('#starterType'))$('#starterType').value=mixture.suggestedStarter.charAt(0).toUpperCase()+mixture.suggestedStarter.slice(1);
+  }
+  const water=Number($('#waterAmount')?.value),starter=Number($('#starterAmount')?.value),salt=Number($('#saltAmount')?.value);
+  preview.textContent='Mehl '+mixture.flourTotal+' g · Wasser '+water+' g · Starter '+starter+' g · Salz '+salt+' g · Teig ca. '+(Math.round((mixture.flourTotal+water+starter+salt)*10)/10)+' g. Mengen nach Mehltabelle; Gärzeiten bleiben rezeptabhängig.';
+ }catch(e){preview.textContent='Automatischer Vorschlag nicht möglich: '+(e.message||'Mehlsorten prüfen')+'. Mengen können manuell eingegeben werden.'}
+}
+document.addEventListener('input',e=>{
+ if(e.target.closest('#blendRows')||['blendSaltPct','blendHydration','blendWater','blendStarter','blendSalt'].includes(e.target.id)){refreshBlendPreview();captureBlendDraft()}
+ if(e.target.closest('#planFlours')&&e.target.classList.contains('plan-flour-grams'))refreshPlanBlendPreview();
+ if(e.target.closest('#blendRecipeDetails'))captureBlendDraft();
+});
+document.addEventListener('change',e=>{
+ if(e.target.id==='blendAuto'){refreshBlendPreview();captureBlendDraft()}
+ if(e.target.id==='blendSavedStarter'){
+  const st=local().starters?.[Number(e.target.value)];
+  if(e.target.value!==''&&st){
+   if($('#blendStarterType')){$('#blendStarterType').value=st.type||'Weizen';$('#blendStarterType').dataset.userSelected='1'}
+   if($('#blendHydration'))$('#blendHydration').value=st.hydration||100;
+  }
+  refreshBlendPreview();captureBlendDraft();
+ }
+ if(e.target.id==='blendStarterType')e.target.dataset.userSelected='1';
+ if(e.target.closest('#blendRows')||e.target.closest('#blendRecipeDetails')){refreshBlendPreview();captureBlendDraft()}
+ if(e.target.closest('#planFlours')){
+  if(e.target.classList.contains('plan-flour-preset')){
+   const row=e.target.closest('[data-plan-flour-row]');if(e.target.value&&row)row.querySelector('.plan-flour-name').value=e.target.value;
+  }
+  if(e.target.classList.contains('plan-flour-name')){
+   const row=e.target.closest('[data-plan-flour-row]');const select=row?.querySelector('.plan-flour-preset');if(select&&select.value!==e.target.value)select.value='';
+  }
+  refreshPlanBlendPreview();
+ }
+ if(e.target.id==='planAutoIngredients'&&e.target.checked)refreshPlanBlendPreview();
+});
+
 async function loadApiConfig(){
  const delays=[0,3000,6000,11000,18000,26000];
  for(const delay of delays){

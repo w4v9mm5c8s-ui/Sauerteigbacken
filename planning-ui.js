@@ -1,4 +1,8 @@
 import {doughWeight,isDoughIngredient} from './dough-weight.js';
+export function planFlourRow(f,i,table=[],esc=x=>String(x)){
+ const options='<option value="">Manuell eingeben</option>'+table.map(row=>'<option value="'+esc(row.name)+'" '+(row.name===f.name?'selected':'')+'>'+esc(row.name)+'</option>').join('');
+ return '<div class="plan-flour-row" data-plan-flour-row><label for="flourPreset'+i+'">Mehl aus der Tabelle</label><select class="plan-flour-preset" id="flourPreset'+i+'">'+options+'</select><div class="cols"><div><label for="flourName'+i+'">Mehlsorte</label><input class="plan-flour-name" id="flourName'+i+'" maxlength="90" value="'+esc(f.name||'')+'"></div><div><label for="flourAmount'+i+'">Menge (g)</label><input class="plan-flour-grams" id="flourAmount'+i+'" type="number" min="0" max="20000" step="0.1" value="'+esc(f.grams??0)+'"></div></div><button type="button" class="plan-flour-remove" data-act="planFlourRemove">Mehl entfernen</button></div>';
+}
 const num=(v,f=0)=>Number.isFinite(Number(v))?Number(v):f;
 export function planningView(r,esc,now,flourTable=[],starters=[]){
  if(!r)return '<section class="card">Bitte zuerst ein Rezept auswählen.</section>';
@@ -11,12 +15,16 @@ export function planningView(r,esc,now,flourTable=[],starters=[]){
  field('Mehlmenge je Brot (g)','flourPerLoaf',Math.round(flour),'type="number" min="50" max="10000"')+field('Gewünschtes fertiges Brotgewicht je Brot (g, optional)','finishedWeight','','type="number" min="100" max="10000"')+field('Angenommener Backverlust (%)','bakeLoss',12,'type="number" min="0" max="30" step="0.5"')+
  '<p class="muted small">Das fertige Brot wiegt nach dem Backen weniger als der rohe Teig. Die genaue Differenz hängt vom Rezept ab.</p></details>'+
  '<details open><summary>2. Mehl und Zutaten</summary>'+
- r.flours.map((f,i)=>'<label>Mehl aus der Tabelle (optional)</label><select id="flourPreset'+i+'"><option value="">Manuell eingeben</option>'+flourTable.map(row=>'<option value="'+esc(row.name)+'" '+(row.name===f.name?'selected':'')+'>'+esc(row.name)+'</option>').join('')+'</select><div class="cols"><div>'+field('Mehl '+(i+1),'flourName'+i,f.name,'maxlength="90"')+'</div><div>'+field('Gramm','flourAmount'+i,f.grams,'type="number" min="0" max="20000"')+'</div></div>').join('')+
+ '<div id="planFlours">'+r.flours.map((f,i)=>planFlourRow(f,i,flourTable,esc)).join('')+'</div>'+
+ '<button type="button" class="plan-flour-add" data-act="planFlourAdd">+ Weiteres Mehl hinzufügen</button>'+
+ '<label class="plan-ingredients-automatic"><input id="planAutoIngredients" type="checkbox" checked> Bei Änderungen der Mehle Wasser, Starter und Salz nach Mehltabelle berechnen</label>'+
+ 
  field('Wasser (g)','waterAmount',r.water,'type="number" min="0" max="30000"')+
  field('Salz (g)','saltAmount',r.salt,'type="number" min="0" max="1000"')+
  '<div id="doughPreview" class="success">Rezeptmenge: '+Math.round(total)+' g Teig</div></details>'+
  '<details><summary>3. Starter und Fütterung</summary>'+
  field('Reifer Starter (g)','starterAmount',r.starter.grams,'type="number" min="0" max="10000"')+
+ (starters.length?'<label for="starterProfile">Gespeicherten Starter aus „Ich“ auswählen</label><select id="starterProfile"><option value="">Ohne gespeicherten Starter</option>'+starters.map((st,i)=>'<option value="'+i+'">'+esc(st.name||'Starter')+' ('+esc(st.type||'Weizen')+')</option>').join('')+'</select>':'')+
  '<label>Starter oder Anstellgut</label><select id="starterType"><option '+(r.starter.type==='Weizen'?'selected':'')+'>Weizen</option><option '+(r.starter.type==='Roggen'?'selected':'')+'>Roggen</option><option>Dinkel</option></select>'+
  field('Hydration des Starters (%)','starterHydration',r.starter.hydration||100,'type="number" min="20" max="250"')+
  '<label>Fütterungsverhältnis</label><select id="feedRatio"><option>1:2:2</option><option>1:1:1</option><option>1:3:3</option><option>1:5:5</option></select>'+
@@ -47,7 +55,8 @@ export function readPlanningForm(r,get){
  const val=id=>get(id)?.value??'',n=id=>num(val(id),NaN),optional=id=>val(id)===''?null:n(id);
  const loaves=n('loaves'),per=n('flourPerLoaf');
  if(!Number.isInteger(loaves)||loaves<1||loaves>24||!Number.isFinite(per)||per<50)throw Error('Bitte eine gültige Brotanzahl und Mehlmenge angeben');
- const flours=r.flours.map((f,i)=>({name:val('flourName'+i).trim(),grams:n('flourAmount'+i)}));
+ const flourSection=get('planFlours');
+ const flours=flourSection&&typeof flourSection.querySelectorAll==='function'?[...flourSection.querySelectorAll('[data-plan-flour-row]')].map(row=>({name:(row.querySelector('.plan-flour-name')?.value||'').trim(),grams:Number(row.querySelector('.plan-flour-grams')?.value)})):r.flours.map((f,i)=>({name:val('flourName'+i).trim(),grams:n('flourAmount'+i)}));
  if(flours.some(x=>!x.name||x.grams<0||!Number.isFinite(x.grams))||!flours.some(x=>x.grams>0))throw Error('Bitte die Mehlmengen prüfen');
  const original=flours.reduce((a,f)=>a+f.grams,0),targetWeight=optional('finishedWeight'),loss=n('bakeLoss'),rawTotal=original+n('waterAmount')+n('saltAmount')+n('starterAmount')+(r.extras||[]).filter(isDoughIngredient).reduce((a,x)=>a+x.grams,0);if(loss<0||loss>30)throw Error('Bitte einen Backverlust zwischen 0 und 30 % wählen');const added=Number(val('altbrot')||0)*(1+Number(val('altbrotRatio')||3))+Number(val('soakerAmount')||0)+Number(val('soakerWater')||0);const targetRaw=targetWeight&&targetWeight>0?targetWeight*loaves/(1-loss/100):null;if(targetRaw!==null&&targetRaw<=added)throw Error('Das Zielgewicht ist kleiner als die Quellstück-Zugaben');const factor=targetRaw!==null?(targetRaw-added)/rawTotal:per*loaves/original;
  const altbrot=n('altbrot'),soakerAmount=n('soakerAmount'),soakerWater=n('soakerWater');if([altbrot,soakerAmount,soakerWater].some(x=>!Number.isFinite(x)||x<0))throw Error('Bitte Quellstückmengen prüfen');const ingredients={...r,flours:flours.map(f=>({...f,grams:Math.round(f.grams*factor*10)/10})),water:Math.round(n('waterAmount')*factor*10)/10,salt:Math.round(n('saltAmount')*factor*10)/10,starter:{...r.starter,type:val('starterType'),grams:Math.round(n('starterAmount')*factor*10)/10},extras:[...(r.extras||[]).map(x=>({...x,grams:Math.round(x.grams*factor*10)/10})),...(altbrot?[{name:'Altbrot',grams:altbrot},{name:'Altbrot-Quellwasser',grams:altbrot*n('altbrotRatio')}]:[]),...(soakerAmount?[{name:'Quellstück',grams:soakerAmount},{name:'Quellwasser',grams:soakerWater}]:[])],altbrot:altbrot?{grams:altbrot,hours:12}:null,soaker:soakerAmount?{hours:n('soakerHours')}:r.soaker,stock:[n('stockHours'),n('stockHours')],proof:[n('proofHours'),n('proofHours')]};
