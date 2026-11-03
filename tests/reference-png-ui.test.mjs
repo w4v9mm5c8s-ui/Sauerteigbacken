@@ -18,7 +18,7 @@ test('every design graphic is an actual local PNG with valid dimensions',()=>{
   assert.ok(sw.includes("'"+path+"'"),name+' offline cache');
  }
  assert.match(server,/\.png':'image\/png'/);
- assert.match(sw,/sauerteig-public-v24/);
+ assert.match(sw,/sauerteig-public-v26/);
 });
 test('the immediately visible and dynamic home display identical PNG illustrations',()=>{
  const html=read('index.html'),live=homeView({signed:false,history:[],parked:[],active:null,recipes:[]});
@@ -29,8 +29,8 @@ test('the immediately visible and dynamic home display identical PNG illustratio
   assert.ok(html.includes('/design/'+name+'.png'),name+' first paint');
   assert.ok(live.includes('/design/'+name+'.png'),name+' dynamic paint');
  }
- assert.equal((html.match(/class="home-feature"/g)||[]).length,8);
- assert.equal((live.match(/class="home-feature"/g)||[]).length,8);
+ assert.equal((html.match(/class="studio-directory-row"/g)||[]).length,9);
+ assert.equal((live.match(/class="studio-directory-row"/g)||[]).length,9);
  assert.doesNotMatch(live,/Zuletzt gebacken/);
 });
 test('recipe photography varies by bread style and never invents personal photos',()=>{

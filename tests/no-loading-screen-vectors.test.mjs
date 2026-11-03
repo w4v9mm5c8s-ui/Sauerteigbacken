@@ -2,34 +2,35 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 const read=path=>readFileSync(new URL('../'+path,import.meta.url),'utf8');
-test('homepage is visible immediately before JavaScript loads',()=>{
+test('the new editorial homepage is visible in the initial HTML before JavaScript',()=>{
  const html=read('index.html');
  assert.match(html,/<body data-page="start">/);
- assert.match(html,/<main id="main"><section class="home-masthead">/);
- assert.match(html,/<section class="home-feature-grid"/);
+ assert.match(html,/<main id="main"><section class="studio-hero"/);
+ assert.match(html,/class="studio-primary"/);
+ assert.match(html,/class="studio-directory"/);
  assert.doesNotMatch(html,/<p>Lädt|class="loading-screen"|id="splash"/i);
  assert.match(html,/<button data-tab="start" class="active" aria-current="page"/);
 });
-test('approved reference illustrations are served as local PNG files without a splash',()=>{
- const html=read('index.html'),home=read('home.js'),css=read('theme-reference.css');
+test('watercolor PNGs and new responsive styles are served directly',()=>{
+ const html=read('index.html'),home=read('home.js'),css=read('theme-editorial.css');
  assert.match(html,/src="\/design\/hero-aquarell\.png"/);
- assert.match(home,/src="\/design\/hero-aquarell\.png"/);
- assert.match(html,/href="\/theme-reference\.css"/);
- assert.match(css,/grid-template-columns:repeat\(4,minmax\(0,1fr\)\)/);
- const server=read('server.mjs');
- assert.match(server,/\.png':'image\/png'/);
+ assert.match(home,/src=\\"\/design\/hero-aquarell\.png\\"|src="\/design\/hero-aquarell\.png"/);
+ assert.match(html,/href="\/theme-editorial\.css"/);
+ assert.match(css,/studio-photo-rail/);
+ assert.match(read('server.mjs'),/\.png':'image\/png'/);
 });
-test('SVG navigation icons are present on first paint',()=>{
+test('initial navigation icons are SVG even before scripts load',()=>{
  const html=read('index.html');
  assert.equal((html.match(/<svg class="ui-icon"/g)||[]).length,4);
- for(const id of ['home','rolling-pin','sprout','user'])assert.match(html,new RegExp('data-icon="'+id+'"><svg'));
+ for(const name of ['home','rolling-pin','sprout','user'])assert.match(html,new RegExp('data-icon="'+name+'"><svg'));
 });
-test('there is no in-app loading screen even after app startup fails',()=>{
- const js=read('app.js');
- assert.doesNotMatch(js,/textContent='App konnte nicht geladen werden/);
- assert.match(js,/main\.append\(warning\)/);
+test('initialization failures do not replace the page with a full-screen message',()=>{
+ const app=read('app.js');
+ assert.doesNotMatch(app,/textContent='App konnte nicht geladen werden/);
+ assert.doesNotMatch(app,/main\.append\(warning\)/);
+ assert.match(app,/render\(\);try\{const response=await fetch\('\/recipes\.json'/);
 });
-test('local SVG vectors have no raster data embedded',()=>{
+test('legacy vector files do not embed raster images or executable scripts',()=>{
  for(const name of ['art-hero.svg','art-buddy.svg','art-heart.svg','art-chart.svg','art-loaf.svg','art-starter.svg','art-pretzel.svg']){
   const svg=read(name);
   assert.match(svg,/^<svg/);

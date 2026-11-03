@@ -16,7 +16,7 @@ function setup(seed,network){
   self:{location:{origin},addEventListener:(type,handler)=>{handlers[type]=handler},skipWaiting:()=>{},clients:{claim:async()=>{}}},
   caches:{open:async()=>cache,keys:async()=>[],delete:async()=>true},
   fetch:async(...args)=>{requests.push(args[0].url||args[0]);return network(...args)},
-  URL,Request,Response,Set,Promise,console
+  URL,Request,Response,Set,Promise,console,setTimeout
  };
  vm.runInNewContext(source,context);
  async function request(path){
@@ -57,8 +57,15 @@ test('private API requests are never served from the public offline cache',async
  assert.deepEqual(res,{unhandled:true});
 });
 
+test('fresh HTML wins over a stale cached page when the server responds',async()=>{
+ const old=new Response('<main id="main">Alte Fassung</main>',{headers:{'Content-Type':'text/html'}});
+ const sw=setup({'/index.html':old},async()=>new Response('<main id="main">Aktuelle Fassung</main>',{headers:{'Content-Type':'text/html'}}));
+ const res=await sw.request('/');
+ assert.match(await res.response.text(),/Aktuelle Fassung/);
+ assert.match(await sw.items.get('/index.html').text(),/Aktuelle Fassung/);
+});
 test('service-worker script retains a dedicated new cache version',()=>{
- assert.match(source,/sauerteig-public-v24/);
+ assert.match(source,/sauerteig-public-v26/);
  assert.match(source,/response\.ok/);
  assert.match(source,/isRealAsset/);
 });

@@ -3,39 +3,31 @@ import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {homeView} from '../home.js';
 import {hubView} from '../hub.js';
-
 const read=path=>readFileSync(new URL('../'+path,import.meta.url),'utf8');
-const expected=['art-hero.svg','art-buddy.svg','art-books.svg','art-scale.svg','art-calendar.svg','art-chart.svg','art-heart.svg','art-pretzel.svg'];
-
-test('all primary watercolor illustrations exist as self-contained SVG assets',()=>{
- for(const asset of expected){
-  const svg=read(asset);
-  assert.match(svg,/^<svg xmlns="http:\/\/www\.w3\.org\/2000\/svg"/,asset);
-  assert.match(svg,/<title\b[^>]*>/,asset);
-  assert.match(svg,/viewBox=/,asset);
-  assert.match(svg,/<\/svg>$/,asset);
-  assert.doesNotMatch(svg,/<script|<foreignObject|onload=/i,asset);
- }
+const svgNames=['art-hero.svg','art-buddy.svg','art-books.svg','art-scale.svg','art-calendar.svg','art-chart.svg','art-heart.svg','art-pretzel.svg'];
+test('supplementary illustrations remain self-contained vectors',()=>{
+ for(const asset of svgNames){const svg=read(asset);assert.match(svg,/^<svg xmlns="http:\/\/www\.w3\.org\/2000\/svg"/);assert.match(svg,/<title\b/);assert.match(svg,/viewBox=/);assert.match(svg,/<\/svg>$/);assert.doesNotMatch(svg,/<script|<foreignObject|onload=/i)}
 });
-test('the illustration cache and public route list contain every new asset',()=>{
+test('vector motifs are cached and served alongside the new PNG artwork',()=>{
  const server=read('server.mjs'),sw=read('sw.js');
- for(const asset of expected){assert.ok(server.includes("'\/"+asset+"'"),asset+" route");assert.ok(sw.includes("'\/"+asset+"'"),asset+" cache")}
+ for(const asset of svgNames){assert.ok(server.includes("'/"+asset+"'"));assert.ok(sw.includes("'/"+asset+"'"))}
+ for(const asset of ['/design/hero-aquarell.png','/design/photo-helles.png','/theme-editorial.css']){assert.ok(server.includes("'"+asset+"'"));assert.ok(sw.includes("'"+asset+"'"))}
 });
-test('the signed-out home has eight illustrated functional shortcuts, no fake baking history',()=>{
- const html=homeView({signed:false,active:null,history:[],parked:[],recipes:[]});
- assert.equal((html.match(/class="home-feature"/g)||[]).length,8);
+test('the signed-out home provides grouped actions without displaying fake history',()=>{
+ const html=homeView({signed:false,active:null,history:[],parked:[]});
+ assert.equal((html.match(/class="studio-directory-row"/g)||[]).length,9);
  assert.match(html,/design\/tile-statistik\.png/);
  assert.match(html,/design\/tile-favoriten\.png/);
  assert.match(html,/design\/hero-aquarell\.png/);
- assert.doesNotMatch(html,/home-recent-grid/);
+ assert.doesNotMatch(html,/studio-history/);
 });
-test('the baking hub removes overlay line icons for watercolor tiles',()=>{
+test('baking navigation uses semantic rows with accessible action buttons',()=>{
  const html=hubView(()=>'',true,0,0);
- assert.match(html,/class="hub-icon has-art"/);
- const style=read('theme-v3.css');
- assert.match(style,/\.hub-icon\.has-art \.hub-line-icon\{display:none\}/);
+ assert.equal((html.match(/class="studio-hub-row"/g)||[]).length,10);
+ assert.equal((html.match(/<svg/g)||[]).length,10);
+ assert.match(html,/data-act="newPlan"/);
 });
-test('illustrations are integrated in stats, own recipes, shopping and community',()=>{
+test('illustrated data modules remain linked',()=>{
  assert.match(read('stats.js'),/art-chart\.svg/);
  assert.match(read('own-recipes.js'),/design\/tile-recipes\.png/);
  assert.match(read('community-ui.js'),/art-basket\.svg/);

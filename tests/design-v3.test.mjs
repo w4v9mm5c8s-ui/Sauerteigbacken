@@ -4,26 +4,30 @@ import {readFileSync} from 'node:fs';
 import {homeView,bakingDaysView} from '../home.js';
 const read=name=>readFileSync(new URL('../'+name,import.meta.url),'utf8');
 
-test('home screen has eight real navigation tiles with decorative watercolors',()=>{
- const html=homeView({signed:false,active:null,parked:[],history:[],favorites:[],escape:x=>String(x)});
- assert.equal((html.match(/class="home-feature"/g)||[]).length,8);
- for(const route of ['newPlan','recipes','import','bakingDays','stats','favorites','community','knowledge'])assert.ok(html.includes('data-act="'+route+'"'),route);
+test('start screen presents an editorial navigation instead of cramped feature tiles',()=>{
+ const html=homeView({signed:false,active:null,parked:[],history:[]});
+ assert.equal((html.match(/class="studio-directory-row"/g)||[]).length,9);
+ for(const route of ['newPlan','recipes','own','import','bakingDays','stats','favorites','community','knowledge','shopping'])assert.ok(html.includes('data-act="'+route+'"'),route);
  assert.match(html,/design\/hero-aquarell\.png/);
+ assert.doesNotMatch(html,/home-feature-grid|home-recent-card/);
  assert.doesNotMatch(html,/Zuletzt gebacken/);
- assert.doesNotMatch(html,/home-buddy/);
 });
-test('home only shows actual completed bakes and signed-in buddy',()=>{
- const html=homeView({signed:true,active:null,parked:[],history:[{title:'Mein Brot',date:'02.11.2026',rating:5}],escape:x=>String(x)});
+test('completed bakes are displayed only for an actual signed-in history',()=>{
+ const html=homeView({signed:true,active:null,parked:[],history:[{title:'Mein Brot',date:'02.11.2026',rating:5}]});
+ assert.match(html,/Zuletzt gebacken/);
  assert.match(html,/Mein Brot/);
  assert.match(html,/★★★★★/);
- assert.match(html,/design\/tile-recipes\.png/);
- assert.equal((html.match(/home-recent-card/g)||[]).length,1);
+ assert.match(html,/studio-history/);
+ const signedOut=homeView({signed:false,active:null,parked:[],history:[{title:'Privatbrot'}]});
+ assert.doesNotMatch(signedOut,/Privatbrot/);
 });
-test('active bake is resumed from its actual saved step',()=>{
- const active={title:'Weizen-Landbrot',index:2,steps:Array.from({length:5},(_,i)=>({title:String(i)}))};
- const html=homeView({signed:true,active,parked:[{title:'B'}],history:[],escape:x=>String(x)});
- assert.match(html,/Schritt 3 von 5/);assert.match(html,/2 Backtage parallel/);
+test('saved parallel bakes offer actions without inventing a due time',()=>{
+ const active={title:'Weizen-Landbrot',index:2,steps:Array.from({length:5},(_,i)=>({title:'Schritt '+i}))};
+ const html=homeView({signed:true,active,parked:[{title:'Zweites Brot'}],history:[]});
+ assert.match(html,/Weizen-Landbrot/);
+ assert.match(html,/Zweites Brot/);
  assert.match(html,/data-act="backtag"/);
+ assert.match(html,/switchBake:0/);
 });
 test('baking days page never invents planned bakes',()=>{
  const empty=bakingDaysView({active:null,parked:[]});
@@ -31,26 +35,26 @@ test('baking days page never invents planned bakes',()=>{
  const withBakes=bakingDaysView({active:{title:'A',index:0,steps:[{}]},parked:[{title:'B',index:1,steps:[{},{}]}]});
  assert.match(withBakes,/switchBake:0/);
 });
-test('all visual assets are local, valid stand-alone SVGs',()=>{
+test('original vector motifs remain valid supplementary assets',()=>{
  for(const name of ['art-hero.svg','art-books.svg','art-scale.svg','art-calendar.svg','art-buddy.svg','art-loaf.svg','art-starter.svg','art-tools.svg','art-wheat.svg','art-basket.svg']){
-  const content=read(name);
-  assert.match(content,/^<svg[^>]+xmlns="http:\/\/www\.w3\.org\/2000\/svg"/);
-  assert.match(content,/viewBox=/);
-  assert.ok(content.endsWith('</svg>'));
-  assert.doesNotMatch(content,/<script|<foreignObject|onload=/i);
+  const src=read(name);
+  assert.match(src,/^<svg[^>]+xmlns="http:\/\/www\.w3\.org\/2000\/svg"/);
+  assert.match(src,/viewBox=/);
+  assert.ok(src.endsWith('</svg>'));
+  assert.doesNotMatch(src,/<script|<foreignObject|onload=/i);
  }
 });
-test('mobile grid and safe area are responsive',()=>{
- const css=read('theme-v3.css');
- assert.match(css,/grid-template-columns:repeat\(2,minmax\(0,1fr\)\)/);
- assert.match(css,/grid-template-columns:repeat\(4,minmax\(0,1fr\)\)/);
+test('new editorial styling respects mobile safe areas',()=>{
+ const css=read('theme-editorial.css');
+ assert.match(css,/studio-directory-row/);
+ assert.match(css,/studio-photo-rail/);
  assert.match(css,/safe-area-inset-bottom/);
- assert.match(css,/--rose:/);
+ assert.doesNotMatch(css,/home-feature-grid/);
 });
-test('new home resources are explicitly available and offline cached',()=>{
+test('the public shell is kept available offline',()=>{
  const server=read('server.mjs'),sw=read('sw.js');
- for(const asset of ['/recipe-gallery.js','/art-pretzel.svg','/home.js','/theme-v3.css','/art-hero.svg','/art-books.svg','/art-scale.svg','/art-calendar.svg','/art-buddy.svg']){
-  assert.ok(server.includes("'"+asset+"'"),asset+' missing allowlist');
+ for(const asset of ['/index.html','/home.js','/hub.js','/theme-editorial.css','/design/hero-aquarell.png']){
+  assert.ok(server.includes("'"+asset+"'"),asset+' missing public route');
   assert.ok(sw.includes("'"+asset+"'"),asset+' missing offline list');
  }
 });

@@ -1,5 +1,5 @@
 const paths={
-'rolling-pin':'<path d="M7 15 15 7m-9 5 6 6M12 6l6 6"/><path d="m4 14-2 2 4 4 2-2m8-14 2-2 4 4-2 2"/>',
+'rolling-pin':'<g transform="rotate(42 12 12)"><rect x="7.5" y="5.5" width="9" height="13" rx="3.3"/><path d="M12 2v3.5M12 18.5V22"/></g>',
 'sprout':'<path d="M12 22V11m0 4C4 15 3 9 3 5c6 0 9 4 9 10Zm0-5c0-5 4-8 9-8 0 5-2 8-9 8Z"/>',
 search:'<circle cx="11" cy="11" r="7"/><path d="m16 16 5 5"/>',
 plus:'<path d="M12 5v14M5 12h14"/>',

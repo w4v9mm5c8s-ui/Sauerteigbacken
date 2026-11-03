@@ -1,20 +1,25 @@
 import {icon} from './icons.js';
-
-const tiles=[
- ['Neues Brot planen','Zutaten und Zeiten','newPlan','calendar','/design/tile-plan.png'],
- ['Meine Rezepte','Deine Rezeptsammlung','own','book','/design/tile-recipes.png'],
- ['Rezeptbibliothek','26 geprüfte Vorlagen','recipes','library','/design/tile-backtage.png'],
- ['Historische Rezepte','Dokumentierte Rezeptstände','historical','book','/design/photo-rustikal.png'],
- ['Favoriten','Deine Lieblingsrezepte','favorites','heart','/design/tile-favoriten.png'],
- ['Community-Backbuch','Rezepte entdecken','community','users','/design/tile-backbuecher.png'],
- ['Rezept importieren','Foto, Text oder Link','import','upload','/design/tile-import.png'],
- ['Meine Brote','Backhistorie','history','bread','/design/photo-landbrot.png'],
- ['Meine Backstatistik','Deine Backergebnisse','stats','chart','/design/tile-statistik.png'],
- ['Rechner & Helfer','Mengen und Hydration','calculator','calculator','/design/tile-import.png']
+const groups=[
+ {title:'PLANEN & BEGLEITEN',items:[
+  ['Meine Backtage','Laufende Teige und Backschritte','bakingDays','calendar'],
+  ['Rezeptbibliothek','Alle Sauerteigrezepte','recipes','book'],
+  ['Meine Rezepte','Deine eigenen Kreationen','own','library'],
+  ['Rezept importieren','Per Link, Foto oder Text','import','upload']
+ ]},
+ {title:'DEINE ERGEBNISSE',items:[
+  ['Meine Brote','Backhistorie und Notizen','history','bread'],
+  ['Favoriten','Deine gemerkten Rezepte','favorites','heart'],
+  ['Meine Backstatistik','Auswertungen deiner Backtage','stats','chart']
+ ]},
+ {title:'MEHR ENTDECKEN',items:[
+  ['Rechner & Helfer','Hydration, Mengen und Zeiten','calculator','calculator'],
+  ['Community-Backbuch','Rezepte aus der Community','community','users'],
+  ['Historische Rezepte','Überlieferte Rezepte entdecken','historical','book']
+ ]}
 ];
-export function hubView(button,user,historyCount,ownCount){
- return '<section class="hub-actions" aria-label="Backen und Rezepte">'+tiles.map(([title,subtitle,route,symbol,art],i)=>{
- const visual=art?'<img src="'+art+'" alt="" loading="lazy" decoding="async">':'';
- return '<button class="hub-tile '+(i===0?'featured':'')+'" data-act="'+route+'"><span class="hub-icon '+(art?'has-art':'')+'" aria-hidden="true">'+visual+'<span class="hub-line-icon">'+icon(symbol,art?19:45)+'</span></span><span class="hub-text"><strong>'+title+'</strong><small>'+subtitle+'</small></span><span class="hub-arrow" aria-hidden="true"></span></button>';
- }).join('')+'</section>';
+export function hubView(button,user=false,historyCount=0,ownCount=0){
+ return '<div class="studio-hub-intro"><span class="studio-overline">BACKEN</span><h2>Alles für deinen nächsten Backtag.</h2><p>Vom Rezept bis zum frischen Brot – deine Schritte an einem Ort.</p></div>'+
+ '<button class="studio-primary studio-hub-primary" data-act="newPlan"><span class="studio-primary-icon" aria-hidden="true">+</span><span class="studio-primary-copy"><strong>Neues Brot planen</strong><small>Rezept auswählen und Zeiten berechnen</small></span><span class="studio-chevron" aria-hidden="true">›</span></button>'+
+ '<div class="studio-hub-photo"><img src="/design/photo-landbrot.png" alt="KI-generiertes Sauerteigbrot" loading="lazy"><span>Du suchst noch ein passendes Rezept?</span><button data-act="recipes">Rezeptbibliothek öffnen <span aria-hidden="true">→</span></button></div>'+
+ groups.map(group=>'<section class="studio-hub-group"><h3>'+group.title+'</h3><div class="studio-hub-list">'+group.items.map(([title,description,action,symbol])=>'<button class="studio-hub-row" data-act="'+action+'"><span class="studio-hub-row-icon">'+icon(symbol,21)+'</span><span class="studio-hub-row-text"><strong>'+title+'</strong><small>'+description+'</small></span><span class="studio-chevron" aria-hidden="true">›</span></button>').join('')+'</div></section>').join('');
 }
