@@ -1,8 +1,9 @@
+import {canonicalFlourName} from './flour-table.js';
 import {doughWeight,isDoughIngredient} from './dough-weight.js';
 import {waterBalance,PDF_SOAKER_RATIOS,checkBanneton} from './pdf-baking.js';
 export function planFlourRow(f,i,table=[],esc=x=>String(x)){
- const options='<option value="">Manuell eingeben</option>'+table.map(row=>'<option value="'+esc(row.name)+'" '+(row.name===f.name?'selected':'')+'>'+esc(row.name)+'</option>').join('');
- return '<div class="plan-flour-row" data-plan-flour-row><label for="flourPreset'+i+'">Mehl aus der Tabelle</label><select class="plan-flour-preset" id="flourPreset'+i+'">'+options+'</select><div class="cols"><div><label for="flourName'+i+'">Mehlsorte</label><input class="plan-flour-name" id="flourName'+i+'" maxlength="90" value="'+esc(f.name||'')+'"></div><div><label for="flourAmount'+i+'">Menge (g)</label><input class="plan-flour-grams" id="flourAmount'+i+'" type="number" min="0" max="20000" step="0.1" value="'+esc(f.grams??0)+'"></div></div><button type="button" class="plan-flour-remove" data-act="planFlourRemove">Mehl entfernen</button></div>';
+ const flourName=canonicalFlourName(f.name);const options='<option value="">Manuell eingeben</option>'+table.map(row=>'<option value="'+esc(row.name)+'" '+(row.name===flourName?'selected':'')+'>'+esc(row.name)+'</option>').join('');
+ return '<div class="plan-flour-row" data-plan-flour-row><label for="flourPreset'+i+'">Mehl aus der Tabelle</label><select class="plan-flour-preset" id="flourPreset'+i+'">'+options+'</select><div class="cols"><div><label for="flourName'+i+'">Mehlsorte</label><input class="plan-flour-name" id="flourName'+i+'" maxlength="90" value="'+esc(flourName)+'"></div><div><label for="flourAmount'+i+'">Menge (g)</label><input class="plan-flour-grams" id="flourAmount'+i+'" type="number" min="0" max="20000" step="0.1" value="'+esc(f.grams??0)+'"></div></div><button type="button" class="plan-flour-remove" data-act="planFlourRemove">Mehl entfernen</button></div>';
 }
 const num=(v,f=0)=>Number.isFinite(Number(v))?Number(v):f;
 export function planningView(r,esc,now,flourTable=[],starters=[]){
@@ -63,7 +64,8 @@ export function readPlanningForm(r,get){
  const loaves=n('loaves'),per=n('flourPerLoaf');
  if(!Number.isInteger(loaves)||loaves<1||loaves>24||!Number.isFinite(per)||per<50)throw Error('Bitte eine gültige Brotanzahl und Mehlmenge angeben');
  const flourSection=get('planFlours');
- const flours=flourSection&&typeof flourSection.querySelectorAll==='function'?[...flourSection.querySelectorAll('[data-plan-flour-row]')].map(row=>({name:(row.querySelector('.plan-flour-name')?.value||'').trim(),grams:Number(row.querySelector('.plan-flour-grams')?.value)})):r.flours.map((f,i)=>({name:val('flourName'+i).trim(),grams:n('flourAmount'+i)}));
+ let flours=flourSection&&typeof flourSection.querySelectorAll==='function'?[...flourSection.querySelectorAll('[data-plan-flour-row]')].map(row=>({name:(row.querySelector('.plan-flour-name')?.value||'').trim(),grams:Number(row.querySelector('.plan-flour-grams')?.value)})):r.flours.map((f,i)=>({name:val('flourName'+i).trim(),grams:n('flourAmount'+i)}));
+ flours=flours.map(x=>({...x,name:canonicalFlourName(x.name)}));
  if(flours.some(x=>!x.name||x.grams<0||!Number.isFinite(x.grams))||!flours.some(x=>x.grams>0))throw Error('Bitte die Mehlmengen prüfen');
  const original=flours.reduce((a,f)=>a+f.grams,0),targetWeight=optional('finishedWeight'),loss=n('bakeLoss');
  if(loss<0||loss>30)throw Error('Bitte einen Backverlust zwischen 0 und 30 % wählen');

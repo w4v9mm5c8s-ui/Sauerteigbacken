@@ -3,6 +3,7 @@
  * validierten universellen Kinetikmodellen. Entscheidungen treffen Menschen anhand des Teigzustands.
  * PDF S. 11–12, 16–17, 20–21, 23–24, 28–30. 
  */
+import {canonicalFlourName} from './flour-table.js';
 export const PDF_PEAK={
   '1:1:1':{hours:[9,8,7,6.5,6,5.5,5],uncertainty:[2,1.5,1.5,1.5,1,1,1]},
   '1:2:2':{hours:[13,12,11,10,9,8,7],uncertainty:[2.5,2.5,2,2,2,1.5,1.5]},
@@ -37,7 +38,7 @@ function listFlours(entries){
  return {items,total};
 }
 function factorOf(entries,table,key){const byName=new Map(table.map(x=>[x.name,x]));let sum=0,total=0,unknown=[];
- for(const e of entries){const n=required(e.grams,'Mehlmenge',.1,20000),row=byName.get(e.name);if(!row||!Number.isFinite(Number(row[key]))){unknown.push(e.name);continue}sum+=n*Number(row[key]);total+=n}
+ for(const e of entries){const n=required(e.grams,'Mehlmenge',.1,20000),row=byName.get(canonicalFlourName(e.name));if(!row||!Number.isFinite(Number(row[key]))){unknown.push(e.name);continue}sum+=n*Number(row[key]);total+=n}
  return {factor:unknown.length||!total?null:sum/total/100,unknown};
 }
 export function estimateStarterPeak({ratio='1:2:2',temperature=22,type='Weizen',observations=[]}={}){
@@ -91,7 +92,7 @@ export function waterBalance({flours=[],totalWater=0,starter=0,starterHydration=
  if(bf===0&&bw>0)throw Error('Brühstückwasser ohne Brühstückmehl nicht möglich.');
  let seeded=0,seedMass=0;
  for(const s of soakers){const mass=required(s.grams,'Quellstückmenge',0,10000);const ratio=s.ratio===undefined||s.ratio===null?seedWaterRatio(s.name):Number(s.ratio);
-  if(ratio===null||!Number.isFinite(ratio)||ratio<0||ratio>4)throw Error('Wasseraufnahme für '+String(s.name||'diese Saat')+' unbekannt. Bitte ausdrücklich auswählen.');
+  if(ratio===null||!Number.isFinite(ratio)||ratio<=0||ratio>4)throw Error('Wasseraufnahme für '+String(s.name||'diese Saat')+' unbekannt. Bitte ausdrücklich auswählen.');
   seeded+=mass*ratio;seedMass+=mass;
  }
  const altWater=alt*altRatio,reserved=altWater+seeded+bw,mainWater=water-reserved;

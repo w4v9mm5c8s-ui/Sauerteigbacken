@@ -3,6 +3,7 @@
  * Reference table: Sauerteigbrot.pdf, flour table pp. 7-8.
  * Values are suggestions; they are not independently validated fermentation predictions.
  */
+import {canonicalFlourName} from './flour-table.js';
 export const roundGram = n => Math.round(n * 10) / 10;
 export function flourBlendSuggestion(table, entries, { saltPercent=2, starterHydration=100 }={}) {
  if (!Array.isArray(table)||!Array.isArray(entries)||entries.length<1||entries.length>16)
@@ -13,7 +14,7 @@ export function flourBlendSuggestion(table, entries, { saltPercent=2, starterHyd
    throw Error('Starter-Hydration muss zwischen 20 und 250 % liegen.');
  const byName = new Map(table.filter(x=>x&&typeof x.name==='string').map(row=>[row.name,row]));
  const selected = entries.map(entry=>{
-  const name=String(entry?.name||'').trim(),grams=Number(entry?.grams);
+  const name=canonicalFlourName(entry?.name||''),grams=Number(entry?.grams);
   if(!name||!Number.isFinite(grams)||grams<=0||grams>20000)
    throw Error('Bitte für jedes Mehl eine Sorte und eine Menge über 0 g eingeben.');
   const row=byName.get(name);
