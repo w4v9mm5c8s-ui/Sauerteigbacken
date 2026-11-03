@@ -1,0 +1,6 @@
+import test from 'node:test';import assert from 'node:assert/strict';
+import {deleteBakePhoto} from '../photos.js';
+import {cancelBakePush} from '../push-client.js';
+test('photo deletion refuses another account path without a request',async()=>{await assert.rejects(deleteBakePhoto({},'token','a','b/test.jpg'),/gehört nicht/)});
+test('photo deletion sends only the selected path',async()=>{const original=globalThis.fetch;let request;globalThis.fetch=async(url,options)=>{request={url,...options};return {ok:true}};try{await deleteBakePhoto({supabaseUrl:'https://example.invalid',supabaseKey:'public'},'token','a','a/b/0.jpg');assert.deepEqual(JSON.parse(request.body),{prefixes:['a/b/0.jpg']});assert.equal(request.method,'DELETE')}finally{globalThis.fetch=original}});
+test('aborting a bake scopes cancellation to current device and bake',async()=>{const original=globalThis.fetch,storage=globalThis.localStorage;let url;globalThis.localStorage={getItem:()=> 'device'};globalThis.fetch=async value=>{url=value;return {ok:true}};try{await cancelBakePush({supabaseUrl:'https://example.invalid'},'token','a','bake-123-');assert.match(url,/subscription_id=eq.device/);assert.match(decodeURIComponent(url),/timer_key=like.bake-123-\*/)}finally{globalThis.fetch=original;globalThis.localStorage=storage}});

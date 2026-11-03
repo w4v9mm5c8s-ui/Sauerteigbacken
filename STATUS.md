@@ -1,28 +1,9 @@
-# Backen mit Sauerteig – eigenständiger Neuaufbau
+# Backen mit Sauerteig – aktueller Prüfstand
 
-Eigenständige Node-Web-App ohne Lovable. GitHub, Render und Supabase sind von Bondpop und Zwischen uns getrennt.
+Eigenständige App auf Render mit GitHub und Supabase.
 
-## Aktueller Stand
-- 26 Sauerteig-Rezeptvorlagen aus dem bisherigen Projekt mit Zutaten und Anleitungen
-- Mobile Rezeptsuche, Zutaten, Mengenfaktor, einfacher Backplan mit Sperrzeiten
-- Einkaufsliste, Starterübersicht, Cloud-Sicherung, Community-Einreichung
-- OpenAI Responses API für Fragen und Rezeptfotos als serverseitige optionale Integration
-- Supabase Auth für Konten; getrennte Daten über RLS
-- HTTPS über Render
+Implementiert: 26 Katalogrezepte plus neun PDF-Planungsvorlagen, eigener Rezeptrechner, Rezeptimport, Starterverwaltung, Backplaner mit Sperrzeiten und parallelen Backtagen, Lernanleitungen, Fotos, KI, Cloud-Synchronisierung und Push-Infrastruktur.
 
-## Noch NICHT als fertig bestätigt
-- Live-Anmeldung mit Bestätigungsmail und Passwort-Reset (Supabase Site URL / Redirect-URLs konfigurieren)
-- OpenAI: OPENAI_API_KEY als Server-Secret setzen, danach echte Testanfragen
-- Visuelle Prüfung auf iPhone/Safari, Accessibility, Fehlermeldungen
-- Backplaner: Die Starter-Reife (9 h), Vorheizdauer (45 min) und Gärzeiten sind Schätzungen, nicht für jedes Rezept validiert. Kühlschrankgare ist noch nicht voll integriert. Ein automatisch berechneter Plan ist keine Garantie für Backerfolg.
-- Community-Moderation und Meldungen
-- Datenmigration aus der alten Lovable-App, rechtliche Texte, Export/Löschung und Datenschutzprüfung
-- Vollständiger Abgleich mit allen Screenshotwünschen, eigene Rezeptverwaltung und Fotobuch-Import
+Der ausführliche aktuelle Prüfstand einschließlich echter API-Tests mit zwei Testkonten und verbleibender Grenzen steht in [PDF_WORKFLOW_STATUS_2026-11-03.md](PDF_WORKFLOW_STATUS_2026-11-03.md). Frühere Aussagen zu pauschaler neunstündiger Starterreife und fehlender Kühlschrankgare sind überholt.
 
-## Server-Konfiguration
-- SUPABASE_URL (öffentliche Projekt-URL)
-- SUPABASE_PUBLISHABLE_KEY (öffentlicher Publishable Key)
-- OPENAI_API_KEY (geheimes Server-Secret, NIEMALS ins Repository)
-- OPENAI_MODEL (optional, Standard gpt-5-mini)
-
-Die App ist nicht als produktionsfertig freigegeben. Alle KI-Funktionen erfordern Anmeldung und explizite Einwilligung vor der Übertragung.
+Offen: E-Mail- und iPhone-Abnahme, Zahlungsfreigabe sowie fachliche Validierung aller Backabläufe. Keine vollständige Produktionsfreigabe behauptet.

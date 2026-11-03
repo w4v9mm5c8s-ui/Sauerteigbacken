@@ -19,3 +19,10 @@ test('user notes are escaped before insertion into the page',()=>{
  assert.ok(!html.includes('<img src=x onerror'));
  assert.ok(html.includes('&lt;img'));
 });
+test('empty baking day renders safely and existing photo can be removed',()=>{
+ assert.match(backtagView(null,esc),/Kein Backtag/);
+ const html=backtagView({...record,logs:{0:{photoPath:'user/bake/0.jpg'}}},esc,true);
+ assert.match(html,/data-act="stepPhotoDelete"/);
+ assert.match(html,/data-act="cancelBake"/);
+ assert.match(html,/data-act="pushTest"/);
+});

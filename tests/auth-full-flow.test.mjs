@@ -75,8 +75,8 @@ test('confirmation can be resent without creating another account',()=>{
 test('server exposes Auth module and caches public code, not private tokens',()=>{
  for(const path of ['server.mjs','sw.js'])assert.match(read(path),/'\/auth-ui\.js'/);
  const sw=read('sw.js');
- assert.match(sw,/sauerteig-public-v35/);
+ assert.match(sw,/sauerteig-public-v36/);
  assert.match(sw,/url\.pathname\.startsWith\('\/api\/'\)/);
  const html=read('index.html');
- assert.match(html,/\/app\.js\?v=35/);
+ assert.match(html,/\/app\.js\?v=36/);
 });

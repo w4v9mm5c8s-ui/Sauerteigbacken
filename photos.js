@@ -15,3 +15,9 @@ export async function signedBakePhoto(config,token,path){
  if(!r.ok)return null;
  const data=await r.json();return data.signedURL?config.supabaseUrl+'/storage/v1'+data.signedURL:null;
 }
+
+export async function deleteBakePhoto(config,token,userId,path){
+ if(!token||!userId||!path?.startsWith(userId+'/'))throw Error('Foto gehört nicht zum angemeldeten Konto');
+ const r=await fetch(config.supabaseUrl+'/storage/v1/object/'+bucket,{method:'DELETE',headers:{Authorization:'Bearer '+token,apikey:config.supabaseKey,'Content-Type':'application/json'},body:JSON.stringify({prefixes:[path]})});
+ if(!r.ok)throw Error('Foto konnte nicht entfernt werden');
+}

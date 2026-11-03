@@ -28,3 +28,15 @@ Offene Abnahme:
 - 216 Tests bestanden, darunter vier ausgeführte Tests mit gezielt verzögerten Antworten.
 - Live geprüft: Foto-Bucket privat, INSERT/SELECT/UPDATE/DELETE auf eigenen Kontopfad beschränkt. 17 erfolgreiche Cron-Ausführungen im betrachteten Zeitraum.
 - Weiterhin offen: Kontodurchlauf mit Anmeldung und tatsächlich zugestellter iPhone-Push. Passwort-Leak-Prüfung laut Supabase Advisor nicht aktiviert; keine passende Konfigurationsfunktion im verfügbaren Connector.
+
+## Live-Test mit zwei separaten Testkonten
+Am 3. November 2026 über die echten Auth-, App- und Storage-APIs geprüft:
+- Anmeldung beider Konten: HTTP 200. Testkonten administrativ angelegt und bestätigt; daher kein Nachweis der E-Mail-Zustellung oder Registrierung im Browser.
+- Cloud-Speichern und erneutes Laden: identischer Inhalt, Revision 1. Veraltete Speicherung: HTTP 409. Zweites Konto sieht keine Daten des ersten.
+- JPEG hochladen und ersetzen: HTTP 200. Eigener signierter Abruf: 200. Signierter Abruf aus zweitem Konto: abgewiesen (400).
+- KI-Textantwort, Rezeptimport und synthetisches Testbild: HTTP 200. Keine Aussage zur fachlichen Qualität einer Brot-Fotoanalyse.
+- Sitzungserneuerung: HTTP 200.
+- Kontolöschung beider Testkonten einschließlich Foto: HTTP 200. Datenbankkontrolle: null verbleibende Testkonten, Datensätze und Fotos.
+
+Ergänzte Funktionen: Backtag abbrechen mit Timerbereinigung; gespeichertes Schrittfoto entfernen; Push-Test in einer Minute. Leere Backtag-Ansicht repariert; Kontolöschung entfernt lokale Backtage und Push-Zuordnung. Cache v36. 220 automatisierte Tests bestanden.
+Weiter offen: E-Mail-Bestätigung und Passwort-Reset mit echtem Postfach, iPhone-Push-Zustellung, Stripe-Live/Preise, vollständige fachliche Rezeptabnahme.
