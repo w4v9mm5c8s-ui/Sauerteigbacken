@@ -5,7 +5,7 @@ export function ingredientPhases(r){
  for(const f of r.flours)add(basePhase,f.name,f.grams-(r.brew?.flour||0)*f.grams/flourTotal);
  const autoWater=r.autolyse?r.water*(r.autolyseWaterFraction??1):0;add(basePhase,'Wasser für den Hauptteig',r.autolyse?autoWater:r.water);if(r.autolyse)add('Teig mischen','Zurückbehaltenes Wasser',r.water-autoWater);
  add('Teig mischen','Reifer '+r.starter.type+'starter',r.starter.grams);add('Teig mischen','Salz',r.salt);
- for(const x of r.extras||[]){if(/wasser/i.test(x.name)||r.altbrot&&x.name==='Altbrot'||x.name===r.soaker?.name||x.name===r.additionalSoaker?.name)continue;add(['fuellung','füllung','belag','topping'].includes(x.role)?'Formen':r.autolyse&&/Milch|Honig|Joghurt/i.test(x.name)?basePhase:'Teig mischen',x.name,x.grams)}
+ for(const x of r.extras||[]){if(/wasser/i.test(x.name)||r.altbrot&&x.name==='Altbrot'||x.name===r.soaker?.name||x.name===r.additionalSoaker?.name)continue;add(['fuellung','füllung','belag','topping','blech','garnitur','dekoration'].includes(x.role)?'Formen':r.autolyse&&/Milch|Honig|Joghurt/i.test(x.name)?basePhase:'Teig mischen',x.name,x.grams)}
  for(const s of [r.soaker,r.additionalSoaker].filter(Boolean)){for(const x of s.items||[{name:s.name,grams:s.grams}])add('Quellstück ansetzen',x.name,x.grams);add('Quellstück ansetzen','Quellwasser',s.water)}
  if(r.altbrot){add('Altbrot-Quellstück ansetzen','Altbrot',r.altbrot.grams);add('Altbrot-Quellstück ansetzen','Quellwasser',r.altbrot.water)}
  if(r.brew){const phase=r.brew.method==='cook'?'Kochstück ansetzen':'Brühstück ansetzen';add(phase,'Mehl aus der Rezeptmenge',r.brew.flour);add(phase,'Wasser',r.brew.water)}
@@ -16,3 +16,7 @@ export function checklistView(b,esc){const {phases,checked}=checklistState(b);if
 export function checkIngredient(b,key){const state=checklistState(b);if(!Object.entries(state.phases).some(([phase,items])=>items.some((_,i)=>key===phase+':'+i)))throw Error('Zutat nicht gefunden');b.ingredientChecklist={signature:state.signature,checked:{...state.checked,[key]:!state.checked[key]}};return b;}
 export function incompletePhase(b,title){const {phases,checked}=checklistState(b);return (phases[title]||[]).some((_,i)=>!checked[title+':'+i]);}
 export function pendingPreparations(b){return (b.steps||[]).flatMap((s,i)=>/^(Autolyse ansetzen|Quellstück ansetzen|Altbrot-Quellstück ansetzen|Brühstück ansetzen|Kochstück ansetzen|Brühstücktemperatur prüfen|Starter prüfen)$/.test(s.title)&&!b.logs?.[i]?.completedAt?[s.title]:[]);}
+
+export function unfinishedWork(record){
+ return record.steps.filter((step,index)=>step.active&&index!==record.index&&!record.logs?.[index]?.completedAt);
+}

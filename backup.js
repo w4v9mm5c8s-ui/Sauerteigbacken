@@ -12,12 +12,18 @@ export function validateBackup(input){
  for(const key of lists){
   if(input[key]!==undefined&&(!Array.isArray(input[key])||input[key].length>MAX_ITEMS))throw Error('Ungültige '+key+'-Daten');
  }
+ for(const key of ['history','shopping','starters','ownRecipes','pantry','chatMessages']){
+  if(input[key]?.some(item=>!item||typeof item!=='object'||Array.isArray(item)))throw Error('Ungültiger Eintrag in '+key);
+ }
  const checkBake=b=>b===null||b===undefined||typeof b==='object'&&!Array.isArray(b)&&typeof b.title==='string'&&b.title.length<=200&&Array.isArray(b.steps)&&b.steps.length>=1&&b.steps.length<=150&&b.steps.every(step=>step&&typeof step.title==='string'&&step.title.length<=180&&Number.isFinite(Number(step.at)));
  if(!checkBake(input.activeBake))throw Error('Aktiver Backtag in der Datensicherung ist ungültig');
  if(input.parallelBakes!==undefined&&(!Array.isArray(input.parallelBakes)||input.parallelBakes.length>24||!input.parallelBakes.every(b=>b!==null&&b!==undefined&&checkBake(b))))throw Error('Parallele Backtage in der Datensicherung sind ungültig');
  if(input.recipeProfiles!==undefined&&(!input.recipeProfiles||typeof input.recipeProfiles!=='object'||Array.isArray(input.recipeProfiles)))throw Error('Ungültige Rezeptvorgaben');
  const clean=Object.fromEntries(Object.entries(JSON.parse(raw)).filter(([key])=>allowed.has(key)));
  for(const key of ['history','shopping','starters'])clean[key]??=[];
+ for(const bake of [clean.activeBake,...(clean.parallelBakes||[])].filter(Boolean)){
+  bake.index=Math.max(0,Math.min(Number.isInteger(bake.index)?bake.index:0,bake.steps.length-1));
+ }
  clean.updatedAt=Date.now();
  return clean;
 }

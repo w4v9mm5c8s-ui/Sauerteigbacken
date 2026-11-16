@@ -36,3 +36,15 @@ test('additional soaker has its actual ingredient and duration-independent cooli
  assert.ok(p.steps.some(s=>/30 g Haferflocken mit 30 g/.test(s.detail)));
  assert.ok(!p.steps.some(s=>/12 Stunden/.test(s.detail)));
 });
+
+test('catalog and PDF templates keep flour and water quantities from form through baking', async()=>{
+ const {readFileSync}=await import('node:fs');
+ const catalog=JSON.parse(readFileSync(new URL('../recipes.json',import.meta.url),'utf8'));
+ for(const recipe of [...catalog,...pdfPlanRecipes()]){
+  const form=prepare(recipe),plan=makePlan(form.recipe,form.finish,form.from,form.to,true,60,null,null,form.options);
+  assert.ok(plan?.steps.length,recipe.id);
+  assert.equal(form.recipe.waterBalance.totalRecipeWater,recipe.water,recipe.id);
+  assert.equal(form.recipe.waterBalance.flourMass,recipe.flours.reduce((n,x)=>n+x.grams,0),recipe.id);
+  assert.equal(plan.steps.at(-1).title,'Auskühlen lassen',recipe.id);
+ }
+});

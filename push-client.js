@@ -28,6 +28,6 @@ export async function scheduleBakeReminders(cfg,token,user,bake){
  if(!bake||!user)return 0;
  const id=localStorage.getItem(idKey(user));if(!id)throw Error('Bitte zuerst Push aktivieren.');
  const prefix='bake-step-'+bake.id+'-';await cancelBakePush(cfg,token,user,prefix);
- let count=0;for(const [i,step] of bake.steps.entries()){const due=new Date(step.at).getTime();if(i<(bake.index||0)||!step.active||due<=Date.now())continue;await scheduleReminder(cfg,token,user,prefix+i,due,bake.title+': '+step.title);count++;}return count;
+ let count=0;for(const [i,step] of bake.steps.entries()){const due=new Date(step.at).getTime();if(bake.logs?.[i]?.completedAt||!step.active||due<=Date.now())continue;await scheduleReminder(cfg,token,user,prefix+i,due,bake.title+': '+step.title);count++;}return count;
 }
 export async function listReminders(cfg,token,user){const id=user&&localStorage.getItem(idKey(user));if(!token||!id)return [];return call(cfg,token,'/rest/v1/sourdough_push_jobs?subscription_id=eq.'+encodeURIComponent(id)+'&state=in.(pending,sending,failed)&select=timer_key,due_at,message,repeat_hours,state&order=due_at');}

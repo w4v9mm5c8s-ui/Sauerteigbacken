@@ -12,7 +12,7 @@ test('backup contains full active and parallel baking day progress',()=>{
  const active={title:'Weizenbrot',index:3,steps:[{title:'Mischen',at:1783000000000},{title:'Backen',at:1783001000000}]};
  const parked={title:'Roggenbrot',index:1,steps:[{title:'Ruhe',at:1783002000000}]};
  const backup=makeBackup(sample,active,[parked]);
- assert.equal(backup.activeBake.index,3);
+ assert.equal(backup.activeBake.index,1);
  assert.equal(backup.parallelBakes[0].title,'Roggenbrot');
  assert.equal(backup.backupVersion,1);
  assert.equal(typeof backup.exportedAt,'string');

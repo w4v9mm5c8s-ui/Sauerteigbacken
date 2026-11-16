@@ -2,7 +2,14 @@ import {placeActions} from './planning-conflicts.js';
 import {estimateStarterPeak,standardBakePhases} from './pdf-baking.js';
 const blocked=(d,from,to)=>{const h=d.getHours()*60+d.getMinutes(),a=from.split(':').map(Number),b=to.split(':').map(Number),x=a[0]*60+a[1],y=b[0]*60+b[1];return x>y?h>=x||h<y:h>=x&&h<y};
 const withinClock=(d,from,to)=>{if(!/^\d{2}:\d{2}$/.test(from||'')||!/^\d{2}:\d{2}$/.test(to||''))return false;const [h,m]=from.split(':').map(Number),[h2,m2]=to.split(':').map(Number),now=d.getHours()*60+d.getMinutes(),start=h*60+m,end=h2*60+m2;return start<=end?now>=start&&now<end:now>=start||now<end};
-export function unavailableAt(date,from,to,absenceStart,absenceEnd,options={}){if(blocked(date,from,to))return true;const time=+date;if(absenceStart&&absenceEnd&&time>=+absenceStart&&time<+absenceEnd)return true;for(const range of options.absenceWindows||[]){if(range.from&&range.to&&time>=+new Date(range.from)&&time<+new Date(range.to))return true}const weekday=(date.getDay()+6)%7;const days=options.recurringDays||[];if(days.includes(weekday)&&withinClock(date,options.recurringFrom,options.recurringTo))return true;const start=options.recurringFrom||'',end=options.recurringTo||'';if(start>end&&days.includes((weekday+6)%7)){const minute=date.getHours()*60+date.getMinutes(),[h,m]=end.split(':').map(Number);if(Number.isFinite(h)&&Number.isFinite(m)&&minute<h*60+m)return true}return false}
+export function unavailableAt(date,from,to,absenceStart,absenceEnd,options={}){if(blocked(date,from,to))return true;const time=+date;if(absenceStart&&absenceEnd&&time>=+absenceStart&&time<+absenceEnd)return true;for(const range of options.absenceWindows||[]){if(range.from&&range.to&&time>=+new Date(range.from)&&time<+new Date(range.to))return true}const weekday=(date.getDay()+6)%7;const days=options.recurringDays||[];const start=options.recurringFrom||'',end=options.recurringTo||'';
+ if(start>end){
+  const clock=date.getHours()*60+date.getMinutes();
+  const minutes=value=>{const [h,m]=value.split(':').map(Number);return h*60+m};
+  return days.includes(weekday)&&clock>=minutes(start)||days.includes((weekday+6)%7)&&clock<minutes(end);
+ }
+ if(days.includes(weekday)&&withinClock(date,start,end))return true;
+ return false}
 export function makePlan(r,want,from,to,ready,preheatMinutes=45,absenceStart=null,absenceEnd=null,options={}){
  const preheat=Math.max(15,Math.min(120,Number(preheatMinutes)||45));
  const pdfStandard=Boolean(options.pdfStandardBake),special=/Laugen|Pizza|Focaccia|Bagel|Zimt|Toast|Airfryer|Joghurt|Brezeln|Semmel|Brötchen|Prote(in)?brot/i.test(r.title||'');

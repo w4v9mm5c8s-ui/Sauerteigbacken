@@ -69,16 +69,18 @@ export function planningView(r,esc,now,flourTable=[],starters=[]){
 export function readPlanningForm(r,get){
  const val=id=>get(id)?.value??'',n=id=>num(val(id),NaN),optional=id=>val(id)===''?null:n(id);
  const loaves=n('loaves'),per=n('flourPerLoaf');
- if(!Number.isInteger(loaves)||loaves<1||loaves>24||!Number.isFinite(per)||per<50)throw Error('Bitte eine gültige Brotanzahl und Mehlmenge angeben');
+ if(!Number.isInteger(loaves)||loaves<1||loaves>24||!Number.isFinite(per)||per<50||per>10000)throw Error('Bitte eine gültige Brotanzahl und Mehlmenge angeben');
  const flourSection=get('planFlours');
  let flours=flourSection&&typeof flourSection.querySelectorAll==='function'?[...flourSection.querySelectorAll('[data-plan-flour-row]')].map(row=>({name:(row.querySelector('.plan-flour-name')?.value||'').trim(),grams:Number(row.querySelector('.plan-flour-grams')?.value)})):r.flours.map((f,i)=>({name:val('flourName'+i).trim(),grams:n('flourAmount'+i)}));
  flours=flours.map(x=>({...x,name:canonicalFlourName(x.name)}));
  if(flours.some(x=>!x.name||x.grams<0||!Number.isFinite(x.grams))||!flours.some(x=>x.grams>0))throw Error('Bitte die Mehlmengen prüfen');
  const original=flours.reduce((a,f)=>a+f.grams,0),targetWeight=optional('finishedWeight'),loss=n('bakeLoss');
- if(loss<0||loss>30)throw Error('Bitte einen Backverlust zwischen 0 und 30 % wählen');
+ if(targetWeight!==null&&(!Number.isFinite(targetWeight)||targetWeight<100||targetWeight>10000))throw Error('Zielgewicht zwischen 100 und 10000 g eingeben.');
+ if(!Number.isFinite(loss)||loss<0||loss>30)throw Error('Bitte einen Backverlust zwischen 0 und 30 % wählen');
  const altbrot=n('altbrot'),soakerAmount=n('soakerAmount'),soakerWater=n('soakerWater'),brewFlour=n('brewFlour'),brewWater=n('brewWater');
  if([altbrot,soakerAmount,soakerWater,brewFlour,brewWater].some(x=>!Number.isFinite(x)||x<0))throw Error('Bitte Quell-/Brühstückmengen prüfen.');
  const soakerKind=val('soakerKind');
+ if(soakerAmount>0&&(!(soakerWater>0)||!(n('soakerHours')>=0.25&&n('soakerHours')<=48)))throw Error('Für das Quellstück Wasser und eine Quellzeit von 0,25 bis 48 Stunden eingeben.');
  if(soakerAmount>0&&!soakerKind)throw Error('Bitte eine Quellstück-Art auswählen.');if(!soakerAmount&&soakerWater>0)throw Error('Quellwasser ohne Quellstück ist nicht möglich.');
  if(val('saltAmount')===''||val('starterHydration')==='')throw Error('Bitte Salzmenge und Starter-Hydration ergänzen.');
  if(!(n('stockHours')>0)||!(n('proofHours')>0))throw Error('Bitte Stock- und Stückgare aus deiner Erfahrung ergänzen.');
