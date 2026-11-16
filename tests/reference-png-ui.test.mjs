@@ -23,8 +23,8 @@ test('every design graphic is an actual local PNG with valid dimensions',()=>{
 test('the immediately visible and dynamic home display identical PNG illustrations',()=>{
  const html=read('index.html'),live=homeView({signed:false,history:[],parked:[],active:null,recipes:[]});
  assert.match(html,/href="\/theme-reference\.css"/);
- assert.match(html,/src="\/design\/buddy-cutout\.webp"/);
- assert.match(live,/src="\/design\/buddy-cutout\.webp"/);
+ assert.match(html,/src="\/design\/buddy-original\.webp"/);
+ assert.match(live,/src="\/design\/buddy-original\.webp"/);
  for(const name of ['menu-book','menu-upload','menu-calendar','menu-chart','menu-heart','menu-library','menu-help','menu-users','menu-basket']){
   assert.ok(html.includes('/design/'+name+'.svg'),name+' first paint');
   assert.ok(live.includes('/design/'+name+'.svg'),name+' dynamic paint');
