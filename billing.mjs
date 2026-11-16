@@ -5,6 +5,14 @@ export function billingConfigured(env=process.env){
 }
 export function billingEnabled(env=process.env){return env.BILLING_ENABLED==='true'&&billingConfigured(env)}
 export function billingPrices(env=process.env){return {monthly:env.STRIPE_PRICE_MONTHLY,yearly:env.STRIPE_PRICE_YEARLY}}
+export function testCodeList(env=process.env){return String(env.PLUS_TEST_CODES||'').split(',').map(code=>code.trim().toUpperCase()).filter(code=>/^[A-Z0-9][A-Z0-9_-]{3,79}$/.test(code))}
+export function testCodeDurationDays(env=process.env){const days=Number(env.PLUS_TEST_DURATION_DAYS||30);return Number.isInteger(days)&&days>=1&&days<=365?days:30}
+export function isTestSubscription(row){return /^testcode:[A-Z0-9][A-Z0-9_-]{3,79}$/.test(row?.stripe_subscription_id||'')&&row?.price_id==='test-code'}
+export function subscriptionActive(row,now=Date.now()){
+ if(!row||!['active','trialing'].includes(row.status))return false;
+ if(!row.current_period_end)return true;
+ const end=Date.parse(row.current_period_end);return Number.isFinite(end)&&end>now;
+}
 export function verifyStripeWebhook(raw,header,secret,now=Math.floor(Date.now()/1000)){
  if(!header||!secret||!Buffer.isBuffer(raw))return false;
  const parts=header.split(',').map(x=>x.trim()),timestamp=Number(parts.find(x=>x.startsWith('t='))?.slice(2));
@@ -24,6 +32,19 @@ export async function subscriptionRow(userId,env=process.env){
  const r=await fetch(url,{headers:{apikey:env.SUPABASE_SERVICE_ROLE_KEY,Authorization:'Bearer '+env.SUPABASE_SERVICE_ROLE_KEY},signal:AbortSignal.timeout(8000)});
  if(!r.ok)throw Error('Abo-Status derzeit nicht verfügbar');
  return (await r.json())[0]||null;
+}
+export async function redeemTestCode(userId,code,env=process.env){
+ if(!env.SUPABASE_SERVICE_ROLE_KEY||!env.SUPABASE_URL)throw Error('Testzugang derzeit nicht verfügbar');
+ if(!/^[0-9a-f-]{36}$/i.test(userId||''))throw Error('Ungültiges Konto');
+ const normalized=String(code||'').trim().toUpperCase();
+ if(!testCodeList(env).includes(normalized))throw Error('Gutscheincode ungültig oder abgelaufen');
+ const existing=await subscriptionRow(userId,env);
+ if(subscriptionActive(existing)&&!isTestSubscription(existing))throw Error('Dein Plus-Abo ist bereits aktiv.');
+ if(subscriptionActive(existing)&&isTestSubscription(existing))return {ok:true,alreadyRedeemed:true,periodEnd:existing.current_period_end,message:'Dieser Gutscheincode ist bereits aktiv.'};
+ const end=new Date(Date.now()+testCodeDurationDays(env)*86400000).toISOString();
+ const response=await fetch(env.SUPABASE_URL+'/rest/v1/sourdough_subscriptions',{method:'POST',headers:{apikey:env.SUPABASE_SERVICE_ROLE_KEY,Authorization:'Bearer '+env.SUPABASE_SERVICE_ROLE_KEY,'Content-Type':'application/json',Prefer:'resolution=merge-duplicates,return=representation'},body:JSON.stringify({user_id:userId,stripe_customer_id:null,stripe_subscription_id:'testcode:'+normalized,status:'trialing',price_id:'test-code',current_period_end:end,last_event_created:0,updated_at:new Date().toISOString()}),signal:AbortSignal.timeout(8000)});
+ if(!response.ok)throw Error('Testzugang konnte nicht aktiviert werden');
+ return {ok:true,periodEnd:end,message:'Gutscheincode eingelöst. Sauerteig Plus ist jetzt kostenlos freigeschaltet.'};
 }
 export async function stripePrice(priceId,env=process.env){
  if(!/^price_[A-Za-z0-9]+$/.test(priceId||''))throw Error('Ungültiger Stripe-Preis');
@@ -54,7 +75,7 @@ export async function checkoutSession(user,plan,env=process.env){
  const price=billingPrices(env)[plan];if(!/^price_[A-Za-z0-9]+$/.test(price))throw Error('Stripe-Preis nicht eingerichtet');
  const checked=await stripePrice(price,env);if(!validConsumerPrice(checked,plan==='monthly'?'month':'year'))throw Error('Tarifpreis noch nicht für den Verkauf freigegeben');
  const existing=await subscriptionRow(user.id,env);
- if(existing&&['active','trialing'].includes(existing.status))throw Error('Dein Plus-Abo ist bereits aktiv. Bitte Abo verwalten.');
+ if(subscriptionActive(existing))throw Error('Dein Plus-Abo ist bereits aktiv. Bitte Abo verwalten.');
  const base=env.PUBLIC_BASE_URL||'https://backen-mit-sauerteig.onrender.com';
  const params={
  mode:'subscription',

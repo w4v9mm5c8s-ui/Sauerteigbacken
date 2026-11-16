@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {createHmac} from 'node:crypto';
-import {billingConfigured,billingEnabled,verifyStripeWebhook,subscriptionFromEvent,checkoutSession,validConsumerPrice} from '../billing.mjs';
+import {billingConfigured,billingEnabled,verifyStripeWebhook,subscriptionFromEvent,checkoutSession,validConsumerPrice,testCodeList,testCodeDurationDays,subscriptionActive,isTestSubscription} from '../billing.mjs';
 import {billingView} from '../billing-ui.js';
 
 test('payments remain disabled until all credentials and explicit approval are present',()=>{
@@ -44,4 +44,14 @@ test('Stripe portal stays available to existing subscribers after new checkout i
 test('subscription updates use atomic database RPC rather than read-then-write',async()=>{
  const source=(await import('node:fs')).readFileSync(new URL('../billing.mjs',import.meta.url),'utf8');
  assert.match(source,/rpc\/apply_sourdough_subscription_event/);
+});
+test('test voucher configuration is normalized and bounded',()=>{
+ assert.deepEqual(testCodeList({PLUS_TEST_CODES:' brotplus-test1, BROTPLUS-TEST2, invalid code '}),['BROTPLUS-TEST1','BROTPLUS-TEST2']);
+ assert.equal(testCodeDurationDays({PLUS_TEST_DURATION_DAYS:'30'}),30);
+ assert.equal(testCodeDurationDays({PLUS_TEST_DURATION_DAYS:'0'}),30);
+});
+test('expired subscriptions do not grant Plus and test subscriptions are identifiable',()=>{
+ const row={status:'trialing',current_period_end:'2020-01-01T00:00:00.000Z',stripe_subscription_id:'testcode:BROTPLUS-TEST1',price_id:'test-code'};
+ assert.equal(subscriptionActive(row,Date.parse('2020-02-01T00:00:00.000Z')),false);
+ assert.equal(isTestSubscription(row),true);
 });

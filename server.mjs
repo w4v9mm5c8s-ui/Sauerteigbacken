@@ -1,4 +1,4 @@
-import {billingEnabled,billingConfigured,checkoutSession,portalSession,subscriptionRow,publicBillingPlans,verifyStripeWebhook,applyStripeEvent} from './billing.mjs';
+import {billingEnabled,billingConfigured,checkoutSession,portalSession,subscriptionRow,publicBillingPlans,verifyStripeWebhook,applyStripeEvent,redeemTestCode,subscriptionActive,isTestSubscription} from './billing.mjs';
 import {fetchPublicRecipeUrl} from './url-import.mjs';
 import http from 'node:http';
 import {readFile,stat} from 'node:fs/promises';
@@ -65,7 +65,11 @@ if(url.pathname.startsWith('/api/')){
  if(!limit('user:'+id.user.id,180))return json(res,429,{error:'Zu viele Anfragen'});
  if(url.pathname==='/api/billing/status'&&req.method==='GET'){
  if(!process.env.SUPABASE_SERVICE_ROLE_KEY||!process.env.SUPABASE_URL)return json(res,200,{enabled:false,plus:false,status:'unavailable',hasCustomer:false});
- const row=await subscriptionRow(id.user.id);return json(res,200,{enabled:billingEnabled(),plus:!!row&&['active','trialing'].includes(row.status),status:row?.status||'inactive',hasCustomer:!!row?.stripe_customer_id&&!!process.env.STRIPE_SECRET_KEY,periodEnd:row?.current_period_end||null});
+ const row=await subscriptionRow(id.user.id);return json(res,200,{enabled:billingEnabled(),plus:subscriptionActive(row),testCode:subscriptionActive(row)&&isTestSubscription(row),status:row?.status||'inactive',hasCustomer:!!row?.stripe_customer_id&&!!process.env.STRIPE_SECRET_KEY,periodEnd:row?.current_period_end||null});
+}
+if(url.pathname==='/api/billing/redeem'&&req.method==='POST'){
+ if(!limit('billing-redeem:'+id.user.id,5))return json(res,429,{error:'Bitte später erneut versuchen'});
+ const input=await body(req,1500);return json(res,200,await redeemTestCode(id.user.id,String(input.code||'')));
 }
 if(url.pathname==='/api/billing/checkout'&&req.method==='POST'){
  if(!limit('billing-checkout:'+id.user.id,5))return json(res,429,{error:'Bitte später erneut versuchen'});
@@ -87,8 +91,8 @@ if(url.pathname==='/api/sync'){
  if(['/api/buddy','/api/recipe-extract','/api/photo-compare'].includes(url.pathname)&&req.method==='POST'){
  const buddyRequest=url.pathname==='/api/buddy';
  let plus=false;
- if(billingEnabled()){
-  try{const sub=await subscriptionRow(id.user.id);plus=['active','trialing'].includes(sub?.status)}
+ if(process.env.SUPABASE_SERVICE_ROLE_KEY&&process.env.SUPABASE_URL){
+  try{const sub=await subscriptionRow(id.user.id);plus=subscriptionActive(sub)}
   catch{if(buddyRequest)return json(res,503,{error:'Dein Abo lässt sich gerade nicht prüfen.'})}
  }
  if(buddyRequest&&!plus)return json(res,402,{error:'Für den KI Buddy brauchst du Sauerteig Plus.'});
