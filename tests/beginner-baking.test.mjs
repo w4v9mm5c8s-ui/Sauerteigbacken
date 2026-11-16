@@ -17,7 +17,7 @@ test('folds begin after mixing and stay inside the single first rise',()=>{
  assert.equal(foldDefaults(recipes.find(r=>r.id==='starter-roggenmisch-60-40')).count,0);
 });
 test('the chosen equipment follows the loaf from recipe to baking instructions',()=>{
- assert.deepEqual(ovenChoices(loaf),['Backblech','Gusseisentopf']);
+ assert.deepEqual(ovenChoices(loaf),['Backblech','Pizzastein auf dem Backblech','Gusseisentopf']);
  assert.doesNotMatch(recipeSteps(loaf,'Backblech').join(' '),/Deckel|Gärkörbchen|Topf/);
  assert.match(recipeSteps(loaf,'Gusseisentopf','round').join(' '),/Gärkörbchen/);
  assert.match(plan('Gusseisentopf',150).filter(s=>s.title==='Backphase starten')[1].detail,/Deckel abnehmen/);

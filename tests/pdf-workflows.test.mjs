@@ -78,3 +78,11 @@ test('starter choice controls the feeding step and a new culture waits for matur
  assert.equal(readRenderedForm({...input,starterReady:'feed'}).ready,false);
  assert.throws(()=>readRenderedForm({...input,starterReady:'new'}),/mehrere Fütterungen/);
 });
+test('a flour amount from recipe detail overrides weekly portions and is shared across all loaves',()=>{
+ const r=readRenderedForm({planMode:'simple',recipeFlourTotal:800,loaves:2}).recipe;
+ assert.equal(r.flours[0].grams,800);
+ assert.equal(r.water,560);
+ assert.equal(r.salt,16);
+ assert.equal(r.starter.grams,192);
+ assert.match(r.steps[0],/528 g/);
+});

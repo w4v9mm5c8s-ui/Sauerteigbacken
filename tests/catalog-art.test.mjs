@@ -11,7 +11,7 @@ test('each illustrated catalog recipe has a distinct, high-resolution offline ph
  const server = read('/server.mjs').toString();
  const worker = read('/sw.js').toString();
  for (const recipe of recipes) {
-  if(recipe.originalUrl){assert.doesNotMatch(recipeCards([recipe]),/<img/);continue;}
+  if(recipe.originalUrl){assert.equal(recipePhotoPath(recipe),recipe.sourcePhoto);assert.ok(recipeCards([recipe]).includes(recipe.sourcePhoto));continue;}
   const path = recipePhotoPath(recipe);
   const image = read(path);
   assert.equal(image.toString('ascii', 8, 16), 'WEBPVP8 ', path);
