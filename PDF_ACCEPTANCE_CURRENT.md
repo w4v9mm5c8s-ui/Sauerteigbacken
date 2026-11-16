@@ -18,7 +18,7 @@ Quelle: aktuelle Sauerteigbrot.pdf, 41 Seiten, Upload vom 03.11.2026. Vollständ
 - Verspätetes Mischen, Formen und Herausnehmen verschieben offene Folgeschritte um die tatsächliche Verspätung. Bereits erledigte Schritte bleiben unverändert. Früheres Abhaken verkürzt keine Gare. Abschaltbar pro Backtag.
 - Manuelle Verschiebungen überspringen keine Tage mehr zur Konfliktlösung; Konflikte mit Sperrzeiten oder anderen Backtagen werden angezeigt.
 - Vorher-/Nachher-Fotovergleich mit zwei Bildern, ausdrücklicher KI-Einwilligung, gespeicherter Einschätzung und separater Übernahme als Beobachtung. Keine automatische Änderung von Reifezeiten aus Bildern.
-- Automatische Tests decken tatsächliche Verzögerung, erledigte Schritte, wiederholten Abschluss, frühzeitiges Abhaken, Falten sowie Sperrzeiten und parallele Backtage ab. Der neue Fotovergleich ist noch nicht mit einem echten Testkonto gegen den KI-Dienst abgenommen.
+- Automatische Tests decken tatsächliche Verzögerung, erledigte Schritte, wiederholten Abschluss, frühzeitiges Abhaken, Falten sowie Sperrzeiten und parallele Backtage ab. Live-API-Test am 16.11.2026: Anmeldung mit temporärem Konto und erfolgreicher Vergleich zweier synthetischer Testbilder. Die fachliche Bewertung anhand echter Teigfotos bleibt offen.
 
 ## Bereits vorhanden
 Mehltabellen und Mischmengen, Starter-/Gärtabellen, Quellwasserbilanz, Gärkörbchengrößen, PDF-Backprogramm, neun PDF-Rezepte, drei Beispielpläne, 97 Wissenseinträge, 21 Ressourcen, sieben interaktive Lektionen mit 28 Zeichnungen; Backtage, Zeitverschiebung, private Fotos, KI, Import, Vorrat, Einkauf, Cloud-Konfliktauswahl und geplante Pushs. Vorhandensein ist kein Nachweis echter iPhone-Abnahme.
@@ -28,7 +28,7 @@ Mehltabellen und Mischmengen, Starter-/Gärtabellen, Quellwasserbilanz, Gärkör
 - Fachlich validierte Reifeauswertung aus Fotos; der neue Vergleich ist eine unvalidierte KI-Einschätzung mit manueller Übernahme ins Protokoll.
 - Autor:innenprofile und vollständige mehrkontige Community-Abnahme.
 - Automatische Zusammenführung widersprüchlicher einzelner Datensätze; derzeit Bereichsauswahl.
-- Vollständig typisierte eigene Zutatenrollen, Vorstufen und Versionsvergleich; der Texteditor ersetzt keinen strukturierten Rezepteditor.
+- Eigene Rezepte unterstützen getrennte Eingaben für Hauptteig, Füllung, Belag und Quellstück samt Quellzeit und Wasseranteil. Versionen lassen sich je Feld vergleichen und einzeln wiederherstellen. Eigene Koch- und Brühstücke sind weiterhin nur im Planer einstellbar.
 - Flexible Ablaufabhängigkeiten und automatische Neuberechnung aller Phasen aus tatsächlichen Fertigzeiten; derzeit Vorbereitungskontrollen, manuelle Restzeitverschiebung und automatische Anpassung an drei Phasengrenzen.
 - Keine Garantie eines passenden Plans bei unvereinbaren Sperrzeiten oder unbekannten Rezeptbedingungen.
 - Alle Originalbilder identisch übernommen bzw. alle Rezepte mit individuellen Fotos: nicht belegt.
