@@ -9,7 +9,7 @@ export function pdfToolsView(flourTable=[],esc=escDefault){
  const soakers=PDF_SOAKER_RATIOS.flatMap(g=>g.names.map(name=>[name,name+' ('+g.label+')']));
  const lessons=PDF_LESSONS.map(g=>'<details class="pdf-lesson"><summary>'+esc(g.name)+' <small>PDF S. '+g.pages+'</small></summary><p>'+esc(g.intro)+'</p><ol>'+g.steps.map(s=>'<li>'+esc(s)+'</li>').join('')+'</ol></details>').join('');
  const opts=['1:1:1','1:2:2','1:3:3','1:5:5','1:10:10'];
- return lessonsMenu()+'<header class="pdf-tool-intro"><span class="studio-overline">DEIN SAUERTEIG-WERKZEUGKASTEN</span><h2>Backwissen & Rechner</h2><p>Originalwerte aus der Sauerteig-PDF, nachvollziehbar gerechnet. Reife und Temperaturen immer am Teig kontrollieren.</p></header>'+
+ return lessonsMenu()+'<header class="pdf-tool-intro"><span class="studio-overline">DEIN SAUERTEIG-WERKZEUGKASTEN</span><h2>Backwissen & Rechner</h2><p>Berechne, wie du deinen Starter fütterst, wie lange dein Teig ungefähr geht und wie viel Wasser deine Saaten brauchen.</p></header>'+
  '<section class="card pdf-tool-card"><h3>Starter richtig füttern</h3><p>Ermittelt die neue Hydration und einen Reife-Richtwert aus dem PDF (S. 11–12).</p>'+
  field('pdfOldMass','Altes Anstellgut (g)',50)+field('pdfOldHyd','Bisherige Hydration (%)',100)+
  select('pdfRatio','Fütterungsverhältnis',opts)+select('pdfStarterKind','Starterart',['Weizen','Roggen'])+field('pdfStarterTemp','Reifetemperatur (18–24 °C)',21)+

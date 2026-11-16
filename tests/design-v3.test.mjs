@@ -31,7 +31,7 @@ test('saved parallel bakes offer actions without inventing a due time',()=>{
 });
 test('baking days page never invents planned bakes',()=>{
  const empty=bakingDaysView({active:null,parked:[]});
- assert.match(empty,/kein Backtag/);
+ assert.match(empty,/keinen Backvorgang/);
  const withBakes=bakingDaysView({active:{title:'A',index:0,steps:[{}]},parked:[{title:'B',index:1,steps:[{},{}]}]});
  assert.match(withBakes,/switchBake:0/);
 });

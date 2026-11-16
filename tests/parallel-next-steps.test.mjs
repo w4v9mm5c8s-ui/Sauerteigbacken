@@ -23,10 +23,10 @@ test('baking day links preserve the exact stored parallel session index',()=>{
  assert.match(html,/Nächste Arbeitsschritte/);
  assert.match(html,/data-act="switchBake:0"/);
  assert.match(html,/data-act="switchBake:1"/);
- assert.match(html,/2 laufende Backtage/);
+ assert.match(html,/2 laufende Backvorgänge/);
 });
 test('no future baking times are shown for an empty account',()=>{
  const html=bakingDaysView({active:null,parked:[]});
  assert.doesNotMatch(html,/Nächste Arbeitsschritte/);
- assert.match(html,/kein Backtag/);
+ assert.match(html,/keinen Backvorgang/);
 });
