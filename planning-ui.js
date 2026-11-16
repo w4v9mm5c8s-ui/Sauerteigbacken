@@ -15,7 +15,7 @@ export function weeklyBread(people,daily,loaves){
 }
 export function planningView(r,esc,now,flourTable=[],starters=[],choice){
  if(!r)return '<section class="card">Bitte zuerst ein Rezept auswählen.</section>';
- const date=new Date(now.getTime()+2*86400000),pad=n=>String(n).padStart(2,'0'),local=date.getFullYear()+'-'+pad(date.getMonth()+1)+'-'+pad(date.getDate())+'T'+pad(date.getHours())+':'+pad(date.getMinutes());
+ const local=now.toISOString();
  const field=(label,id,value,opts='')=>'<label for="'+id+'">'+label+'</label><input id="'+id+'" '+opts+' value="'+esc(value??'')+'">';
  const mean=values=>values?.[0]==null?'':(values[0]+values[1])/2;
  const flour=r.flours.reduce((a,f)=>a+f.grams,0),total=doughWeight(r);
@@ -40,7 +40,7 @@ export function planningView(r,esc,now,flourTable=[],starters=[],choice){
  '<label>Starter oder Anstellgut</label><select id="starterType"><option '+(r.starter.type==='Weizen'?'selected':'')+'>Weizen</option><option '+(r.starter.type==='Roggen'?'selected':'')+'>Roggen</option><option '+(r.starter.type==='Dinkel'?'selected':'')+'>Dinkel</option></select>'+
  field('Wasser im Starter (% seines Mehlgewichts)','starterHydration',r.source==='PDF'?(r.starter.hydration??''):(r.starter.hydration||100),'type="number" min="20" max="250"')+
  '<label>Fütterungsverhältnis</label><select id="feedRatio"><option>1:2:2</option><option>1:1:1</option><option>1:3:3</option><option>1:5:5</option><option>1:10:10</option></select>'+
- '<div class="starter-choice"><label for="starterReady">Wo stehst du mit deinem Starter?</label><select id="starterReady"><option value="feed">Füttern im Backplan einplanen</option><option value="peak">Starter ist bereits am Peak</option><option value="new">Ich möchte jetzt einen neuen Starter ansetzen</option></select><p id="peakHelp" hidden>Dein Starter hat nach dem Füttern seinen höchsten Stand erreicht. Du kannst ihn jetzt für den Teig verwenden.</p><div id="newStarterGuide" hidden><h3>Dein erster Starter</h3><ol><li>Heute: Verrühre 50 g Vollkornmehl mit 50 g Wasser in einem sauberen Glas. Markiere die Höhe, decke das Glas locker ab und lass es bei Zimmertemperatur stehen.</li><li>Nach 24 Stunden: Behalte 50 g Ansatz und rühre 50 g Weizenmehl und 50 g Wasser ein.</li><li>Ab Tag 3: Wiederhole diese Fütterung morgens und abends. Markiere nach jeder Fütterung den neuen Stand.</li></ol><p>Wenn sich dein Starter nach mehreren Fütterungen zuverlässig innerhalb von etwa 6 bis 8 Stunden verdoppelt und viele Bläschen zeigt, kannst du damit backen. Wähle dann „Starter ist bereits am Peak“.</p><button type="button" data-act="markStarterStart">Ich habe den Starter angesetzt</button><p id="starterStartDate" role="status"></p><a href="https://www.kingarthurbaking.com/recipes/sourdough-starter-recipe" target="_blank" rel="noopener noreferrer">Anleitung von King Arthur Baking</a></div></div>'+
+ '<div class="starter-choice"><label for="starterReady">Wo stehst du mit deinem Starter?</label><select id="starterReady"><option value="feed">Füttern im Backplan einplanen</option><option value="peak">Starter ist bereits am Peak</option></select><p id="peakHelp" hidden>Dein Starter hat nach dem Füttern seinen höchsten Stand erreicht. Du kannst ihn jetzt für den Teig verwenden.</p></div>'+
  field('Starter-Reifezeit in Stunden (optional)','starterHours','','type="number" min="1" max="72" step="0.5" placeholder="Aus PDF-Tabelle oder persönliche Erfahrung"')+'<div id="pdfStarterPeakHint" class="muted small"></div>'+
  '</details><details><summary>4. Temperaturen</summary>'+
  field('Raumtemperatur (°C)','roomTemp',r.roomTemp??22,'type="number" min="5" max="40" step="0.5"')+
@@ -66,10 +66,11 @@ export function planningView(r,esc,now,flourTable=[],starters=[],choice){
  field('Mehl für Brühstück (g; Teil der Mehlmenge)','brewFlour',r.brew?.flour??0,'type="number" min="0" max="5000"')+field('Wasser für Brühstück (g)','brewWater',r.brew?.water??0,'type="number" min="0" max="10000"')+
  '<label for="brewMethod">Vorstufe</label><select id="brewMethod"><option value="scald">Brühstück: übergießen</option><option value="cook" '+(r.brew?.method==='cook'?'selected':'')+'>Kochstück: unter Rühren aufkochen</option></select>'+field('Brühstück-Abkühlzeit (Minuten; Temperatur anschließend prüfen)','brewCoolMinutes',r.brew?.coolMinutes??60,'type="number" min="30" max="1440"')+
  '<div id="pdfWaterCheck" class="muted small" aria-live="polite">Quellwasser wird vom Gesamtwasser abgezogen.</div>'+'</details><details open><summary>Dein Zeitplan</summary>'+
- field('Fertig am','finish',local,'type="datetime-local"')+
+ '<p id="minimumTime" role="status">Passende Backtermine werden berechnet …</p><input type="hidden" id="finish" value="'+esc(local)+'">'+
  '<div class="cols"><div>'+field('Schlafen ab','sleepFrom','22:00','type="time"')+'</div><div>'+field('Aufstehen um','sleepTo','07:00','type="time"')+'</div></div>'+
  field('Frühestens beginnen ab (optional)','earliestStart','','type="datetime-local"')+
  '<details><summary>Abwesenheiten berücksichtigen</summary>'+field('Abwesend von','awayFrom','','type="datetime-local"')+field('Bis','awayTo','','type="datetime-local"')+field('Weitere Abwesenheit von','awayFrom2','','type="datetime-local"')+field('Bis','awayTo2','','type="datetime-local"')+'<label>Regelmäßig nicht verfügbar (Wochentage)</label><div class="weekday-grid">'+['Mo','Di','Mi','Do','Fr','Sa','So'].map((day,i)=>'<label><input type="checkbox" id="recurringDay'+i+'" data-unavailable-day="'+i+'">'+day+'</label>').join('')+'</div>'+field('An diesen Tagen ab','recurringFrom','09:00','type="time"')+field('Bis','recurringTo','17:00','type="time"')+'</details>'+
+ '<div class="cols"><div><label for="finishDay">Fertig am</label><select id="finishDay" disabled></select></div><div><label for="finishTime">Aus dem Ofen um</label><select id="finishTime" disabled></select></div></div>'+
  '</details><label><input type="checkbox" id="planReminders"> An die Arbeitsschritte per Push erinnern</label><button class="primary" data-act="calculate">Meinen Backplan erstellen</button><button type="button" data-act="saveRecipeProfile">Als eigene Rezeptvorgaben speichern</button><div id="planResult"></div></section>';
 }
 export function readPlanningForm(r,get,ingredientsOnly=false){
@@ -110,7 +111,6 @@ export function readPlanningForm(r,get,ingredientsOnly=false){
  if(r.requiresColdBulk&&!(n('coldBulkHours')>=1&&n('coldBulkHours')<=48))throw Error('Bitte Dauer der kalten Stockgare angeben.');
  if(r.soaker&&!(n('recipeSoakerHours')>0&&n('recipeSoakerHours')<=48))throw Error('Bitte Quellzeit angeben.');
  if(!r.bake.length&&!(n('recipeBakeTemp')>=80&&n('recipeBakeTemp')<=300&&n('recipeBakeMinutes')>=5&&n('recipeBakeMinutes')<=240))throw Error('Bitte Backtemperatur und Backdauer ergänzen.');
- if(val('starterReady')==='new')throw Error('Dein neuer Starter braucht erst mehrere Fütterungen. Sobald er backbereit ist, wähle „Starter ist bereits am Peak“.');
  const finish=new Date(val('finish'));if(!Number.isFinite(+finish))throw Error('Bitte ein gültiges Datum eingeben');
  const awayFrom=val('awayFrom')?new Date(val('awayFrom')):null,awayTo=val('awayTo')?new Date(val('awayTo')):null;
  if(Boolean(awayFrom)!==Boolean(awayTo)||awayFrom&&awayTo<=awayFrom)throw Error('Bitte Abwesenheit vollständig und korrekt angeben');

@@ -33,3 +33,15 @@ test('30 distinct source recipes have ingredients, starter and a reader rating',
  assert.equal(new Set(added.map(r=>r.originalUrl)).size,30);
  assert.ok(added.every(r=>r.starter.grams>0&&r.readerVotes>0&&r.readerRating>0&&r.flours.every(f=>f.grams>0)));
 });
+test('finish picker accepts exact feasible slots and rejects occupied or too-early times',()=>{
+ const wanted=new Date(Date.now()+2*86400000);wanted.setHours(17,0,0,0);
+ const options={mode:'warm',exactFinish:true,starterHours:8};
+ const run=(date,ready,extra={})=>makePlan(recipes[0],date,'00:00','00:00',ready,45,null,null,{...options,...extra});
+ const plan=run(wanted,true);
+ assert.equal(plan.finish,+wanted);assert.equal(plan.shift,0);
+ assert.equal(run(wanted,true,{occupied:[{at:+wanted,minutes:5}]}),null);
+ const mix=plan.steps.find(s=>s.title==='Teig mischen');
+ const earliestStart=new Date(mix.at-2*3600000);
+ assert.ok(run(wanted,true,{earliestStart}));assert.equal(run(wanted,false,{earliestStart}),null);
+ assert.equal(makePlan(recipes[0],wanted,'16:00','18:00',true,45,null,null,options),null);
+});
