@@ -6,6 +6,6 @@ test('all app module imports and artwork are in public allowlist',()=>{
  const app=readFileSync(new URL('../app.js',import.meta.url),'utf8');
  const server=readFileSync(new URL('../server.mjs',import.meta.url),'utf8');
  const imports=[...app.matchAll(/from '\.\/([^']+)'/g)].map(x=>'/'+x[1]);
- const assets=['/art-loaf.svg','/art-starter.svg','/art-tools.svg','/flour-table.json','/knowledge-data.json','/resources.json','/source-conflicts.json','/historical-recipes.json'];
+ const assets=['/art-loaf.svg','/art-starter.svg','/art-tools.svg','/flour-table.json','/knowledge-data.json','/resources.json','/source-conflicts.json'];
  for(const path of [...imports,...assets])assert.ok(server.includes("'"+path+"'"),'Missing static asset '+path);
 });

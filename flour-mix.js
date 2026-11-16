@@ -39,5 +39,5 @@ export function flourBlendSuggestion(table, entries, { saltPercent=2, starterHyd
  const starterFlour=starter/(1+Number(starterHydration)/100);
  const starterWater=starter-starterFlour;
  const effectiveHydration=roundGram(100*(water+starterWater)/(grams+starterFlour));
- return {flours:selected.map(({name,grams})=>({name,grams})),flourTotal:roundGram(grams),water,starter,salt,saltPercent:Number(saltPercent),starterHydration:Number(starterHydration),total:roundGram(grams+water+starter+salt),weightedHydration,effectiveHydration,stockFactor,proofFactor,suggestedStarter,source:'Sauerteigbrot.pdf, Mehltabelle S. 7–8',isEstimate:true};
+ return {flours:selected.map(({name,grams})=>({name,grams})),flourTotal:roundGram(grams),water,starter,salt,saltPercent:Number(saltPercent),starterHydration:Number(starterHydration),total:roundGram(grams+water+starter+salt),weightedHydration,effectiveHydration,stockFactor,proofFactor,suggestedStarter,source:'Richtwert für die gewählte Mehlsorte',isEstimate:true};
 }

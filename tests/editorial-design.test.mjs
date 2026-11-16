@@ -15,7 +15,8 @@ test('a small viewport uses readable full-width rows, not eight narrow tiles',()
 test('the start and baking hub preserve every core destination',()=>{
  const home=homeView({signed:false}),hub=hubView(()=>'',false,0,0);
  for(const key of ['newPlan','newRecipe','recipes','own','bakingDays','favorites','import','stats','community','knowledge'])assert.match(home,new RegExp('data-act="'+key+'"'));
- for(const key of ['planFromRecipe','newRecipe','recipes','own','bakingDays','favorites','history','stats','calculator','community','historical'])assert.match(hub,new RegExp('data-act="'+key+'"'));
+ assert.doesNotMatch(hub,/Rezeptarchiv|data-act="historical"/);
+ for(const key of ['planFromRecipe','newRecipe','recipes','own','bakingDays','favorites','history','stats','calculator','community'])assert.match(hub,new RegExp('data-act="'+key+'"'));
 });
 test('suggested images are example recipes, never fabricated user history',()=>{
  const html=homeView({signed:false,history:[]});
@@ -32,7 +33,7 @@ test('the app loads before public-data requests and keeps a manual recipe reload
 });
 test('the service worker version is atomically updated and prefers current HTML and modules',()=>{
  const sw=read('sw.js'),server=read('server.mjs');
- assert.match(sw,/sauerteig-public-v50/);
+ assert.match(sw,/sauerteig-public-v51/);
  assert.match(sw,/Promise\.race/);
  assert.match(sw,/isRealAsset/);
  assert.match(sw,/url\.pathname\.startsWith\('\/api\/'\)/);

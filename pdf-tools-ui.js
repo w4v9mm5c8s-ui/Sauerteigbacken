@@ -7,34 +7,33 @@ const button=(act,title)=>'<button type="button" data-act="'+act+'" class="pdf-t
 export function pdfToolsView(flourTable=[],esc=escDefault){
  const grains=flourTable.map(x=>[x.name,x.name]);
  const soakers=PDF_SOAKER_RATIOS.flatMap(g=>g.names.map(name=>[name,name+' ('+g.label+')']));
- const lessons=PDF_LESSONS.map(g=>'<details class="pdf-lesson"><summary>'+esc(g.name)+' <small>PDF S. '+g.pages+'</small></summary><p>'+esc(g.intro)+'</p><ol>'+g.steps.map(s=>'<li>'+esc(s)+'</li>').join('')+'</ol></details>').join('');
+ const lessons=PDF_LESSONS.map(g=>'<details class="pdf-lesson"><summary>'+esc(g.name)+'</summary><p>'+esc(g.intro)+'</p><ol>'+g.steps.map(s=>'<li>'+esc(s)+'</li>').join('')+'</ol></details>').join('');
  const opts=['1:1:1','1:2:2','1:3:3','1:5:5','1:10:10'];
  return lessonsMenu()+'<header class="pdf-tool-intro"><span class="studio-overline">DEIN SAUERTEIG-WERKZEUGKASTEN</span><h2>Backwissen & Rechner</h2><p>Berechne, wie du deinen Starter fütterst, wie lange dein Teig ungefähr geht und wie viel Wasser deine Saaten brauchen.</p></header>'+
- '<section class="card pdf-tool-card"><h3>Starter richtig füttern</h3><p>Ermittelt die neue Hydration und einen Reife-Richtwert aus dem PDF (S. 11–12).</p>'+
+ '<section class="card pdf-tool-card"><h3>Starter richtig füttern</h3><p>Berechne, wie viel Mehl und Wasser du zum Füttern brauchst und wann dein Starter ungefähr reif ist.</p>'+
  field('pdfOldMass','Altes Anstellgut (g)',50)+field('pdfOldHyd','Bisherige Hydration (%)',100)+
  select('pdfRatio','Fütterungsverhältnis',opts)+select('pdfStarterKind','Starterart',['Weizen','Roggen'])+field('pdfStarterTemp','Reifetemperatur (18–24 °C)',21)+
  button('pdfFeed','Fütterung berechnen')+'<div id="pdfFeedResult" class="pdf-tool-result" aria-live="polite"></div></section>'+
- '<section class="card pdf-tool-card"><h3>Stock- und Stückgare</h3><p>Referenztabellen S. 16–17 und 20–21. Die Stockgare gilt genau nur bei 500 g Mehl, 170 g ASG und 50 % Starter-Hydration.</p>'+
+ '<section class="card pdf-tool-card"><h3>Stock- und Stückgare</h3><p>Vergleiche die Gehzeit vor und nach dem Formen. Für die erste Gehzeit rechnet die App mit 500 g Mehl und 170 g festem Starter (50 % Hydration).</p>'+
  select('pdfFlour','Mehlart',grains)+field('pdfGareTemp','Raum-/Teigtemperatur (°C)',21)+
  button('pdfGare','Gärzeiten vergleichen')+'<div id="pdfGareResult" class="pdf-tool-result" aria-live="polite"></div></section>'+
- '<section class="card pdf-tool-card"><h3>Gärkörbchen auswählen</h3><p>Empfohlene Größen nach Rohteiggewicht (PDF S. 23).</p>'+
+ '<section class="card pdf-tool-card"><h3>Gärkörbchen auswählen</h3><p>Empfohlene Größen nach Rohteiggewicht.</p>'+
  field('pdfBasketGrams','Rohteiggewicht pro Brot (g)',900)+select('pdfBasketShape','Form',[['round','Rund'],['oval','Oval']])+
  button('pdfBasket','Korbgröße berechnen')+'<div id="pdfBasketResult" class="pdf-tool-result" aria-live="polite"></div></section>'+
  '<section class="card pdf-tool-card"><h3>Quellwasser und Brühstück</h3><p>Alle verwendeten Flüssigkeiten werden aus dem Gesamtwasser abgezogen, nicht hinzuaddiert.</p>'+
  select('pdfBalanceFlour','Mehl',grains)+field('pdfBalanceFlourGrams','Mehlmenge (g)',500)+field('pdfBalanceWater','Gesamtes Rezeptwasser (g)',380)+
  field('pdfBalanceStarter','Reifer Starter (g)',170)+field('pdfBalanceStarterHyd','Starter-Hydration (%)',100)+
  select('pdfSeedName','Saat oder Schrot', [['','Kein Quellstück'],...soakers])+field('pdfSeedGrams','Saat-/Schrotmenge (g)',0)+
- field('pdfAltGrams','Altbrot (g)',0)+select('pdfAltRatio','Altbrot-Wasser',[['3','3× (PDF-Haupttext S. 28)'],['2','2× (PDF-Tabelle S. 29)']])+
+ field('pdfAltGrams','Altbrot (g)',0)+select('pdfAltRatio','Altbrot-Wasser',[['3','300 g Wasser pro 100 g Altbrot'],['2','200 g Wasser pro 100 g Altbrot']])+
  field('pdfBrewFlour','Mehl im Brühstück (g; zählt zur Mehlmenge)',0)+field('pdfBrewWater','Brühwasser (g)',0)+
  button('pdfWaterBalance','Wasserbilanz berechnen')+'<div id="pdfWaterResult" class="pdf-tool-result" aria-live="polite"></div></section>'+
- '<section class="card pdf-tool-card"><h3>Backprogramm aus der PDF</h3><p>Strukturierter Standardablauf für geeignete Brote (S. 24), nicht automatisch für Laugengebäck, Pizza, Airfryer oder süße Teige.</p>'+
+ '<section class="card pdf-tool-card"><h3>Brot mit Dampf backen</h3><p>Strukturierter Standardablauf für geeignete Brote, nicht automatisch für Laugengebäck, Pizza, Airfryer oder süße Teige.</p>'+
  button('pdfStandardBake','Standardphasen anzeigen')+'<div id="pdfBakeResult" class="pdf-tool-result" aria-live="polite"></div></section>'+
  '<section class="card pdf-figures"><h3>Lehrbilder: Teigentwicklung und Backphasen</h3>'+
  '<figure><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 115" role="img" aria-label="Drei schematische Reifestufen"><g fill="#e9cdb2" stroke="#986e5f" stroke-width="3"><path d="M20 72 Q55 60 115 72 V95 H20Z"/><path d="M181 58 Q239 16 297 58 V95 H181Z"/><path d="M355 81 Q398 80 459 82 V95 H355Z"/></g><g fill="#66443a" font-family="sans-serif" font-size="14" text-anchor="middle"><text x="70" y="111">Untergare</text><text x="238" y="111">Gute Reife</text><text x="410" y="111">Übergare</text></g></svg><figcaption>Die Grafik ist schematisch. Auf Volumen, Gasblasen und Teigspannung achten, nicht nur auf Zeiten.</figcaption></figure>'+
  '<figure><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 115" role="img" aria-label="Stretch and Fold und Coil Fold"><rect x="14" y="15" width="210" height="65" rx="17" fill="#efcfbe"/><rect x="256" y="15" width="210" height="65" rx="17" fill="#e5d4b8"/><g fill="none" stroke="#a56c68" stroke-width="6" stroke-linecap="round"><path d="M46 46 Q95 8 176 49 M154 31 L177 49 150 68"/><path d="M291 61 Q365 6 430 61 M290 60 l16 -26 M430 60 l-18 -26"/></g><g fill="#61443a" font-family="sans-serif" font-size="14" text-anchor="middle"><text x="118" y="101">Stretch &amp; Fold</text><text x="360" y="101">Coil Fold</text></g></svg><figcaption>Erst behutsam über die Mitte falten, später von unten anheben – bei geeigneten Weizenteigen.</figcaption></figure>'+
- '<figure><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 100" role="img" aria-label="Backphasen 230 Grad mit Dampf und danach 210 Grad ohne Dampf"><path d="M25 23 H448" stroke="#d1b9a1" stroke-width="14"/><path d="M25 23 H104" stroke="#b4757c" stroke-width="14"/><g font-family="sans-serif" fill="#684c43" font-size="14" text-anchor="middle"><text x="35" y="54">0</text><text x="108" y="54">8 Min.</text><text x="270" y="54">28 Min.</text><text x="435" y="54">48 Min.</text><text x="64" y="82">230 °C</text><text x="310" y="82">210 °C</text></g></svg><figcaption>Das PDF-Standardprogramm gilt für geeignete Brote, nicht für alle Gebäckarten.</figcaption></figure></section>'+
- '<section class="card pdf-tool-card"><h3>Schritt-für-Schritt-Anleitungen</h3><div class="pdf-lesson-list">'+lessons+'</div></section>'+
- '<p class="pdf-source-note">PDF-Quellen sind als Seitenangaben hinterlegt. Die Tabelle ist eine Praxishilfe, kein Messgerät; fehlende Werte werden nicht erfunden. Abweichende Altbrot-Angaben bleiben wählbar.</p>';
+ '<figure><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 100" role="img" aria-label="Backphasen 230 Grad mit Dampf und danach 210 Grad ohne Dampf"><path d="M25 23 H448" stroke="#d1b9a1" stroke-width="14"/><path d="M25 23 H104" stroke="#b4757c" stroke-width="14"/><g font-family="sans-serif" fill="#684c43" font-size="14" text-anchor="middle"><text x="35" y="54">0</text><text x="108" y="54">8 Min.</text><text x="270" y="54">28 Min.</text><text x="435" y="54">48 Min.</text><text x="64" y="82">230 °C</text><text x="310" y="82">210 °C</text></g></svg><figcaption>Dieses Backprogramm gilt für geeignete Brote, nicht für alle Gebäckarten.</figcaption></figure></section>'+
+ '<section class="card pdf-tool-card"><h3>Schritt-für-Schritt-Anleitungen</h3><div class="pdf-lesson-list">'+lessons+'</div></section>';
 }
 export function pdfToolCalculation(action,form,flourTable=[],esc=escDefault){
  const num=id=>Number(form[id]??0),s=id=>String(form[id]??''),one=name=>[{name,grams:500}],grams=id=>num(id);
@@ -53,6 +52,6 @@ export function pdfToolCalculation(action,form,flourTable=[],esc=escDefault){
   return '<strong>Wasser in den Hauptteig: '+water.mainWater+' g</strong><p>Für Altbrot: '+water.altbrotWater+' g · Für Saaten: '+water.soakerWater+' g · Für Brühstück: '+water.brewWater+' g.</p><p>Gesamtwasser: '+water.totalRecipeWater+' g; Hydration inklusive Starter: '+water.hydration+' %. Rohteiggewicht: '+water.doughMass+' g.</p><p>'+esc(water.note)+'</p>';}
  if(action==='pdfStandardBake'){const base=new Date();base.setSeconds(0,0);base.setHours(18,0);if(+base<Date.now())base.setDate(base.getDate()+1);
   const steps=standardBakePhases({start:base,preheat:60});
-  return '<ol class="pdf-phases">'+steps.map(s=>'<li><strong>'+new Date(s.at).toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'})+' · '+esc(s.title)+'</strong>'+(s.temp?' · '+s.temp+' °C':'')+'</li>').join('')+'</ol><p>Beispiel: Einschießen 18 Uhr. Das Programm gilt nur für das PDF-Standardbrot.</p>';}
+  return '<ol class="pdf-phases">'+steps.map(s=>'<li><strong>'+new Date(s.at).toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'})+' · '+esc(s.title)+'</strong>'+(s.temp?' · '+s.temp+' °C':'')+'</li>').join('')+'</ol><p>Beispiel: Einschießen 18 Uhr. Wähle zum Backen die Temperaturen und Zeiten deines Rezepts.</p>';}
  throw Error('Unbekannter Rechner.');
 }
