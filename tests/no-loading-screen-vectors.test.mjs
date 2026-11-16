@@ -13,8 +13,8 @@ test('the new editorial homepage is visible in the initial HTML before JavaScrip
 });
 test('watercolor PNGs and new responsive styles are served directly',()=>{
  const html=read('index.html'),home=read('home.js'),css=read('theme-editorial.css');
- assert.match(html,/src="\/design\/buddy-cutout\.webp"/);
- assert.match(home,/src=\\"\/design\/buddy-cutout\.webp\\"|src="\/design\/buddy-cutout\.webp"/);
+ assert.match(html,/src="\/design\/buddy-original\.webp"/);
+ assert.match(home,/src=\\"\/design\/buddy-original\.webp\\"|src="\/design\/buddy-original\.webp"/);
  assert.match(html,/href="\/theme-editorial\.css"/);
  assert.match(css,/studio-photo-rail/);
  assert.match(read('server.mjs'),/\.png':'image\/png'/);
