@@ -23,14 +23,14 @@ test('the signed-out home provides grouped actions without displaying fake histo
 });
 test('baking navigation uses semantic rows with accessible action buttons',()=>{
  const html=hubView(()=>'',true,0,0);
- assert.equal((html.match(/class="studio-hub-row"/g)||[]).length,11);
- assert.equal((html.match(/<svg/g)||[]).length,12);
+ assert.equal((html.match(/class="studio-hub-row"/g)||[]).length,12);
+ assert.equal((html.match(/<svg/g)||[]).length,13);
  assert.match(html,/data-act="planFromRecipe"/);
 });
 test('illustrated data modules remain linked',()=>{
  assert.match(read('stats.js'),/art-chart\.svg/);
  assert.match(read('own-recipes.js'),/design\/menu-book\.svg/);
- assert.match(read('community-ui.js'),/art-basket\.svg/);
+ assert.match(read('community-ui.js'),/art-books\.svg/);
  assert.match(read('app.js'),/art-heart\.svg/);
  assert.match(read('pantry.js'),/art-wheat\.svg/);
 });

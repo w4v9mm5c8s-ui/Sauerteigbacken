@@ -13,7 +13,7 @@ Die Stripe-Integration ist technisch vorbereitet, aber **standardmäßig ausgesc
 1. Eigenes Stripe-Geschäftskonto für das tatsächliche Unternehmen erstellen und Identität/Bankdaten verifizieren.
 2. Zunächst im Stripe-Testmodus ein Produkt „Sauerteig Plus“ und zwei wiederkehrende EUR-Preise anlegen (monatlich/jährlich).
 3. Stripe-Kundenportal konfigurieren: Kündigung, Zahlungsmethoden und Rechnungsverlauf aktivieren.
-4. Stripe-Webhook anlegen: `https://backen-mit-sauerteig.onrender.com/api/stripe/webhook`.
+4. Stripe-Webhook anlegen: `https://sauerteigbuddy.de/api/stripe/webhook`.
 5. Ereignisse abonnieren: `customer.subscription.created`, `customer.subscription.updated`, `customer.subscription.deleted`.
 6. Folgende Geheimnisse **ausschließlich** in Render Environment hinterlegen, nie in GitHub oder Chat:
    - `STRIPE_SECRET_KEY` = Stripe-Testschlüssel `sk_test_...` (später Live-Schlüssel)
@@ -21,7 +21,7 @@ Die Stripe-Integration ist technisch vorbereitet, aber **standardmäßig ausgesc
    - `STRIPE_PRICE_MONTHLY` = Monats-Price-ID `price_...`
    - `STRIPE_PRICE_YEARLY` = Jahres-Price-ID `price_...`
    - `SUPABASE_SERVICE_ROLE_KEY` = Supabase Service-Role-Schlüssel, ausschließlich serverseitig
-   - `PUBLIC_BASE_URL` = `https://backen-mit-sauerteig.onrender.com`
+   - `PUBLIC_BASE_URL` = `https://sauerteigbuddy.de`
 7. Erst nach End-to-End-Test und Rechts-/Steuerfreigabe `BILLING_ENABLED=true` setzen.
 8. Vor Livebetrieb Test-IDs durch Live-IDs ersetzen und erneut vollständig testen. Test- und Live-Schlüssel nicht mischen.
 

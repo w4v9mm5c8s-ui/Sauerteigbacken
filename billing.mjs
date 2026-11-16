@@ -76,7 +76,7 @@ export async function checkoutSession(user,plan,env=process.env){
  const checked=await stripePrice(price,env);if(!validConsumerPrice(checked,plan==='monthly'?'month':'year'))throw Error('Tarifpreis noch nicht für den Verkauf freigegeben');
  const existing=await subscriptionRow(user.id,env);
  if(subscriptionActive(existing))throw Error('Dein Plus-Abo ist bereits aktiv. Bitte Abo verwalten.');
- const base=env.PUBLIC_BASE_URL||'https://backen-mit-sauerteig.onrender.com';
+ const base=env.PUBLIC_BASE_URL||'https://sauerteigbuddy.de';
  const params={
  mode:'subscription',
  'line_items[0][price]':price,'line_items[0][quantity]':'1',
@@ -95,7 +95,7 @@ export async function portalSession(userId,env=process.env){
  if(!env.STRIPE_SECRET_KEY||!env.SUPABASE_SERVICE_ROLE_KEY||!env.SUPABASE_URL)throw Error('Stripe-Kundenportal nicht eingerichtet');
  const existing=await subscriptionRow(userId,env);
  if(!existing?.stripe_customer_id)throw Error('Noch kein Stripe-Kundenkonto vorhanden');
- const base=env.PUBLIC_BASE_URL||'https://backen-mit-sauerteig.onrender.com';
+ const base=env.PUBLIC_BASE_URL||'https://sauerteigbuddy.de';
  const result=await stripeCall('billing_portal/sessions',{customer:existing.stripe_customer_id,return_url:base+'/'},env);
  if(!/^https:\/\/billing\.stripe\.com\//.test(result.url||''))throw Error('Ungültige Portal-Adresse');
  return {url:result.url};

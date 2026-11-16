@@ -1,9 +1,9 @@
 import webpush from 'npm:web-push@3.6.7';
 const base=Deno.env.get('SUPABASE_URL')!,key=Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
-const origin='https://backen-mit-sauerteig.onrender.com';
+const origin='https://sauerteigbuddy.de';
 async function db(path:string,method='GET',data?:unknown){const r=await fetch(base+'/rest/v1/'+path,{method,headers:{apikey:key,Authorization:'Bearer '+key,'Content-Type':'application/json',Prefer:'return=representation'},body:data===undefined?undefined:JSON.stringify(data)});if(!r.ok)throw Error('Database unavailable');const text=await r.text();return text?JSON.parse(text):null;}
 function validEndpoint(value:string){try{const u=new URL(value);return u.protocol==='https:'&&!u.username&&!u.password&&(!u.port||u.port==='443')&&(u.hostname==='fcm.googleapis.com'||u.hostname.endsWith('.push.apple.com')||u.hostname==='updates.push.services.mozilla.com'||u.hostname.endsWith('.notify.windows.com'));}catch{return false}}
-const allowedOrigins=new Set([origin,'https://sauerteigbuddy.de','https://www.sauerteigbuddy.de']);
+const allowedOrigins=new Set([origin,'https://www.sauerteigbuddy.de','https://backen-mit-sauerteig.onrender.com']);
 Deno.serve(async req=>{
  const requestOrigin=req.headers.get('Origin')||'';
  const allowedOrigin=allowedOrigins.has(requestOrigin)?requestOrigin:origin;

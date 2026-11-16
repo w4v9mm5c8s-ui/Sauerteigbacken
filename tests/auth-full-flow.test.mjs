@@ -4,7 +4,7 @@ import {readFileSync} from 'node:fs';
 import {AUTH_REDIRECT_URL,authView,validateAuthFields,parseAuthReturn,readableAuthError} from '../auth-ui.js';
 const read=path=>readFileSync(new URL('../'+path,import.meta.url),'utf8');
 test('auth redirects to deployed HTTPS application, never localhost',()=>{
- assert.equal(AUTH_REDIRECT_URL,'https://backen-mit-sauerteig.onrender.com/');
+ assert.equal(AUTH_REDIRECT_URL,'https://sauerteigbuddy.de/');
  assert.doesNotMatch(AUTH_REDIRECT_URL,/localhost/i);
  const app=read('app.js');
  assert.match(app,/signup\?redirect_to='\+encodeURIComponent\(AUTH_REDIRECT_URL\)/);

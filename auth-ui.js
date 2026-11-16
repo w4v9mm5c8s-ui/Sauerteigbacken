@@ -1,5 +1,5 @@
-const publicOrigins = ['https://backen-mit-sauerteig.onrender.com', 'https://sauerteigbuddy.de', 'https://www.sauerteigbuddy.de'];
-export const AUTH_REDIRECT_URL = (publicOrigins.includes(globalThis.location?.origin) ? globalThis.location.origin : publicOrigins[0]) + '/';
+const publicOrigins = ['https://sauerteigbuddy.de', 'https://www.sauerteigbuddy.de', 'https://backen-mit-sauerteig.onrender.com'];
+export const AUTH_REDIRECT_URL = (publicOrigins.includes(globalThis.location?.origin) ? globalThis.location.origin : 'https://sauerteigbuddy.de') + '/';
 
 const emailPattern=/^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 export function normalizedAuthEmail(input){return String(input??'').trim().toLocaleLowerCase('de-DE')}

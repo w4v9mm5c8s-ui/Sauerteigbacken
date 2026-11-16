@@ -26,7 +26,7 @@ test('home and learning screens use the watercolor motifs matching the approved 
  assert.ok(home.includes('/design/menu-book.svg'));
  assert.ok(knowledge.includes('src="/art-books.svg"'));
  assert.ok(app.includes('src="/art-starter.svg"'));
- assert.ok(app.includes('src="/art-buddy.svg"'));
+ assert.ok(app.includes('src="/design/buddy-original.webp"'));
  assert.ok(gallery.includes('/design/starter-sauerteig-brezeln.webp'));
 });
 

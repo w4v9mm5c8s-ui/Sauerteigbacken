@@ -82,6 +82,12 @@ body[data-page="hub"] main>.back-button{display:none}
 .studio-hub-row-text strong{font:600 .98rem/1.12 Georgia,serif;color:#4d3431}
 .studio-hub-row-text small{font:.73rem/1.25 'Outfit',system-ui,sans-serif;color:#836f69}
 .studio-hub-row .studio-chevron{font-size:1.22rem}
+.bake-hub-secondary strong{white-space:nowrap}
+.buddy-intro{margin:0 0 10px;color:var(--studio-muted);font:.8rem/1.4 'Outfit',system-ui,sans-serif}
+.chat-empty{margin:0;padding:30px 12px;text-align:center;color:var(--studio-muted);font:.8rem/1.4 'Outfit',system-ui,sans-serif}
+.msg.assistant{border:1px solid #ead8df;background:#fffaf8}
+.back-button{position:relative;z-index:3;touch-action:manipulation;cursor:pointer}
+body[data-page="buddy"] main>.back-button{margin-bottom:14px}
 nav{position:fixed;z-index:100;bottom:calc(8px + env(safe-area-inset-bottom,0px));left:50%;right:auto;width:calc(100% - 26px);max-width:725px;transform:translateX(-50%);display:flex;justify-content:space-around;gap:3px;padding:6px 8px;border-radius:27px;border:1px solid #e9dad1;background:#fffbf6f5;box-shadow:0 7px 22px #9271602a;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)}
 nav button{flex:1 1 0;max-width:none;min-height:59px;min-width:0;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:5px;padding:6px 3px;font:500 .76rem/1.1 'Outfit',system-ui,sans-serif;border-radius:19px;border:0;background:transparent;color:#786660}
 nav button.active{color:#914e54;background:linear-gradient(120deg,#f2d7da,#fbe8e8)}
