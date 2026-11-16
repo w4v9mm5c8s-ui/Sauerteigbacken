@@ -72,11 +72,11 @@ test('weekly portions scale the rendered recipe including baking loss',()=>{
  assert.equal(a.water,b.water);
  assert.ok(Math.abs(doughWeight(b)*0.88-1400)<1);
 });
-test('starter choice controls the feeding step and a new culture waits for maturity',()=>{
+test('starter choice controls the feeding step and excludes a new culture',()=>{
  const input={planMode:'simple',weekPeople:2,weekDaily:100,loaves:2};
  assert.equal(readRenderedForm({...input,starterReady:'peak'}).ready,true);
  assert.equal(readRenderedForm({...input,starterReady:'feed'}).ready,false);
- assert.throws(()=>readRenderedForm({...input,starterReady:'new'}),/mehrere Fütterungen/);
+ assert.doesNotMatch(planningView(recipe,String,new Date(),table),/value="new"|neuen Starter ansetzen/);
 });
 test('a flour amount from recipe detail overrides weekly portions and is shared across all loaves',()=>{
  const r=readRenderedForm({planMode:'simple',recipeFlourTotal:800,loaves:2}).recipe;

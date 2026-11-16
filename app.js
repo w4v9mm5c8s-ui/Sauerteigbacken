@@ -316,7 +316,7 @@ if(a.startsWith('communityImport:')){if(!user)throw Error('Bitte anmelden');cons
 if(a==='compareCloud'){const owner=user?.id,response=await request('/api/sync');if(user?.id!==owner)return;cloudConflict={local:structuredClone(local()),cloud:normalizeLocal(response.payload),revision:response.revision,owner};tab='cloudConflict';render();return}
 if(a==='resolveCloud'){if(!cloudConflict||cloudConflict.owner!==user?.id)throw Error('Bitte Vergleich erneut öffnen');const choices=Object.fromEntries([...document.querySelectorAll('[data-conflict-field]')].map(x=>[x.dataset.conflictField,x.value]));const resolved=resolveCloudChoices(cloudConflict.local,cloudConflict.cloud,choices);localStorage.setItem(storageKey()+'-conflict-backup',JSON.stringify(cloudConflict));clearTimeout(syncTimer);await syncInFlight.catch(()=>{});if(JSON.stringify(local())!==JSON.stringify(cloudConflict.local))throw Error('Lokale Daten haben sich geändert. Bitte Vergleich erneut öffnen.');const response=await request('/api/sync','PUT',{payload:resolved,revision:cloudConflict.revision});localStorage.setItem(storageKey(),JSON.stringify(resolved));localStorage.setItem(revisionKey(),String(response.revision));localStorage.removeItem(dirtyKey());if(resolved.activeBake)localStorage.setItem(activeKey(),JSON.stringify(resolved.activeBake));else localStorage.removeItem(activeKey());localStorage.setItem(parkedKey(),JSON.stringify(resolved.parallelBakes||[]));cloudConflict=null;tab='account';render();note('Ausgewählte Stände gespeichert');return}
 if(a==='exportConflictBackup'){const content=localStorage.getItem(storageKey()+'-conflict-backup');if(!content)throw Error('Noch keine Konfliktsicherung vorhanden.');const url=URL.createObjectURL(new Blob([content],{type:'application/json'})),link=document.createElement('a');link.href=url;link.download='sauerteig-konfliktsicherung.json';link.click();setTimeout(()=>URL.revokeObjectURL(url),1000);return}
-if(a==='saveRecipeProfile'){if(!user)throw Error('Bitte anmelden');readPlanningForm(current,id=>document.getElementById(id));const d=local(),values={};for(const el of document.querySelectorAll('#main input[id],#main select[id]'))if(!['datetime-local','time'].includes(el.type))values[el.id]=el.type==='checkbox'?el.checked:el.value;d.recipeProfiles=d.recipeProfiles||{};d.recipeProfiles[current.id]={values,flours:[...document.querySelectorAll('[data-plan-flour-row]')].map(row=>({name:row.querySelector('.plan-flour-name').value,grams:Number(row.querySelector('.plan-flour-grams').value)}))};save(d);note('Eigene Rezeptvorgaben gespeichert');return}
+if(a==='saveRecipeProfile'){if(!user)throw Error('Bitte anmelden');readPlanningForm(current,id=>document.getElementById(id));const d=local(),values={};for(const el of document.querySelectorAll('#main input[id],#main select[id]'))if(!['datetime-local','time'].includes(el.type)&&!['finish','finishDay','finishTime'].includes(el.id))values[el.id]=el.type==='checkbox'?el.checked:el.value;d.recipeProfiles=d.recipeProfiles||{};d.recipeProfiles[current.id]={values,flours:[...document.querySelectorAll('[data-plan-flour-row]')].map(row=>({name:row.querySelector('.plan-flour-name').value,grams:Number(row.querySelector('.plan-flour-grams').value)}))};save(d);note('Eigene Rezeptvorgaben gespeichert');return}
 if(a.startsWith('pantryWarn:')){
  const d=local(),item=d.pantry[Number(a.split(':')[1])];if(!item)return;
  const value=prompt('Bei welcher Restmenge soll die App zum Nachfüllen erinnern? (g)',String(item.warnAt??200));
@@ -419,19 +419,13 @@ if(a==='resetPlanWater'){
  const water=original?recipe.water:flourBlendSuggestion(flourTable,rows).water;
  $('#waterAmount').value=water;field.dataset.manual='';field.setCustomValidity('');syncPlanHydration();updatePdfPlanningHints();return
 }
-if(a==='markStarterStart'){
- const key='starter-start-date:'+(user?.id||'guest');
- if(!localStorage.getItem(key))localStorage.setItem(key,new Date().toISOString());
- updateStarterChoice();return
-}
 if(a==='calculate'){
  if(!$('#planDoughHyd').reportValidity())return;
  window.lastPlan=null;$('#planResult').replaceChildren();
- const data=readPlanningForm(current||recipes[0],id=>document.getElementById(id));
- const profileValue=$('#starterProfile')?.value;const profile=profileValue?local().starters?.[Number(profileValue)]:null;data.options.starterObservations=profile?.logs||[];data.options.occupied=[getActive(),...getParked()].filter(Boolean).flatMap(b=>b.steps.filter((s,i)=>s.active&&!b.logs?.[i]?.completedAt).map(s=>({at:s.at,minutes:s.minutes||5})));
- const p=makePlan(data.recipe,data.finish,data.from,data.to,data.ready,data.preheat,data.awayFrom,data.awayTo,data.options);
+ const data=planningConstraints();
+ const p=planAt(data,data.finish);
  const out=$('#planResult');
- if(!p){out.innerHTML='<p class="warning">Unter diesen Vorgaben konnte innerhalb von 21 Tagen kein sicherer Zeitplan berechnet werden. Passe die Schlaf- oder Abwesenheitszeiten an oder wähle eine geeignete Kühlschrankgare.</p>';return}
+ if(!p){refreshFinishOptions();note('Dieser Termin passt inzwischen nicht mehr. Bitte wähle erneut.');return}
  const sum=doughWeight(data.recipe);
  out.innerHTML='<h3>Dein Backplan</h3><p class="muted">'+(p.shift?'Nächster passender Fertigtermin: '+new Date(p.finish).toLocaleString('de-DE'):'Dein Wunschtermin passt.')+'</p><p class="success">'+data.loaves+' fertige Brote · '+Math.round(sum)+' g roher Teig'+(data.estimatedFinishedWeight?' · ca. '+Math.round(data.estimatedFinishedWeight*data.loaves)+' g fertiges Brot (Schätzung)':'')+' · '+(p.cold?'Kühlschrankgare':'Stückgare')+'</p><div class="steps">'+p.steps.map((x,i)=>'<div class="step"><strong>'+new Date(x.at).toLocaleString('de-DE')+' · '+escape(localStorage.getItem('sourdough-plan-mode')==='full'?x.title:plainTitle(x.title))+'</strong><p class="muted small">'+escape(x.detail)+'</p></div>').join('')+'</div><p class="muted small">'+escape(p.assumptions)+'</p>'+button('Backtag übernehmen','saveBake');
  window.lastPlan={...p,constraints:{...data.options,awayFrom:data.awayFrom,awayTo:data.awayTo},recipe:data.name,ingredients:data.recipe,temperatures:data.temperatures,estimatedFinishedWeight:data.estimatedFinishedWeight,bakeLoss:data.bakeLoss,starterHydration:data.starterHydration,loaves:data.loaves,createdAt:new Date().toISOString(),sleepFrom:data.from,sleepTo:data.to};
@@ -626,16 +620,83 @@ function refreshBlendPreview(editingHydration=false){
 }
 function updateStarterChoice(){
  const select=$('#starterReady');if(!select)return;
- const fresh=select.value==='new';
+ if(!select.value)select.value='feed';
  $('#peakHelp').hidden=select.value!=='peak';
- $('#newStarterGuide').hidden=!fresh;
- $('#planCard [data-act="calculate"]').disabled=fresh;
- const key='starter-start-date:'+(user?.id||'guest');
- const start=new Date(localStorage.getItem(key)||'');
- const tracked=Number.isFinite(+start);
- $('#newStarterGuide [data-act="markStarterStart"]').hidden=tracked;
- $('#starterStartDate').textContent=tracked?'Angesetzt am '+start.toLocaleDateString('de-DE')+'.':'';
 }
+function planningConstraints(){
+ const data=readPlanningForm(current||recipes[0],id=>document.getElementById(id));
+ const profileValue=$('#starterProfile')?.value;const profile=profileValue?local().starters?.[Number(profileValue)]:null;data.options.starterObservations=profile?.logs||[];data.options.occupied=[getActive(),...getParked()].filter(Boolean).flatMap(b=>b.steps.filter((s,i)=>s.active&&!b.logs?.[i]?.completedAt).map(s=>({at:s.at,minutes:s.minutes||5})));
+ return data;
+}
+function planAt(data,finish){
+ return makePlan(data.recipe,finish,data.from,data.to,data.ready,data.preheat,data.awayFrom,data.awayTo,{...data.options,exactFinish:true});
+}
+
+let finishRevision=0,finishTimer,availableDays=new Map();
+const dayLabel=new Intl.DateTimeFormat('de-DE',{weekday:'short',day:'2-digit',month:'2-digit',year:'numeric'});
+const hourLabel=new Intl.DateTimeFormat('de-DE',{hour:'2-digit',minute:'2-digit'});
+function chooseFinishDay(preferred){
+ const dates=availableDays.get($('#finishDay').value)||[];
+ const labels=dates.map(date=>hourLabel.format(date));
+ const choices=dates.map((date,i)=>new Option(labels.indexOf(labels[i])===labels.lastIndexOf(labels[i])?labels[i]:date.toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit',timeZoneName:'short'}),date.toISOString()));
+ const time=$('#finishTime');
+ time.replaceChildren(...choices);
+ if(choices.some(x=>x.value===preferred))time.value=preferred;
+ if(time.value)$('#finish').value=time.value;
+}
+function refreshFinishOptions(){
+ const card=$('#planCard');if(!card)return;
+ const revision=++finishRevision;
+ clearTimeout(finishTimer);
+ const day=$('#finishDay'),time=$('#finishTime'),submit=card.querySelector('[data-act="calculate"]'),status=$('#minimumTime');
+ day.disabled=time.disabled=submit.disabled=true;
+ day.replaceChildren();time.replaceChildren();availableDays=new Map();
+ status.textContent='Passende Backtermine werden berechnet …';
+ finishTimer=setTimeout(async()=>{
+  try{
+   const data=planningConstraints(),now=Date.now(),quarter=15*60000;
+   const start=Math.ceil(Math.max(now,+data.options.earliestStart||0)/quarter)*quarter;
+   const days=new Map();let first=null;
+   for(let block=0;block<21*96;block+=48){
+    if(revision!==finishRevision||!card.isConnected)return;
+    for(let i=block;i<block+48;i++){
+     const date=new Date(start+i*quarter),plan=planAt(data,date);
+     if(!plan)continue;
+     first??=plan;
+     const key=dayLabel.format(date);
+     if(!days.has(key))days.set(key,[]);
+     days.get(key).push(date);
+    }
+    await new Promise(done=>setTimeout(done,0));
+   }
+   if(revision!==finishRevision||!card.isConnected)return;
+   if(!first){status.textContent='In den geprüften 21 Tagen passt kein Backtermin. Prüfe deine Ruhezeiten und Abwesenheiten.';return}
+   availableDays=days;
+   day.replaceChildren(...[...days.keys()].map(key=>new Option(key,key)));
+   const wanted=data.finish.toISOString(),key=dayLabel.format(data.finish);
+   if(days.get(key)?.some(date=>date.toISOString()===wanted))day.value=key;
+   chooseFinishDay(wanted);
+   const minutes=Math.ceil((first.finish-now)/60000);
+   status.textContent='Mindestzeit ab jetzt: '+Math.floor(minutes/60)+' Std. '+minutes%60+' Min. bis zum ersten möglichen Ofentermin am '+dayLabel.format(first.finish)+' um '+hourLabel.format(first.finish)+' Uhr. Termine im 15-Minuten-Takt.';
+   day.disabled=time.disabled=submit.disabled=false;
+  }catch(error){if(revision===finishRevision&&card.isConnected)status.textContent=error.message}
+ },100);
+}
+function finishInput(event){
+ const id=event.target.id;
+ if(!event.target.closest('#planCard')||['finish','finishDay','finishTime','planReminders'].includes(id))return;
+ refreshFinishOptions();
+}
+document.addEventListener('visibilitychange',()=>{if(!document.hidden&&$('#planCard'))refreshFinishOptions()});
+document.addEventListener('input',finishInput);
+document.addEventListener('change',finishInput);
+document.addEventListener('change',event=>{
+ if(!['finishDay','finishTime'].includes(event.target.id))return;
+ if(event.target.id==='finishDay')chooseFinishDay();
+ else $('#finish').value=event.target.value;
+ window.lastPlan=null;$('#planResult').replaceChildren();
+ $('#finish').dispatchEvent(new Event('change',{bubbles:true}));
+});
 function updateIngredientList(){
  const el=$('#simpleIngredients');if(!el||$('#planMode').value!=='simple')return;
  try{
@@ -645,6 +706,7 @@ function updateIngredientList(){
  }catch(error){el.textContent=error.message}
 }
 function updatePdfPlanningHints(){
+ refreshFinishOptions();
  updateIngredientList();
  if(!document.getElementById('planFlours'))return;
  const n=id=>Number(document.getElementById(id)?.value??0),v=id=>document.getElementById(id)?.value||'';
@@ -722,6 +784,7 @@ function applyTargetHydration(field,flour,starter,hyd,water){
  return grams!==null;
 }
 function refreshPlanBlendPreview(){
+ refreshFinishOptions();
  const container=$('#planFlours'),preview=$('#doughPreview');
  if(!container||!preview)return;
  const rows=[...container.querySelectorAll('[data-plan-flour-row]')];
