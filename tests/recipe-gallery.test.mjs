@@ -22,7 +22,7 @@ test('new plan first asks for an explicit recipe selection',()=>{
  const picker=recipePicker(recipes,x=>String(x));
  assert.match(picker,/Welches Gebäck|Was möchtest du backen/);
  assert.match(picker,/data-act="selectForPlan:bread"/);
- const home=homeView({signed:false,active:null,parked:[],history:[]});
+ const home=homeView({signed:true,active:null,parked:[],history:[]});
  assert.match(home,/data-act="newPlan"/);
  const app=readFileSync(new URL('../app.js',import.meta.url),'utf8');
  assert.match(app,/recipeSelect:\(\)=>recipePicker/);

@@ -6,7 +6,7 @@ test('the new editorial homepage is visible in the initial HTML before JavaScrip
  const html=read('index.html');
  assert.match(html,/<body data-page="start">/);
  assert.match(html,/<main id="main"><section class="studio-hero"/);
- assert.match(html,/class="studio-primary"/);
+ assert.match(html,/class="studio-inspiration"/);
  assert.match(html,/class="studio-directory"/);
  assert.doesNotMatch(html,/<p>Lädt|class="loading-screen"|id="splash"/i);
  assert.match(html,/<button data-tab="start" class="active" aria-current="page"/);
