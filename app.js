@@ -28,7 +28,7 @@ import {bakeChoiceView,flourBlendRow,recipeBuilderView,readBlendEntries,readBlen
 import {flourBlendSuggestion} from './flour-mix.js';
 import {canonicalFlourName} from './flour-table.js';
 import {parseOwnRecipe,recipeToRaw} from './own-recipe-parser.js';
-import {weeklyBread,planningView,readPlanningForm,planFlourRow} from './planning-ui.js';
+import {suggestedLoaves,weeklyBread,planningView,readPlanningForm,planFlourRow} from './planning-ui.js';
 import {statsView,statsCsv} from './stats.js';
 import {icon} from './icons.js';
 import {pantryView,isFlour} from './pantry.js';
@@ -185,7 +185,7 @@ async function processAuthReturn(){
  return true;
 }
 function localDateInput(d){const pad=n=>String(n).padStart(2,'0');return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate())+'T'+pad(d.getHours())+':'+pad(d.getMinutes())}
-function render(){document.body.dataset.page=tab;document.querySelectorAll('[data-icon]').forEach(e=>{e.innerHTML=icon(e.dataset.icon,24)});const activeNav=['start','hub','buddy','account'].includes(tab)?tab:['shopping','pantry','starters','onboarding','billing'].includes(tab)?'account':'hub';document.querySelectorAll('nav button').forEach(b=>{const active=b.dataset.tab===activeNav;b.classList.toggle('active',active);if(active)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current')});$('#pageTitle').textContent=({start:'Start',recipes:current?.title||'Rezepte',plan:'Dein Backplan',buddy:'KI Buddy',account:'Ich',billing:'Sauerteig Plus',shopping:'Einkaufsliste',starters:'Meine Starter',community:'Community-Backbuch',hub:'Womit legen wir los?',bakingDays:'Meine Backtage',recipeSelect:'Rezept auswählen',bakeChoice:'Jetzt backen',recipeBuilder:'Eigenes Rezept berechnen',onboarding:'Einrichtung',calculator:'Rechner',pdfTools:'PDF-Backwissen & Rechner',pdfRecipes:'Rezepte aus der PDF',knowledge:'Wissen',favorites:'Favoriten',historical:'Historische Rezepte',resources:'Weiterführende Quellen',conflicts:'Quellenkonflikte',problem:'Problem lösen',stats:'Meine Backstatistik',import:'Rezept importieren',history:'Meine Brote',pantry:'Meine Mehle & Vorrat',inventory:'Vorrat abgleichen',cloudConflict:'Cloud-Konflikt lösen',moderation:'Community prüfen',own:'Meine Rezepte',backtag:'Dein Backtag'})[tab]||'Backen mit Sauerteig';$('#main').innerHTML=(tab==='start'?'':'<button class="back-button" data-act="back">'+icon('arrow-left',18)+' Zurück</button>')+pages[tab]();if(tab==='backtag'){updateTimer();loadStepPhoto()}if(tab==='recipeBuilder'){restoreBlendDraft();refreshBlendPreview()}if(tab==='plan'){const profile=user?local().recipeProfiles?.[current?.id]:null;if(profile?.flours?.length)$('#planFlours').innerHTML=profile.flours.map((f,i)=>planFlourRow(f,i,flourTable,escape)).join('');for(const [id,v] of Object.entries(profile?.values||{})){const el=document.getElementById(id);if(el){if(el.type==='checkbox')el.checked=!!v;else el.value=id==='starterReady'&&typeof v==='boolean'?(v?'peak':'feed'):v}}try{const draft=JSON.parse(sessionStorage.getItem('sauerteig-plan-draft-'+(current?.id||'new'))||'{}');for(const [id,v] of Object.entries(draft)){const el=document.getElementById(id);if(el){if(el.type==='checkbox')el.checked=!!v;else el.value=id==='starterReady'&&typeof v==='boolean'?(v?'peak':'feed'):v}}}catch{} applyPlanMode();updateStarterChoice();updateWaterTemperature();syncPlanHydration();updatePdfPlanningHints()}
+function render(){document.body.dataset.page=tab;document.querySelectorAll('[data-icon]').forEach(e=>{e.innerHTML=icon(e.dataset.icon,24)});const activeNav=['start','hub','buddy','account'].includes(tab)?tab:['shopping','pantry','starters','onboarding','billing'].includes(tab)?'account':'hub';document.querySelectorAll('nav button').forEach(b=>{const active=b.dataset.tab===activeNav;b.classList.toggle('active',active);if(active)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current')});$('#pageTitle').textContent=({start:'Start',recipes:current?.title||'Rezepte',plan:'Dein Backplan',buddy:'KI Buddy',account:'Ich',billing:'Sauerteig Plus',shopping:'Einkaufsliste',starters:'Meine Starter',community:'Community-Backbuch',hub:'Womit legen wir los?',bakingDays:'Meine Backtage',recipeSelect:'Rezept auswählen',bakeChoice:'Jetzt backen',recipeBuilder:'Eigenes Rezept berechnen',onboarding:'Einrichtung',calculator:'Rechner',pdfTools:'PDF-Backwissen & Rechner',pdfRecipes:'Rezepte aus der PDF',knowledge:'Wissen',favorites:'Favoriten',historical:'Historische Rezepte',resources:'Weiterführende Quellen',conflicts:'Quellenkonflikte',problem:'Problem lösen',stats:'Meine Backstatistik',import:'Rezept importieren',history:'Meine Brote',pantry:'Meine Mehle & Vorrat',inventory:'Vorrat abgleichen',cloudConflict:'Cloud-Konflikt lösen',moderation:'Community prüfen',own:'Meine Rezepte',backtag:'Dein Backtag'})[tab]||'Backen mit Sauerteig';$('#main').innerHTML=(tab==='start'?'':'<button class="back-button" data-act="back">'+icon('arrow-left',18)+' Zurück</button>')+pages[tab]();if(tab==='backtag'){updateTimer();loadStepPhoto()}if(tab==='recipeBuilder'){restoreBlendDraft();refreshBlendPreview()}if(tab==='plan'){const profile=user?local().recipeProfiles?.[current?.id]:null;if(profile?.flours?.length)$('#planFlours').innerHTML=profile.flours.map((f,i)=>planFlourRow(f,i,flourTable,escape)).join('');for(const [id,v] of Object.entries(profile?.values||{})){const el=document.getElementById(id);if(el){if(el.type==='checkbox')el.checked=!!v;else el.value=id==='starterReady'&&typeof v==='boolean'?(v?'peak':'feed'):v}}try{const draft=JSON.parse(sessionStorage.getItem('sauerteig-plan-draft-'+(current?.id||'new'))||'{}');for(const [id,v] of Object.entries(draft)){const el=document.getElementById(id);if(el){if(el.type==='checkbox')el.checked=!!v;else el.value=id==='starterReady'&&typeof v==='boolean'?(v?'peak':'feed'):v}}}catch{} if(profile?.values?.loaves)$('#loaves').dataset.manual='1';applyPlanMode();updateStarterChoice();updateWaterTemperature();syncPlanHydration();updatePdfPlanningHints()}
  // Already-approved notifications make new baking reminders the default;
  // previously saved recipe preferences still take priority.
  if(tab==='plan'&&user&&localStorage.getItem('sourdough-push-device-'+user.id)){
@@ -677,7 +677,7 @@ function refreshFinishOptions(){
    if(days.get(key)?.some(date=>date.toISOString()===wanted))day.value=key;
    chooseFinishDay(wanted);
    const minutes=Math.ceil((first.finish-now)/60000);
-   status.textContent='Mindestzeit ab jetzt: '+Math.floor(minutes/60)+' Std. '+minutes%60+' Min. bis zum ersten möglichen Ofentermin am '+dayLabel.format(first.finish)+' um '+hourLabel.format(first.finish)+' Uhr. Termine im 15-Minuten-Takt.';
+   status.textContent='Mindestzeit ab jetzt: '+Math.floor(minutes/60)+' Std. '+minutes%60+' Min. bis zum ersten möglichen Ofentermin am '+dayLabel.format(first.finish)+' um '+hourLabel.format(first.finish)+' Uhr.';
    day.disabled=time.disabled=submit.disabled=false;
   }catch(error){if(revision===finishRevision&&card.isConnected)status.textContent=error.message}
  },100);
@@ -697,6 +697,15 @@ document.addEventListener('change',event=>{
  window.lastPlan=null;$('#planResult').replaceChildren();
  $('#finish').dispatchEvent(new Event('change',{bubbles:true}));
 });
+function updateLoafSuggestion(){
+ const field=$('#loaves');
+ if(!field||field.dataset.manual==='1'||$('#planMode').value!=='simple')return;
+ const suggestion=suggestedLoaves(current||recipes[0],{
+  people:Number($('#weekPeople').value),daily:Number($('#weekDaily').value),
+  loss:Number($('#bakeLoss').value),flour:Number($('#recipeFlourTotal').value)
+ });
+ if(suggestion!==null)field.value=String(suggestion);
+}
 function updateIngredientList(){
  const el=$('#simpleIngredients');if(!el||$('#planMode').value!=='simple')return;
  try{
@@ -706,6 +715,7 @@ function updateIngredientList(){
  }catch(error){el.textContent=error.message}
 }
 function updatePdfPlanningHints(){
+ updateLoafSuggestion();
  refreshFinishOptions();
  updateIngredientList();
  if(!document.getElementById('planFlours'))return;
@@ -807,6 +817,7 @@ function refreshPlanBlendPreview(){
  }catch(e){preview.textContent='Automatischer Vorschlag nicht möglich: '+(e.message||'Mehlsorten prüfen')+'. Mengen können manuell eingegeben werden.'}
 }
 document.addEventListener('input',e=>{
+ if(e.target.id==='loaves')e.target.dataset.manual='1';
  if(e.target.closest('#planCard')&&e.target.id!=='planMode'){window.lastPlan=null;$('#planResult').replaceChildren()}
  if(e.target.id==='planDoughHyd'){e.target.dataset.manual='1';applyTargetHydration(e.target,planFlourMass(),$('#starterAmount'),$('#starterHydration'),$('#waterAmount'));updatePdfPlanningHints();return}
  if(e.target.id==='waterAmount'){const field=$('#planDoughHyd');field.dataset.manual='';field.setCustomValidity('');$('#planAutoIngredients').checked=false;syncPlanHydration()}
