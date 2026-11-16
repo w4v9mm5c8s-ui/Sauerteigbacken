@@ -31,7 +31,7 @@ import {parseOwnRecipe,recipeToRaw} from './own-recipe-parser.js';
 import {planningView,readPlanningForm,planFlourRow} from './planning-ui.js';
 import {statsView,statsCsv} from './stats.js';
 import {icon} from './icons.js';
-import {pantryView} from './pantry.js';
+import {pantryView,isFlour} from './pantry.js';
 import {hubView} from './hub.js';
 import {waterForDoughHydration,calculatorView,calculateDough,calculateFeed} from './calculators.js';
 import {knowledgeView,problemsView,setKnowledgeCards,knowledgeResults} from './knowledge.js';
@@ -254,7 +254,7 @@ conflicts:()=>conflictsView(sourceConflicts,escape),
 problem:()=>problemsView(button),
 stats:()=>statsView(local().history,escape),
 import:()=>user?ownRecipesView(local().ownRecipes||[],escape,editingOwn):signInGate('Zum Importieren und Speichern eigener Rezepte melde dich bitte an.'),
-pantry:()=>user?pantryView(local().pantry||[],escape):signInGate('Diese Funktion speichert persönliche Backdaten. Bitte melde dich an.'),
+pantry:()=>user?pantryView(local().pantry||[],escape,flourTable):signInGate('Diese Funktion speichert persönliche Backdaten. Bitte melde dich an.'),
 inventory:()=>user&&inventoryRecipe?inventoryView(inventoryRecipe,local().pantry,escape,inventoryScale):signInGate('Bitte anmelden und ein Rezept auswählen.'),
 cloudConflict:()=>cloudConflict?conflictView(cloudConflict.local,cloudConflict.cloud,escape):box('<p>Kein Vergleich geöffnet.</p>'),
 history:()=>box('<div class="illustrated-section"><div><span class="hero-kicker">DEINE BACKHISTORIE</span><h2>Meine Brote</h2></div><img src="/art-basket.svg" alt="" width="150" height="115" loading="lazy"></div>'+(local().history.length?local().history.map((x,i)=>({...x,index:i})).reverse().map(x=>'<details class="bake-log"><summary>'+escape(x.title)+' · '+escape(x.date)+'</summary><div class="stats-edit"><label>Bewertung (1–5)</label><select data-log="'+x.index+'" data-field="rating"><option value="">Keine</option>'+[1,2,3,4,5].map(n=>'<option value="'+n+'" '+(Number(x.rating)===n?'selected':'')+'>'+n+'</option>').join('')+'</select>'+[['flour','Verwendetes Mehl','text'],['hydration','Hydration (%)','number'],['doughTemp','Teigtemperatur (°C)','number'],['stockHours','Stockgare (Stunden)','number'],['proofHours','Stückgare (Stunden)','number'],['totalHours','Dokumentierte Dauer (Stunden ab erstem abgehakten Schritt)','number'],['ovenSpring','Ofentrieb (1–5)','number'],['crumb','Krume (1–5)','number'],['crust','Kruste (1–5)','number'],['taste','Geschmack (1–5)','number']].map(([key,label,type])=>'<label>'+label+'</label><input data-log="'+x.index+'" data-field="'+key+'" type="'+type+'" '+(type==='number'?'step="0.1" min="0"':'')+' value="'+escape(x[key]??'')+'">').join('')+'</div>'+Object.entries(x.stepLogs||{}).filter(([,log])=>log.note).map(([step,log])=>'<p style="white-space:pre-wrap"><strong>Beobachtung zu Schritt '+(Number(step)+1)+'</strong><br>'+escape(log.note)+'</p>').join('')+(Object.entries(x.stepLogs||{}).filter(([i,v])=>v.photoPath).map(([i,v])=>'<button data-act="historyPhoto:'+x.index+':'+i+'">Foto zu Schritt '+(Number(i)+1)+' ansehen</button>').join(''))+'<div id="historyPhotoPreview'+x.index+'"></div></details>').join(''):'<p class="muted">Noch kein Brot dokumentiert.</p>')),
@@ -317,7 +317,24 @@ if(a==='compareCloud'){const owner=user?.id,response=await request('/api/sync');
 if(a==='resolveCloud'){if(!cloudConflict||cloudConflict.owner!==user?.id)throw Error('Bitte Vergleich erneut öffnen');const choices=Object.fromEntries([...document.querySelectorAll('[data-conflict-field]')].map(x=>[x.dataset.conflictField,x.value]));const resolved=resolveCloudChoices(cloudConflict.local,cloudConflict.cloud,choices);localStorage.setItem(storageKey()+'-conflict-backup',JSON.stringify(cloudConflict));clearTimeout(syncTimer);await syncInFlight.catch(()=>{});if(JSON.stringify(local())!==JSON.stringify(cloudConflict.local))throw Error('Lokale Daten haben sich geändert. Bitte Vergleich erneut öffnen.');const response=await request('/api/sync','PUT',{payload:resolved,revision:cloudConflict.revision});localStorage.setItem(storageKey(),JSON.stringify(resolved));localStorage.setItem(revisionKey(),String(response.revision));localStorage.removeItem(dirtyKey());if(resolved.activeBake)localStorage.setItem(activeKey(),JSON.stringify(resolved.activeBake));else localStorage.removeItem(activeKey());localStorage.setItem(parkedKey(),JSON.stringify(resolved.parallelBakes||[]));cloudConflict=null;tab='account';render();note('Ausgewählte Stände gespeichert');return}
 if(a==='exportConflictBackup'){const content=localStorage.getItem(storageKey()+'-conflict-backup');if(!content)throw Error('Noch keine Konfliktsicherung vorhanden.');const url=URL.createObjectURL(new Blob([content],{type:'application/json'})),link=document.createElement('a');link.href=url;link.download='sauerteig-konfliktsicherung.json';link.click();setTimeout(()=>URL.revokeObjectURL(url),1000);return}
 if(a==='saveRecipeProfile'){if(!user)throw Error('Bitte anmelden');readPlanningForm(current,id=>document.getElementById(id));const d=local(),values={};for(const el of document.querySelectorAll('#main input[id],#main select[id]'))if(!['datetime-local','time'].includes(el.type))values[el.id]=el.type==='checkbox'?el.checked:el.value;d.recipeProfiles=d.recipeProfiles||{};d.recipeProfiles[current.id]={values,flours:[...document.querySelectorAll('[data-plan-flour-row]')].map(row=>({name:row.querySelector('.plan-flour-name').value,grams:Number(row.querySelector('.plan-flour-grams').value)}))};save(d);note('Eigene Rezeptvorgaben gespeichert');return}
-if(a==='pantryAdd'){const name=$('#pantryName').value.trim(),amount=Number($('#pantryAmount').value);if(!name||!Number.isFinite(amount)||amount<0)throw Error('Bitte gültigen Vorrat eingeben');const d=local();d.pantry=d.pantry||[];d.pantry.push({name,amount});save(d);render();return}
+if(a.startsWith('pantryWarn:')){
+ const d=local(),item=d.pantry[Number(a.split(':')[1])];if(!item)return;
+ const value=prompt('Bei welcher Restmenge soll die App zum Nachfüllen erinnern? (g)',String(item.warnAt??200));
+ if(value===null)return;
+ const n=Number(value.trim().replace(',','.'));
+ if(!value.trim()||!Number.isFinite(n)||n<0||n>1000000)throw Error('Bitte eine gültige Warngrenze eingeben.');
+ item.warnAt=n;save(d);render();return;
+}
+if(a==='pantryAdd'){
+ const d=local(),name=$('#pantryName').value.trim(),kind=$('#pantryKind').value;
+ const amount=$('#pantryAmount').valueAsNumber,warnAt=$('#pantryWarnAt').valueAsNumber;
+ if(!name||!Number.isFinite(amount)||amount<0||amount>1000000)throw Error('Bitte Namen und gültige Menge eingeben.');
+ if(kind==='flour'&&(!Number.isFinite(warnAt)||warnAt<0||warnAt>1000000))throw Error('Bitte eine gültige Warngrenze eingeben.');
+ const same=d.pantry.find(item=>item.name.trim().toLowerCase()===name.toLowerCase()&&isFlour(item)===(kind==='flour'));
+ if(same){if(Number(same.amount)+amount>1000000)throw Error('Gesamtmenge zu groß.');same.amount=Number(same.amount)+amount;}
+ else d.pantry.push(kind==='flour'?{name,amount,kind,warnAt}:{name,amount,kind});
+ save(d);render();return;
+}
 if(a.startsWith('pantryDelete:')){const d=local();d.pantry=d.pantry||[];d.pantry.splice(Number(a.split(':')[1]),1);save(d);render();return}
 if(a.startsWith('historyPhoto:')){const [,index,step]=a.split(':'),path=local().history[Number(index)]?.stepLogs?.[step]?.photoPath;if(!path)throw Error('Foto nicht gefunden');const url=await signedBakePhoto(cfg,token,path);if(!url)throw Error('Foto derzeit nicht abrufbar');const el=document.getElementById('historyPhotoPreview'+index),img=document.createElement('img');img.src=url;img.alt='Backfoto';img.className='bake-photo';el.replaceChildren(img);return}
 if(a==='statsExport'){const blob=new Blob([statsCsv(local().history)],{type:'text/csv;charset=utf-8'}),url=URL.createObjectURL(blob),link=document.createElement('a');link.href=url;link.download='sauerteig-backstatistik.csv';link.click();setTimeout(()=>URL.revokeObjectURL(url),1000);return}
@@ -549,6 +566,7 @@ document.addEventListener('change',e=>{if(e.target.dataset.log!==undefined){cons
 document.addEventListener('change',e=>{if(e.target.dataset.rating!==undefined){const d=local(),i=Number(e.target.dataset.rating);if(d.history[i]){d.history[i].rating=e.target.value?Number(e.target.value):null;save(d);note('Bewertung gespeichert')}}});
 document.addEventListener('change',e=>{
  const id=e.target.id;
+ if(id==='pantryKind'){$('#pantryWarnFields').hidden=e.target.value!=='flour';return}
  if(id==='recipeEquipment'){recipeOvens.set(current.id,e.target.value);render();return}
  if(id==='equipment'&&current)recipeOvens.set(current.id,e.target.value);
  if(id==='planMode'){localStorage.setItem('sourdough-plan-mode',e.target.value);applyPlanMode();return}
