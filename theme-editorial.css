@@ -127,7 +127,7 @@ nav button{min-height:58px}
 .studio-hero-picture img{object-position:53% 50%;transform:scale(1.03)}
 .studio-photo-item img{height:158px}
 .studio-section-head h2{font-size:1.9rem}
-.studio-directory{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+.studio-directory{display:grid;grid-template-columns:1fr;gap:24px}
 }
 @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto}}
 

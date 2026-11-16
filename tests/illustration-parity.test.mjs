@@ -15,9 +15,9 @@ test('vector motifs are cached and served alongside the new PNG artwork',()=>{
 });
 test('the signed-out home provides grouped actions without displaying fake history',()=>{
  const html=homeView({signed:false,active:null,history:[],parked:[]});
- assert.equal((html.match(/class="studio-directory-row"/g)||[]).length,9);
- assert.match(html,/design\/menu-chart\.svg/);
- assert.match(html,/design\/menu-heart\.svg/);
+ assert.equal((html.match(/class="studio-directory-row"/g)||[]).length,3);
+ assert.doesNotMatch(html,/design\/menu-chart\.svg/);
+ assert.doesNotMatch(html,/design\/menu-heart\.svg/);
  assert.match(html,/design\/buddy-original\.webp/);
  assert.doesNotMatch(html,/studio-history/);
 });

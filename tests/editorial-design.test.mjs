@@ -13,7 +13,7 @@ test('a small viewport uses readable full-width rows, not eight narrow tiles',()
  assert.match(css,/studio-mini-art/);
 });
 test('the start and baking hub preserve every core destination',()=>{
- const home=homeView({signed:false}),hub=hubView(()=>'',false,0,0);
+ const home=homeView({signed:true}),hub=hubView(()=>'',true,0,0);
  for(const key of ['newPlan','newRecipe','recipes','own','bakingDays','favorites','import','stats','community','knowledge'])assert.match(home,new RegExp('data-act="'+key+'"'));
  assert.doesNotMatch(hub,/Rezeptarchiv|data-act="historical"/);
  for(const key of ['planFromRecipe','newRecipe','recipes','own','bakingDays','favorites','history','stats','calculator','community'])assert.match(hub,new RegExp('data-act="'+key+'"'));
@@ -39,4 +39,12 @@ test('the service worker version is atomically updated and prefers current HTML 
  assert.match(sw,/url\.pathname\.startsWith\('\/api\/'\)/);
  assert.match(sw,/cache\.match\(key\)/);
  assert.ok(server.includes("'/theme-editorial.css'"));
+});
+
+test('guest navigation exposes only public areas',()=>{
+ for(const html of [homeView(),hubView(()=>'',false),read('index.html')]){
+  assert.doesNotMatch(html,/data-act="(?:newPlan|newRecipe|planFromRecipe|bakingDays|own|import|favorites|stats|history|shopping)"/);
+  assert.match(html,/data-act="recipes"/);
+ }
+ assert.doesNotMatch(hubView(()=>'',true),/Du suchst noch ein passendes Rezept/);
 });

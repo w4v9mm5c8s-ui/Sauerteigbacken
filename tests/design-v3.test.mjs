@@ -5,7 +5,7 @@ import {homeView,bakingDaysView} from '../home.js';
 const read=name=>readFileSync(new URL('../'+name,import.meta.url),'utf8');
 
 test('start screen presents an editorial navigation instead of cramped feature tiles',()=>{
- const html=homeView({signed:false,active:null,parked:[],history:[]});
+ const html=homeView({signed:true,active:null,parked:[],history:[]});
  assert.equal((html.match(/class="studio-directory-row"/g)||[]).length,9);
  for(const route of ['newPlan','recipes','own','import','bakingDays','stats','favorites','community','knowledge','shopping'])assert.ok(html.includes('data-act="'+route+'"'),route);
  assert.match(html,/design\/buddy-original\.webp/);

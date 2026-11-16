@@ -25,12 +25,12 @@ test('the immediately visible and dynamic home display identical PNG illustratio
  assert.match(html,/href="\/theme-reference\.css"/);
  assert.match(html,/src="\/design\/buddy-original\.webp"/);
  assert.match(live,/src="\/design\/buddy-original\.webp"/);
- for(const name of ['menu-book','menu-upload','menu-calendar','menu-chart','menu-heart','menu-library','menu-help','menu-users','menu-basket']){
+ for(const name of ['menu-book','menu-help','menu-users']){
   assert.ok(html.includes('/design/'+name+'.svg'),name+' first paint');
   assert.ok(live.includes('/design/'+name+'.svg'),name+' dynamic paint');
  }
- assert.equal((html.match(/class="studio-directory-row"/g)||[]).length,9);
- assert.equal((live.match(/class="studio-directory-row"/g)||[]).length,9);
+ assert.equal((html.match(/class="studio-directory-row"/g)||[]).length,3);
+ assert.equal((live.match(/class="studio-directory-row"/g)||[]).length,3);
  assert.doesNotMatch(live,/Zuletzt gebacken/);
 });
 test('recipe photography varies by bread style and never invents personal photos',()=>{

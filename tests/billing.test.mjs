@@ -24,7 +24,7 @@ test('subscription webhook maps verified customer and owner only',()=>{
 });
 test('billing view never offers checkout when not enabled',()=>{
  const html=billingView({id:'x',email:'test@example.org'},{enabled:false,plus:false,status:'unavailable'},x=>x);
- assert.match(html,/nicht freigeschaltet/);assert.doesNotMatch(html,/data-act="billingCheckout:/);
+ assert.doesNotMatch(html,/nicht freigeschaltet/);assert.match(html,/4,90/);assert.match(html,/39,90/);assert.doesNotMatch(html,/data-act="billingCheckout:/);
 });
 test('no checkout request when payments disabled',async()=>{
  await assert.rejects(checkoutSession({id:'test',email:'test@example.org'},'monthly',{}),/nicht freigeschaltet/);
