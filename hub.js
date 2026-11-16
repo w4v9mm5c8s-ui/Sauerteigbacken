@@ -1,5 +1,5 @@
 import {icon} from './icons.js';
-const memberActions=new Set(['newPlan','newRecipe','planFromRecipe','bakeChoice','recipeSelect','recipeBuilder','plan','calculate','saveBake','backtag','bakingDays','own','import','history','stats','favorites','favorite','shopping','starters','blendSave','blendPlan','selectForPlan','switchBake','pdfPlan']);
+const memberActions=new Set(['newPlan','newRecipe','planFromRecipe','bakeChoice','recipeSelect','recipeBuilder','plan','calculate','saveBake','backtag','bakingDays','own','import','history','stats','favorites','favorite','shopping','starters','backup','blendSave','blendPlan','selectForPlan','switchBake','pdfPlan']);
 export const requiresAccount=action=>memberActions.has(action.split(':')[0]);
 const groups=[
  {title:'PLANEN & BEGLEITEN',items:[

@@ -28,6 +28,7 @@ flask:'<path d="M9 3h6m-5 0v7L4 20a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1l-6-10V3M8 15h8
 jar:'<path d="M7 3h10l1 3-1 2v11a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2V8L6 6l1-3Z"/><path d="M7 8h10M8 13c2-1 3 1 4 0s3-1 4 0m-6 3h.01m4 1h.01"/>',
 scale:'<path d="M12 3v18M5 6h14M3 11l3-5 3 5m-6 0a3 3 0 0 0 6 0m6 0 3-5 3 5m-6 0a3 3 0 0 0 6 0M7 21h10"/>',
 sparkles:'<path d="m12 3 1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8L12 3ZM19 16l.7 2.3L22 19l-2.3.7L19 22l-.7-2.3L16 19l2.3-.7L19 16Z"/>',
+database:'<ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v7c0 1.7 3.6 3 8 3s8-1.3 8-3V5m-16 7v7c0 1.7 3.6 3 8 3s8-1.3 8-3v-7"/>',
 image:'<rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8" cy="8" r="1.5"/><path d="m3 17 5-5 4 4 3-3 6 6"/>',
 check:'<path d="m4 12 5 5L20 6"/>',
 list:'<path d="M9 6h12M9 12h12M9 18h12M3 6h.01M3 12h.01M3 18h.01"/>',

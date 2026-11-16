@@ -84,6 +84,11 @@ body[data-page="hub"] main>.back-button{display:none}
 .studio-hub-row .studio-chevron{font-size:1.22rem}
 .bake-hub-secondary strong{white-space:nowrap}
 .buddy-intro{margin:0 0 10px;color:var(--studio-muted);font:.8rem/1.4 'Outfit',system-ui,sans-serif}
+.backup-section{padding:14px 0;border-top:1px solid var(--studio-line)}
+.backup-section h3{margin:0 0 5px;color:#8f5b60;font:600 .82rem/1.3 'Outfit',system-ui,sans-serif;letter-spacing:.08em;text-transform:uppercase}
+.backup-section button{display:block;width:100%;margin:7px 0;text-align:left}
+.backup-section label{margin-top:12px}
+.backup-section input[type=file]{width:100%;box-sizing:border-box;font-size:.8rem}
 .chat-empty{margin:0;padding:30px 12px;text-align:center;color:var(--studio-muted);font:.8rem/1.4 'Outfit',system-ui,sans-serif}
 .msg.assistant{border:1px solid #ead8df;background:#fffaf8}
 .back-button{position:relative;z-index:3;touch-action:manipulation;cursor:pointer}
