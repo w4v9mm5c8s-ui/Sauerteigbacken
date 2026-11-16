@@ -17,25 +17,36 @@ export function makePlan(r,want,from,to,ready,preheatMinutes=45,absenceStart=nul
  const stock=Number.isFinite(Number(options.stockMinutes))&&Number(options.stockMinutes)>0?Number(options.stockMinutes):(r.stock[0]+r.stock[1])*30;
  const warmProof=Number.isFinite(Number(options.proofMinutes))&&Number(options.proofMinutes)>0?Number(options.proofMinutes):(r.proof[0]+r.proof[1])*30;
  const loads=Math.max(1,Math.min(12,Number(options.ovenLoads)||1)),bake=pdfStandard?50*loads:r.bake.reduce((s,x)=>s+x.min,0)*loads,lye=/Laugen/.test(r.title);
+ const technique={
+  'starter-bagels':{title:'Bagels im Kochbad garen',minutes:12,detail:r.steps?.[4],shape:r.steps?.[2]},
+  'starter-focaccia':{title:'Mulden drücken und Focaccia belegen',minutes:5,detail:r.steps?.[4],shape:r.steps?.[2]},
+  'starter-pizza':{title:'Pizza ausziehen und belegen',minutes:10,detail:r.steps?.[5],shape:r.steps?.[2]},
+  'starter-zimtschnecken':{shape:r.steps?.slice(2,5).join(' ')}
+ }[r.id];
+ const prepMinutes=lye?15:technique?.minutes||0;
  const coldProof=r.cold?.[0]>0?(r.cold[0]+r.cold[1])*30:null;
  const mode=options.mode||'auto';
  if(mode==='cold'&&!coldProof)throw Error('Für dieses Rezept ist keine Kühlschrankgare hinterlegt.');
  const warmMode={minutes:warmProof,cold:false},coldMode={minutes:coldProof,cold:true};
- const modes=mode==='warm'?[warmMode]:mode==='cold'?[coldMode]:coldProof?[warmMode,coldMode]:[warmMode];
+ const pizza=r.id==='starter-pizza';
+ const modes=pizza&&coldProof?[coldMode]:mode==='warm'?[warmMode]:mode==='cold'?[coldMode]:coldProof?[warmMode,coldMode]:[warmMode];
  const peak=options.starterRatio&&Number.isFinite(Number(options.roomTemp))?estimateStarterPeak({ratio:options.starterRatio,temperature:Number(options.roomTemp),type:options.starterType||r.starter.type,observations:options.starterObservations||[]}):null;
  const starterHours=Number.isFinite(Number(options.starterHours))&&Number(options.starterHours)>0?Number(options.starterHours):peak?.hours??null;
  if(!ready&&starterHours===null)throw Error('Keine passende Starterprognose. Bitte eigene Reifezeit eingeben oder einen bereits reifen Starter verwenden.');
  const unverifiedPeak=!(Number.isFinite(Number(options.starterHours))&&Number(options.starterHours)>0)&&!peak?.valid;
  const folds=Number.isInteger(Number(options.foldCount))?Math.max(0,Math.min(8,Number(options.foldCount))):(r.starter.type==='Weizen'?2:0);
  const interval=Number.isFinite(Number(options.foldInterval))?Math.max(10,Math.min(240,Number(options.foldInterval))):40;
- for(const selected of modes){const {minutes:proof,cold}=selected;
+ for(const selected of modes){const {minutes:coldOrWarm,cold}=selected;
+ const temper=pizza&&cold?warmProof:0,proof=coldOrWarm+temper;
  for(let shift=0;shift<21*1440;shift+=15){
- const finish=+want+shift*60000,oven=finish-bake*60000,shape=oven-(proof+20+(lye?15:0))*60000,mix=shape-stock*60000-(r.coldBulkHours||0)*3600000,auto=mix-(r.autolyse||0)*60000,feed=mix-starterHours*3600000;
- const actions=[...(!ready?[['Starter füttern',feed,10,'Starter nach deinem Fütterungsverhältnis füttern.'],['Starter prüfen',mix-10*60000,5,'Reifezeichen prüfen: Volumen, Bläschen und Peak.']]:[]),...(r.autolyse?[['Autolyse ansetzen',auto,10,r.autolyseDetail||'Mehl und Wasser mischen.']]:[]),['Teig mischen',mix,15,(r.mixDetail||'Zutaten nach Rezept mischen.')+(r.starter.type==='Roggen'?' Roggenteig nur homogen mischen; kein Fenstertest.':options.kneadMethod==='hand'?' PDF-Richtwert: von Hand 8–12 Minuten; Dehnbarkeit prüfen.':options.kneadMethod==='machine'?' PDF-Richtwert: Maschine 3–4 Minuten; Erwärmung und Fenstertest prüfen, nicht überkneten.':'')],['Stockgare prüfen',mix+(stock-10)*60000,5,r.stockCheckDetail||'Teigentwicklung prüfen.'],['Formen',shape,20,r.shapeDetail||'Teig nach Rezept formen.'],...(pdfStandard?[]:[['Ofen vorheizen',oven-preheat*60000,5,'Auf '+(r.preheatTemp||r.bake[0].temp)+' °C vorheizen.']]),...(cold?[['Kühlschrankgare beginnen',shape+20*60000,5,'Teig abgedeckt in den Kühlschrank stellen. Kühltemperatur und Reife beachten.']]:[['Stückgare prüfen',oven-(lye?25:10)*60000,5,r.proofCheckDetail||'Teigreife prüfen.']])];
- if(cold)actions.push(['Aus dem Kühlschrank nehmen',oven-30*60000,5,'Teigzustand prüfen. Ob direkt kalt gebacken wird, richtet sich nach dem Rezept.']);
+ const finish=+want+shift*60000,oven=finish-bake*60000,shape=oven-(proof+20+prepMinutes)*60000,mix=shape-stock*60000-(r.coldBulkHours||0)*3600000,auto=mix-(r.autolyse||0)*60000,feed=mix-starterHours*3600000;
+ const actions=[...(!ready?[['Starter füttern',feed,10,'Starter nach deinem Fütterungsverhältnis füttern.'],['Starter prüfen',mix-10*60000,5,'Reifezeichen prüfen: Volumen, Bläschen und Peak.']]:[]),...(r.autolyse?[['Autolyse ansetzen',auto,10,r.autolyseDetail||'Mehl und Wasser mischen.']]:[]),['Teig mischen',mix,15,(r.mixDetail||'Zutaten nach Rezept mischen.')+(r.starter.type==='Roggen'?' Roggenteig nur homogen mischen; kein Fenstertest.':options.kneadMethod==='hand'?' PDF-Richtwert: von Hand 8–12 Minuten; Dehnbarkeit prüfen.':options.kneadMethod==='machine'?' PDF-Richtwert: Maschine 3–4 Minuten; Erwärmung und Fenstertest prüfen, nicht überkneten.':'')],['Stockgare prüfen',mix+(stock-10)*60000,5,r.stockCheckDetail||'Teigentwicklung prüfen.'],['Formen',shape,20,r.shapeDetail||technique?.shape||'Teig nach Rezept formen.'],...(pdfStandard?[]:[['Ofen vorheizen',oven-preheat*60000,5,'Auf '+(r.preheatTemp||r.bake[0].temp)+' °C vorheizen.']]),...(cold?[['Kühlschrankgare beginnen',shape+20*60000,5,'Teig abgedeckt in den Kühlschrank stellen. Kühltemperatur und Reife beachten.']]:[['Stückgare prüfen',oven-(prepMinutes+10)*60000,5,r.proofCheckDetail||'Teigreife prüfen.']])];
+ if(cold)actions.push(['Aus dem Kühlschrank nehmen',pizza?oven-(prepMinutes+temper)*60000:oven-30*60000,5,'Teigzustand prüfen. Ob direkt kalt gebacken wird, richtet sich nach dem Rezept.']);
+ if(technique?.title)actions.push([technique.title,oven-prepMinutes*60000,prepMinutes,technique.detail+' Zeitfenster für die gesamte Vorbereitung: '+prepMinutes+' Min (Planwert).']);
  if(lye)actions.push(['Mit Bäckerlauge behandeln',oven-15*60000,15,'Nur lebensmitteltaugliche Bäckerlauge nach Herstelleranleitung verwenden. Schutzbrille und laugenfeste Handschuhe tragen.']);
  if(r.coldBulkHours)actions.push(['Kalte Stockgare beginnen',mix+stock*60000,5,'Teig nach sichtbarem Aufgang abgedeckt in den Kühlschrank stellen.'+(options.fridgeTemp!=null?' Vorgabe: '+options.fridgeTemp+' °C.':'')],['Teig aus dem Kühlschrank nehmen',shape-5*60000,5,'Erst jetzt teilen und formen.']);
- const rests=[['Stockgare',mix+15*60000,stock-15],[cold?'Kühlschrankgare':'Stückgare',shape+20*60000,proof]];
+ const rests=[['Stockgare',mix+15*60000,stock-15],[cold?'Kühlschrankgare':'Stückgare',shape+20*60000,coldOrWarm]];
+ if(temper)rests.push(['Pizzakugeln temperieren',oven-(prepMinutes+temper)*60000,temper]);
  if(r.coldBulkHours)rests.push(['Kalte Stockgare',mix+stock*60000,r.coldBulkHours*60]);
  if(r.brew?.flour){const cool=Number(r.brew.coolMinutes);if(!Number.isFinite(cool)||cool<30)throw Error('Bitte mindestens 30 Minuten zum Abkühlen des Brühstücks einplanen und die Temperatur vor dem Mischen prüfen.');const at=mix-(cool+10)*60000;actions.push([r.brew.method==='cook'?'Kochstück ansetzen':'Brühstück ansetzen',at,10,r.brew.flour+' g Mehl mit '+r.brew.water+' g Wasser '+(r.brew.method==='cook'?'unter ständigem Rühren aufkochen, bis eine gebundene Masse entsteht.':'(kochend) übergießen und verrühren.')]);rests.push(['Brühstück abkühlen lassen',at+10*60000,cool]);actions.push(['Brühstücktemperatur prüfen',mix-5*60000,5,'Erst passend zur gewünschten Teigtemperatur abgekühlt verwenden.']);}
  for(const soaker of [r.soaker,r.additionalSoaker].filter(Boolean)){const at=mix-(soaker.hours*60+10)*60000;actions.push(['Quellstück ansetzen',at,10,(soaker.items?.length?soaker.items:[{grams:soaker.grams,name:soaker.name}]).map(x=>x.grams+' g '+x.name).join(', ')+' mit '+soaker.water+' g Quellwasser vermischen. '+(soaker.detail||'')]);rests.push(['Quellstück quellen lassen',at+10*60000,soaker.hours*60])}
@@ -68,10 +79,13 @@ export function rescheduleRemaining(steps,index,delayMinutes,sleepFrom='22:00',s
  if(changed.some(s=>(options.occupied||[]).some(o=>s.at<Number(o.at)+(o.minutes||5)*60000&&Number(o.at)<s.at+(s.minutes||5)*60000)))throw Error('Die Verschiebung kollidiert mit einem anderen Backtag.');
  return proposed;
 }
+function phaseBoundary(title=''){
+ return ['Teig mischen','Formen','Kalte Stockgare beginnen','Kühlschrankgare beginnen','Teig aus dem Kühlschrank nehmen','Aus dem Kühlschrank nehmen','Backphase starten','Einschießen','Bagels im Kochbad garen','Mulden drücken und Focaccia belegen','Pizza ausziehen und belegen','Mit Bäckerlauge behandeln','Brot herausnehmen und Garzustand prüfen'].includes(title)||/^Ofenladung [0-9]+[: ]/.test(title);
+}
 // Only phase boundaries anchor a new schedule. Folds and checks do not restart fermentation.
 export function adjustAfterCompletion(record,index,completedAt,occupied=[]){
  const step=record.steps[index];
- if(record.autoAdjust===false||record.logs?.[index]?.completedAt||!['Teig mischen','Formen','Brot herausnehmen und Garzustand prüfen'].includes(step?.title))return {steps:record.steps,delay:0};
+ if(record.autoAdjust===false||record.logs?.[index]?.completedAt||!phaseBoundary(step?.title))return {steps:record.steps,delay:0};
  const delay=Math.floor((+new Date(completedAt)-(Number(step.at)+(step.minutes||0)*60000))/60000);
  if(!Number.isFinite(delay)||delay<2)return {steps:record.steps,delay:0};
  try{return {steps:rescheduleRemaining(record.steps,index,delay,record.sleepFrom||'22:00',record.sleepTo||'07:00',{...record.constraints,logs:record.logs,occupied}),delay}}

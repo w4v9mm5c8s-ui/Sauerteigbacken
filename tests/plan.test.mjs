@@ -16,4 +16,10 @@ test('pretzel baking plan includes separate lye handling and protective warning'
 
 test('landbrot can use overnight refrigerator proof when warm plan cannot fit sleep schedule',()=>{const r=recipes.find(x=>x.id==='starter-weizen-landbrot');const p=makePlan(r,new Date(Date.now()+4*86400000),'22:00','07:00',false,45,null,null,{starterHours:9});assert.ok(p);assert.equal(p.cold,true);assert.ok(p.steps.some(x=>x.title==='Kühlschrankgare'))});
 
-test('planner does not reinterpret pizza cold maturation as bread proof',()=>{const r=recipes.find(x=>x.id==='starter-pizza');const p=makePlan(r,new Date(Date.now()+7*86400000),'22:00','07:00',true);if(p)assert.equal(p.cold,false)});
+test('pizza has cold maturation followed by warm tempering before topping',()=>{
+ const r=recipes.find(x=>x.id==='starter-pizza'),p=makePlan(r,new Date(Date.now()+7*86400000),'22:00','07:00',true);
+ assert.ok(p?.cold);
+ const cold=p.steps.find(s=>s.title==='Kühlschrankgare'),warm=p.steps.find(s=>s.title==='Pizzakugeln temperieren'),top=p.steps.find(s=>s.title==='Pizza ausziehen und belegen');
+ assert.equal(cold.at+cold.minutes*60000,warm.at);
+ assert.equal(warm.at+warm.minutes*60000,top.at);
+});

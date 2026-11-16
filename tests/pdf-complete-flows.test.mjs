@@ -48,3 +48,28 @@ test('catalog and PDF templates keep flour and water quantities from form throug
   assert.equal(plan.steps.at(-1).title,'Auskühlen lassen',recipe.id);
  }
 });
+
+test('saved cooked flour and water round-trip through editor, scaling and planning',async()=>{
+ const {parseOwnRecipe,recipeToRaw}=await import('../own-recipe-parser.js');
+ const input={title:'Kochstückbrot',ingredients:'500 g Weizenmehl\n350 g Wasser\n100 g Starter',steps:'Mischen\nBacken',stockHours:4,proofHours:2,bakeTemp:220,bakeMin:40,brewMethod:'cook',brewFlour:30,brewWater:150,brewCoolMinutes:90};
+ const saved=parseOwnRecipe(input);
+ assert.deepEqual(parseOwnRecipe(recipeToRaw(saved)).brew,saved.brew);
+ const form=prepare(saved);
+ assert.equal(form.recipe.water,200);
+ assert.equal(form.recipe.brew.water,150);
+ const plan=makePlan(form.recipe,form.finish,form.from,form.to,true);
+ assert.ok(plan.steps.some(s=>s.title==='Kochstück ansetzen'));
+ assert.throws(()=>parseOwnRecipe({...input,brewWater:355}));
+});
+test('temperature calibration reproduces the measured batch and responds to room temperature',async()=>{
+ const {mixingFriction,waterTempSuggestion}=await import('../flour-table.js');
+ const factor=mixingFriction(20,21,22,27,24);
+ assert.equal(waterTempSuggestion(24,21,22,20,factor),27);
+ assert.equal(waterTempSuggestion(24,21,22,21,factor),26);
+ assert.equal(mixingFriction(20,21,null,27,24),null);
+});
+test('cloud resolution preserves separately chosen edits and deletions',async()=>{
+ const {resolveCloudChoices}=await import('../workflow-tools.js');
+ const result=resolveCloudChoices({pantry:[{id:'a',amount:1},{id:'b',amount:3}]},{pantry:[{id:'a',amount:2},{id:'c',amount:4}]},{'pantry:a':'cloud','pantry:b':'local','pantry:c':'local'});
+ assert.deepEqual(result.pantry,[{id:'a',amount:2},{id:'b',amount:3}]);
+});

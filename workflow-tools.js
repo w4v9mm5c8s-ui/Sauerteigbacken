@@ -19,6 +19,44 @@ export function addMissingShopping(shopping,balance){const next=shopping.map(x=>
 export function inventoryView(recipe,pantry,esc,scale=1){const balance=inventoryBalance(recipeNeeds(recipe,scale),pantry);return '<section class="card"><h2>Vorrat für '+esc(recipe.title||'deinen Backtag')+'</h2><p>Mehle, Salz, Saaten und weitere Zutaten. Wasser und reifen Starter separat bereitstellen. Verglichen werden gleiche Zutatenbezeichnungen.</p><div style="overflow:auto"><table><thead><tr><th>Zutat</th><th>Benötigt</th><th>Vorrat</th><th>Fehlt</th></tr></thead><tbody>'+balance.map(x=>'<tr><td>'+esc(x.name)+'</td><td>'+x.grams+' g</td><td>'+x.available+' g</td><td>'+x.missing+' g</td></tr>').join('')+'</tbody></table></div><button data-act="shoppingMissing">Fehlmengen auf die Einkaufsliste</button><button data-act="consumePantry">Für diesen Backtag verbrauchen</button><p>Verbrauch wird erst nach deiner Bestätigung abgezogen.</p></section>';}
 export function chatView(messages,esc){return (messages||[]).slice(-80).map(m=>'<div class="msg '+(m.role==='user'?'user':'')+'"><strong>'+(m.role==='user'?'Du':'Back-Buddy')+'</strong><p style="white-space:pre-wrap">'+esc(m.content)+'</p></div>').join('');}
 export const conflictFields=['starters','ownRecipes','history','shopping','pantry','favorites','communitySaved','activeBake','parallelBakes','chatMessages','recipeProfiles','onboarded'];
-export function resolveCloudChoices(local,cloud,choices){const result={...cloud};for(const key of new Set([...Object.keys(local),...Object.keys(cloud)])){if(key==='updatedAt')continue;if(JSON.stringify(local[key])===JSON.stringify(cloud[key])){result[key]=local[key];continue;}if(!['local','cloud'].includes(choices[key]))throw Error('Bitte für jeden geänderten Bereich einen Stand wählen.');result[key]=(choices[key]==='local'?local:cloud)[key];}result.updatedAt=Date.now();return result;}
+function recordPairs(key,left,right){
+ if(!Array.isArray(left)||!Array.isArray(right))return null;
+ function index(rows){
+  const map=new Map();
+  for(const row of rows){
+   const id=row?.id??row?.recipe?.id??(key==='history'?row?.finishedAt:null)??(['pantry','shopping','starters'].includes(key)?row?.name:null)??(['favorites','communitySaved'].includes(key)&&typeof row==='string'?row:null);
+   if(typeof id!=='string'||!id||map.has(id))return null;
+   map.set(id,row);
+  }
+  return map;
+ }
+ const a=index(left),b=index(right);
+ if(!a||!b)return null;
+ return [...new Set([...a.keys(),...b.keys()])].map(id=>({id,local:a.get(id),cloud:b.get(id),choice:key+':'+encodeURIComponent(id)}));
+}
+export function resolveCloudChoices(local,cloud,choices){
+ const result={...cloud};
+ function pick(key,a,b){
+  if(JSON.stringify(a)===JSON.stringify(b))return a;
+  if(!['local','cloud'].includes(choices[key]))throw Error('Bitte für jeden geänderten Eintrag einen Stand wählen.');
+  return choices[key]==='local'?a:b;
+ }
+ for(const key of new Set([...Object.keys(local),...Object.keys(cloud)])){
+  if(key==='updatedAt')continue;
+  const pairs=recordPairs(key,local[key],cloud[key]);
+  result[key]=pairs?pairs.map(p=>pick(p.choice,p.local,p.cloud)).filter(v=>v!==undefined):pick(key,local[key],cloud[key]);
+ }
+ result.updatedAt=Date.now();return result;
+}
 const fieldNames={starters:'Starter',ownRecipes:'Eigene Rezepte',history:'Backhistorie',shopping:'Einkaufsliste',pantry:'Vorrat',favorites:'Favoriten',communitySaved:'Community-Merkliste',activeBake:'Aktiver Backtag',parallelBakes:'Weitere Backtage',chatMessages:'KI-Gespräch',recipeProfiles:'Eigene Rezeptvorgaben',onboarded:'Einrichtung'};
-export function conflictView(local,cloud,esc){return '<section class="card"><h2>Cloud-Konflikt lösen</h2><p>Wähle je Bereich den gewünschten Stand. Vor dem Speichern werden beide Versionen auf diesem Gerät gesichert.</p>'+[...new Set([...Object.keys(local),...Object.keys(cloud)])].filter(k=>k!=='updatedAt'&&JSON.stringify(local[k])!==JSON.stringify(cloud[k])).map(k=>'<fieldset><legend>'+esc(fieldNames[k]||k)+'</legend><details><summary>Lokaler Stand ansehen</summary><pre style="white-space:pre-wrap">'+esc(JSON.stringify(local[k]??null,null,2))+'</pre></details><details><summary>Cloud-Stand ansehen</summary><pre style="white-space:pre-wrap">'+esc(JSON.stringify(cloud[k]??null,null,2))+'</pre></details><label>Übernehmen <select data-conflict-field="'+esc(k)+'"><option value="">Bitte wählen</option><option value="local">Diesen lokalen Stand</option><option value="cloud">Diesen Cloud-Stand</option></select></label></fieldset>').join('')+'<button data-act="resolveCloud">Auswahl speichern</button></section>';}
+export function conflictView(local,cloud,esc){
+ const selector=(id,label,a,b)=>'<fieldset><legend>'+esc(label)+'</legend>'+[['Lokal',a],['Cloud',b]].map(([name,value])=>'<details><summary>'+name+'</summary><pre>'+esc(value===undefined?'Eintrag fehlt':JSON.stringify(value,null,2))+'</pre></details>').join('')+'<label>Übernehmen <select data-conflict-field="'+esc(id)+'"><option value="">Bitte wählen</option><option value="local">'+(a===undefined?'Eintrag weglassen':'Lokalen Stand behalten')+'</option><option value="cloud">'+(b===undefined?'Eintrag weglassen':'Cloud-Stand behalten')+'</option></select></label></fieldset>';
+ const fields=[];
+ for(const key of new Set([...Object.keys(local),...Object.keys(cloud)])){
+  if(key==='updatedAt'||JSON.stringify(local[key])===JSON.stringify(cloud[key]))continue;
+  const label=fieldNames[key]||key,pairs=recordPairs(key,local[key],cloud[key]);
+  if(!pairs){fields.push(selector(key,label,local[key],cloud[key]));continue}
+  for(const p of pairs){if(JSON.stringify(p.local)===JSON.stringify(p.cloud))continue;const row=p.local??p.cloud;fields.push(selector(p.choice,label+' · '+(row.title||row.name||p.id),p.local,p.cloud))}
+ }
+ return '<section class="card"><h2>Cloud-Konflikt lösen</h2><p>Wähle für jeden Unterschied den gewünschten Stand. Beide Fassungen werden vor dem Speichern auf diesem Gerät gesichert.</p>'+fields.join('')+'<button data-act="resolveCloud">Auswahl speichern</button></section>';
+}

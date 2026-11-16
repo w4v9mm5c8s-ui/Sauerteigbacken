@@ -1,6 +1,6 @@
 import {ownRecipeForm,recipeToRaw} from './own-recipe-parser.js';
 import {recipePhotoPath} from './recipe-gallery.js';
-const versionFields={title:'Rezeptname',ingredients:'Hauptteig',steps:'Zubereitung',starterType:'Starterart',starterHydration:'Starter-Hydration (%)',bakeMin:'Backzeit (Min.)',bakeTemp:'Backtemperatur (°C)',stockHours:'Stockgare (h)',proofHours:'Stückgare (h)',bakePhases:'Backphasen',fillingItems:'Füllung',toppingItems:'Belag',soakerItems:'Quellstück',soakWater:'Quellwasser (g)',soakHours:'Quellzeit (h)'};
+const versionFields={title:'Rezeptname',ingredients:'Hauptteig',steps:'Zubereitung',starterType:'Starterart',starterHydration:'Starter-Hydration (%)',bakeMin:'Backzeit (Min.)',bakeTemp:'Backtemperatur (°C)',stockHours:'Stockgare (h)',proofHours:'Stückgare (h)',bakePhases:'Backphasen',fillingItems:'Füllung',toppingItems:'Belag',soakerItems:'Quellstück',soakWater:'Quellwasser (g)',soakHours:'Quellzeit (h)',brewMethod:'Zubereitung der Vorstufe',brewFlour:'Mehl der Vorstufe (g)',brewWater:'Wasser der Vorstufe (g)',brewCoolMinutes:'Abkühlzeit (Min.)'};
 export function versionHistory(item,index,esc){
  if(!item.versions?.length)return '';
  const snapshots=item.versions.map((old,j)=>{
