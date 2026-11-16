@@ -18,16 +18,17 @@ test('the hero stays fully visible and watercolor icons have no colored backgrou
  assert.match(css,/\.studio-hero-picture img\{[^}]*transform:none!important/);
  assert.match(css,/\.studio-mini-art\{background:transparent!important/);
  const html=src('index.html').toString();
- assert.match(html,/src="\/design\/buddy-hero.webp"/);
+ assert.match(html,/src="\/design\/buddy-cutout.webp"/);
 });
 test('a new cache version picks up the transparent replacement files on iOS',()=>{
- assert.match(src('sw.js').toString(),/sauerteig-public-v48/);
- assert.match(src('index.html').toString(),/app\.js\?v=48/);
+ assert.match(src('sw.js').toString(),/sauerteig-public-v49/);
+ assert.match(src('index.html').toString(),/app\.js\?v=49/);
 });
 
 test('homepage uses the visually reviewed watercolor with intact glass and crust',()=>{
- const image=src('design/buddy-hero.webp');
+ const image=src('design/buddy-cutout.webp');
  assert.equal(image.toString('ascii',8,12),'WEBP');
- assert.equal(image.toString('ascii',12,16),'VP8 ');
- assert.ok((image.readUInt16LE(26)&16383)>=1400);
+ assert.equal(image.toString('ascii',12,16),'VP8X');
+ assert.ok(image[20] & 16, "Startmotiv braucht einen Alphakanal");
+ assert.ok(image.readUIntLE(24,3)+1>=1400);
 });

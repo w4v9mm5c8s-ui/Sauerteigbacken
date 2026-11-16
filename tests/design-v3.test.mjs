@@ -8,7 +8,7 @@ test('start screen presents an editorial navigation instead of cramped feature t
  const html=homeView({signed:false,active:null,parked:[],history:[]});
  assert.equal((html.match(/class="studio-directory-row"/g)||[]).length,9);
  for(const route of ['newPlan','recipes','own','import','bakingDays','stats','favorites','community','knowledge','shopping'])assert.ok(html.includes('data-act="'+route+'"'),route);
- assert.match(html,/design\/buddy-hero\.webp/);
+ assert.match(html,/design\/buddy-cutout\.webp/);
  assert.doesNotMatch(html,/home-feature-grid|home-recent-card/);
  assert.doesNotMatch(html,/Zuletzt gebacken/);
 });

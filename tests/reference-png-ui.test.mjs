@@ -18,13 +18,13 @@ test('every design graphic is an actual local PNG with valid dimensions',()=>{
   assert.ok(sw.includes("'"+path+"'"),name+' offline cache');
  }
  assert.match(server,/\.png':'image\/png'/);
- assert.match(sw,/sauerteig-public-v48/);
+ assert.match(sw,/sauerteig-public-v49/);
 });
 test('the immediately visible and dynamic home display identical PNG illustrations',()=>{
  const html=read('index.html'),live=homeView({signed:false,history:[],parked:[],active:null,recipes:[]});
  assert.match(html,/href="\/theme-reference\.css"/);
- assert.match(html,/src="\/design\/buddy-hero\.webp"/);
- assert.match(live,/src="\/design\/buddy-hero\.webp"/);
+ assert.match(html,/src="\/design\/buddy-cutout\.webp"/);
+ assert.match(live,/src="\/design\/buddy-cutout\.webp"/);
  for(const name of ['menu-book','menu-upload','menu-calendar','menu-chart','menu-heart','menu-library','menu-help','menu-users','menu-basket']){
   assert.ok(html.includes('/design/'+name+'.svg'),name+' first paint');
   assert.ok(live.includes('/design/'+name+'.svg'),name+' dynamic paint');
