@@ -105,6 +105,7 @@ test('PDF tools and recipes are accessible through the live public app and page 
  const tools=pdfToolsView(table),cards=pdfRecipesView();
  for(const action of ['pdfFeed','pdfGare','pdfBasket','pdfWaterBalance','pdfStandardBake'])assert.match(tools,new RegExp('data-act="'+action+'"'));
  assert.match(tools,/viewBox="0 0 480 115"/);
+ assert.doesNotMatch((tools+cards).replace(/<[^>]+>/g,' '),/\bPDF\b|\bS\. \d/i);
  assert.match(cards,/Airfryer/);assert.match(cards,/Joghurtbrötchen/);
  const app=get('app.js'),hub=get('hub.js'),server=get('server.mjs'),sw=get('sw.js');
  assert.match(app,/pdfTools:\(\)=>pdfToolsView/);

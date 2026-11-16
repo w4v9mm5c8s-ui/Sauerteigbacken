@@ -27,7 +27,7 @@ test('changing the flour proportions changes the suggestions while keeping the s
  assert.notEqual(first.water,second.water);
  assert.notEqual(first.starter,second.starter);
  assert.equal(second.flourTotal,500);
- assert.match(second.source,/Sauerteigbrot.pdf/);
+ assert.match(second.source,/Richtwert für die gewählte Mehlsorte/);
 });
 test('reject unknown flours and negative, empty or impossible quantities',()=>{
  for(const invalid of [

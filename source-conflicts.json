@@ -2,7 +2,7 @@
   {
     "id": "altbrot-einlage-vs-standard",
     "title": "Altbrot: Wasseraufnahme 200 % vs. 3× Wasser",
-    "handling": "Beim Altbrot-Schalter wählst du in Planer, Rechner, Rezept und Backtag ausdrücklich 300 % (Standard) oder 200 % (Einlagen-Tabelle); die Wahl wird im Rezept und Backtag gespeichert und in allen Mengen verwendet. Ohne Entscheidung gilt sichtbar der Standard 300 %. Ist der Schalter aktiv, wird eine zusätzliche Altbrot-Einlage nicht mitgerechnet (keine Doppelzählung)."
+    "handling": "Beim Altbrot-Schalter wählst du in Planer, Rechner, Rezept und Backtag ausdrücklich 300 % (Standard) oder 200 %; die Wahl wird im Rezept und Backtag gespeichert und in allen Mengen verwendet. Ohne Entscheidung gilt sichtbar der Standard 300 %. Ist der Schalter aktiv, wird eine zusätzliche Altbrot-Einlage nicht mitgerechnet (keine Doppelzählung)."
   },
   {
     "id": "starter-hydration",
@@ -26,7 +26,7 @@
   },
   {
     "id": "bruehstueck-kochstueck",
-    "title": "Brühstück: übergießen (S. 2) vs. aufkochen (S. 27)",
+    "title": "Brühstück: übergießen vs. aufkochen",
     "handling": "Beide Beschreibungen bleiben sichtbar; die App rechnet für Brühstück/Kochstück keine festen Werte, du legst Methode und Menge selbst fest."
   },
   {
@@ -51,12 +51,12 @@
   },
   {
     "id": "ruch-68-roggenstarter",
-    "title": "Ruchmehl: „68 % mit Roggenstarter“ (frühere Anweisung) vs. 75 % Weizenruch (PDF)",
+    "title": "Ruchmehl: „68 % mit Roggenstarter“ (frühere Anweisung) vs. 75 % Weizenruch",
     "handling": "Versionsabhängiger Konflikt. Die allgemeine Tabelle bleibt 75 %/Weizenstarter, bis du anders entscheidest; im Planer kannst du Hydration und Starter frei ändern."
   },
   {
     "id": "asg-30-prozent",
-    "title": "Standard-ASG 30 % (frühere Anweisung) vs. mehlabhängig 160–250 g/500 g (PDF)",
+    "title": "Standard-ASG 30 % (frühere Anweisung) vs. mehlabhängig 160–250 g/500 g",
     "handling": "Die Tabelle bleibt Vorschlag; Startermenge ist im Rezept frei änderbar. Kein automatisches Überschreiben ohne deine Entscheidung."
   }
 ]

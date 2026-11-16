@@ -12,7 +12,7 @@ export function canonicalFlourName(name){
 export function flourSuggestion(rows,name,grams){
  const row=rows.find(x=>x.name===canonicalFlourName(name));
  if(!row||!Number.isFinite(grams)||grams<=0)return null;
- return {water:Math.round(row.water500*grams/500),starter:Math.round(row.starter500*grams/500),hydration:row.hydration,starterType:row.starterType,stockFactor:row.stockFactor,proofFactor:row.proofFactor,source:'Sauerteigbrot.pdf, Mehltabelle S. 7–8'};
+ return {water:Math.round(row.water500*grams/500),starter:Math.round(row.starter500*grams/500),hydration:row.hydration,starterType:row.starterType,stockFactor:row.stockFactor,proofFactor:row.proofFactor,source:'Richtwert für die gewählte Mehlsorte'};
 }
 export function mixingFriction(room,flour,starter,water,finished){
  if(![room,flour,starter,water,finished].every(Number.isFinite))return null;

@@ -31,7 +31,7 @@ export function recipeBuilderView(rows,esc=x=>String(x),starters=[]){
  '<label for="blendSalt">Salz (g)<input id="blendSalt" type="number" min="0" max="5000" step="0.1" inputmode="decimal" value="'+(prediction?.salt??'')+'"></label>'+
  '<label for="blendStarterType">Starterart<select id="blendStarterType">'+['Weizen','Roggen','Dinkel'].map(v=>'<option '+((prediction?.suggestedStarter||'weizen')===v.toLowerCase()?'selected':'')+'>'+v+'</option>').join('')+'</select></label></div>'+
  '<div id="blendResult" class="blend-result" aria-live="polite">'+(prediction?blendSummary(prediction,prediction.water,prediction.starter,prediction.salt):'Bitte Mehl auswählen.')+'</div>'+
- '<p class="blend-source">Die Mengen sind Vorschläge aus der Mehltabelle (Sauerteigbrot.pdf, S. 7–8), kein garantiertes Rezept. Bei anderen Temperaturen und Startern muss der Teigzustand geprüft werden.</p></section>'+
+ '<p class="blend-source">Die Mengen sind Vorschläge aus der Mehltabelle, kein garantiertes Rezept. Bei anderen Temperaturen und Startern muss der Teigzustand geprüft werden.</p></section>'+
  '<section class="card blend-complete"><details id="blendRecipeDetails"><summary><strong>Eigenes Rezept fertigstellen</strong><span>Fürs Speichern oder Planen Backschritte und Zeiten ergänzen</span></summary>'+
  '<label for="blendTitle">Rezeptname</label><input id="blendTitle" type="text" maxlength="120" placeholder="z. B. Mein Weizen-Roggen-Brot">'+
  '<label for="blendSteps">Zubereitungsschritte (mindestens zwei, eine Zeile je Schritt)</label><textarea id="blendSteps" rows="5" placeholder="Mehle, Wasser und Starter mischen\nTeig gehen lassen und den Zustand prüfen\nFormen und backen"></textarea>'+
