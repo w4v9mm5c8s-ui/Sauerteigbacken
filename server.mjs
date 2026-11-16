@@ -57,15 +57,15 @@ if(url.pathname==='/api/community/author'&&req.method==='GET'){
  return json(res,200,{name:row.author_display_name||'Bäcker:in',recipes:recipes.slice(0,20),more:recipes.length>20});
 }
 if(url.pathname==='/api/community'&&req.method==='GET'){if(!process.env.SUPABASE_URL)return json(res,200,{recipes:[]});const r=await fetch(process.env.SUPABASE_URL+'/rest/v1/community_recipes?status=eq.published&select=id,title,ingredients,instructions,created_at,author_display_name,flour_type,bread_type,hydration,difficulty,starter_type,bake_method,total_hours&limit=100',{headers:{apikey:process.env.SUPABASE_PUBLISHABLE_KEY}});return json(res,r.ok?200:502,r.ok?{recipes:await r.json()}:{error:'Community nicht erreichbar'})}
+if(url.pathname==='/api/billing/plans'&&req.method==='GET'){
+ try{return json(res,200,await publicBillingPlans())}catch{return json(res,200,{enabled:false,plans:[]})}
+}
 if(url.pathname.startsWith('/api/')){
  const id=await who(req);if(!id)return json(res,401,{error:'Bitte zuerst anmelden.'});
  if(!limit('user:'+id.user.id,180))return json(res,429,{error:'Zu viele Anfragen'});
  if(url.pathname==='/api/billing/status'&&req.method==='GET'){
  if(!process.env.SUPABASE_SERVICE_ROLE_KEY||!process.env.SUPABASE_URL)return json(res,200,{enabled:false,plus:false,status:'unavailable',hasCustomer:false});
  const row=await subscriptionRow(id.user.id);return json(res,200,{enabled:billingEnabled(),plus:!!row&&['active','trialing'].includes(row.status),status:row?.status||'inactive',hasCustomer:!!row?.stripe_customer_id&&!!process.env.STRIPE_SECRET_KEY,periodEnd:row?.current_period_end||null});
-}
-if(url.pathname==='/api/billing/plans'&&req.method==='GET'){
- try{return json(res,200,await publicBillingPlans())}catch{return json(res,200,{enabled:false,plans:[]})}
 }
 if(url.pathname==='/api/billing/checkout'&&req.method==='POST'){
  if(!limit('billing-checkout:'+id.user.id,5))return json(res,429,{error:'Bitte später erneut versuchen'});

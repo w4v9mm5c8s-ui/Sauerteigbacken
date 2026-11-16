@@ -1,7 +1,7 @@
 import {icon} from './icons.js';
 const groups=[
  {title:'PLANEN & BEGLEITEN',items:[
-  ['Meine Backtage','Laufende Teige und Backschritte','bakingDays','calendar'],
+  ['Aktuelle Backvorgänge','Laufende Teige und Backschritte','bakingDays','calendar'],
   ['Rezeptbibliothek','Alle Sauerteigrezepte','recipes','book'],
   ['Meine Rezepte','Deine eigenen Kreationen','own','library'],
   ['Rezept importieren','Per Link, Foto oder Text','import','upload']
@@ -13,10 +13,10 @@ const groups=[
  ]},
  {title:'MEHR ENTDECKEN',items:[
   ['Rechner & Helfer','Hydration, Mengen und Zeiten','calculator','calculator'],
-  ['PDF-Backwissen & Spezialrechner','Gärzeiten, Quellwasser und Gärkörbchen','pdfTools','book'],
-  ['Rezepte aus der PDF','Originalmengen und Besonderheiten','pdfRecipes','book'],
+  ['Backrechner für Sauerteig','Starter füttern, Gehzeit schätzen und Wassermengen berechnen','pdfTools','calculator'],
   ['Community-Backbuch','Rezepte aus der Community','community','users'],
-  ['Historische Rezepte','Überlieferte Rezepte entdecken','historical','book']
+  ['Rezeptarchiv','Frühere Rezeptversionen mit Zutaten und Notizen','historical','book'],
+  ['Sauerteig Plus','KI Buddy, Funktionen und Abomodelle','billing','heart']
  ]}
 ];
 export function hubView(button,user=false,historyCount=0,ownCount=0){

@@ -109,7 +109,7 @@ test('PDF tools and recipes are accessible through the live public app and page 
  const app=get('app.js'),hub=get('hub.js'),server=get('server.mjs'),sw=get('sw.js');
  assert.match(app,/pdfTools:\(\)=>pdfToolsView/);
  assert.match(app,/pdfRecipes:\(\)=>pdfRecipesView/);
- assert.match(hub,/pdfTools/);assert.match(hub,/pdfRecipes/);
+ assert.match(hub,/pdfTools/);assert.doesNotMatch(hub,/pdfRecipes/);
  for(const asset of ['/pdf-baking.js','/pdf-tools-ui.js','/pdf-recipes.js']){assert.ok(server.includes("'"+asset+"'"));assert.ok(sw.includes("'"+asset+"'"))}
 });
 test('PDF tools compute a numeric response with source-preserving assumptions',()=>{
