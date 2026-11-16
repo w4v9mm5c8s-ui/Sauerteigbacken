@@ -6,11 +6,15 @@ export function starterForecast(logs,ratio,temp){
 
 const safeRows=items=>Array.isArray(items)?items:[];
 const textValue=(x,esc)=>esc(String(x??''));
-export const STARTER_TYPES=['Weizen','Roggen','Dinkel','Emmer','Einkorn','Kamut / Khorasan','Hafer','Gerste','Buchweizen','Reis','Mais','Hirse','Mischstarter','Sonstiger Starter'];
+export const STARTER_TYPES=['Weizen','Roggen','Dinkel','Emmer','Einkorn','Kamut / Khorasan','Hafer','Gerste','Buchweizen','Reis','Mais','Hirse','Triticale','Sonstiges Getreide'];
+export const STARTER_STYLES=['Klassischer Sauerteig','Lievito Madre','Eigener/Mischstarter'];
+const starterStyle=(x)=>x.style||'Klassischer Sauerteig';
+const starterBase=(x)=>x.type||'Weizen';
+const starterFlour=(x)=>x.flourName||starterBase(x);
 export function personalStartersPreview(items,esc=x=>String(x)){
  const list=safeRows(items);
  return '<section class="personal-starters"><div class="personal-starters-head"><span><span class="studio-overline">PERSÖNLICHER BEREICH</span><h2>Meine Starter</h2></span><button data-act="starters">Alle anzeigen →</button></div>'+
- (list.length?'<div class="personal-starters-preview">'+list.slice(0,3).map(st=>'<button data-act="starters" class="personal-starter-preview"><img src="/design/menu-jar.svg" alt="" loading="lazy"><span><strong>'+textValue(st.name||'Starter',esc)+'</strong><small>'+textValue(st.type||'Weizen',esc)+' · '+textValue(st.hydration??100,esc)+' % Hydration · '+textValue(st.ratio||'1:2:2',esc)+'</small></span><span aria-hidden="true">›</span></button>').join('')+'</div>':
+ (list.length?'<div class="personal-starters-preview">'+list.slice(0,3).map(st=>'<button data-act="starters" class="personal-starter-preview"><img src="/design/menu-jar.svg" alt="" loading="lazy"><span><strong>'+textValue(st.name||'Starter',esc)+'</strong><small>'+textValue(starterStyle(st),esc)+' · '+textValue(starterFlour(st),esc)+' · '+textValue(st.hydration??100,esc)+' % Hydration</small></span><span aria-hidden="true">›</span></button>').join('')+'</div>':
  '<p>Du hast noch keinen eigenen Starter angelegt.</p>')+
  '<button class="personal-starters-open" data-act="starters">'+(list.length?'Starter verwalten':'Ersten Starter anlegen')+'</button></section>';
 }
@@ -20,9 +24,9 @@ export function starterListView(items,esc=x=>String(x)){
  if(!list.length)return '<p class="muted">Noch keine Starter gespeichert. Lege deinen ersten Starter unten an.</p>';
  return '<div class="starter-collection">'+list.map((x,i)=>{
  const logs=Array.isArray(x.logs)?x.logs:[],last=logs.at(-1),forecast=last?starterForecast(logs,last.ratio||x.ratio||'1:2:2',Number(last.temperature||22)):null;
- const name=textValue(x.name||'Starter',esc),type=textValue(x.type||'Weizen',esc),flour=x.flourName?textValue(x.flourName,esc):'Mehltyp nicht hinterlegt';
+ const name=textValue(x.name||'Starter',esc),type=textValue(starterBase(x),esc),style=textValue(starterStyle(x),esc),flour=textValue(starterFlour(x),esc);
  const select=(id,values,chosen)=>{const options=[...new Set([...values,chosen].filter(Boolean))];return '<select id="'+id+'">'+options.map(v=>'<option value="'+textValue(v,esc)+'" '+(v===chosen?'selected':'')+'>'+textValue(v,esc)+'</option>').join('')+'</select>'};
- return '<article class="starter-profile"><div class="starter-profile-top"><img src="/design/menu-jar.svg" alt="" loading="lazy"><div><h3>'+name+' ('+type+')</h3><p>'+flour+' · '+textValue(x.hydration??100,esc)+' % Hydration · '+textValue(x.ratio||'1:2:2',esc)+'</p><small>'+logs.length+' Fütterungen protokolliert</small></div></div>'+
+ return '<article class="starter-profile"><div class="starter-profile-top"><img src="/design/menu-jar.svg" alt="" loading="lazy"><div><h3>'+name+' · '+style+'</h3><p>'+flour+' · Basis: '+type+' · '+textValue(x.hydration??100,esc)+' % Hydration · '+textValue(x.ratio||'1:2:2',esc)+'</p><small>'+logs.length+' Fütterungen protokolliert</small></div></div>'+
  '<div class="starter-profile-forecast"><strong>'+(forecast?'Persönliche Reifeprognose: '+forecast.hours+' h':'Reifeprognose aus eigenen Messungen noch offen')+'</strong><small>'+(forecast?'Aus '+forecast.count+' vergleichbaren Messungen':'Mindestens drei vergleichbare Messungen nötig; der Reifezustand geht vor')+'</small></div>'+
  '<details class="starter-profile-details"><summary>Fütterung berechnen und protokollieren</summary><button data-act="feed:'+i+'">Fütterungsmenge berechnen</button>'+
  '<label for="starterLogRatio'+i+'">Fütterungsverhältnis</label>'+select('starterLogRatio'+i,['1:1:1','1:2:2','1:3:3','1:5:5','1:10:10'],x.ratio||'1:2:2')+
@@ -33,8 +37,9 @@ export function starterListView(items,esc=x=>String(x)){
  '<details class="starter-profile-details"><summary>Erinnerungen</summary><label for="starterReminderFirst'+i+'">Erste Fütterungserinnerung in Stunden</label><input id="starterReminderFirst'+i+'" type="number" min="0.1" step="0.1" value="24"><label for="starterReminderHours'+i+'">Danach alle Stunden</label><input id="starterReminderHours'+i+'" type="number" min="1" max="8760" value="'+(x.reminderHours||24)+'"><button data-act="starterReminder:'+i+'">Fütterungserinnerung speichern</button><label for="starterPeakHours'+i+'">Reife in Stunden prüfen</label><input id="starterPeakHours'+i+'" type="number" min="0.1" max="72" step="0.1" value="'+(forecast?.hours||'')+'"><button data-act="starterPeak:'+i+'">Reife-Erinnerung speichern</button><button data-act="reminders">Erinnerungen verwalten</button></details>'+
  '<details class="starter-profile-details"><summary>Starter bearbeiten</summary>'+
  '<label for="starterEditName'+i+'">Name</label><input id="starterEditName'+i+'" value="'+name+'" maxlength="90">'+
- '<label for="starterEditType'+i+'">Starterart</label>'+select('starterEditType'+i,STARTER_TYPES,x.type||'Weizen')+
- '<label for="starterEditFlour'+i+'">Verwendetes Mehl (optional)</label><input id="starterEditFlour'+i+'" maxlength="90" value="'+textValue(x.flourName||'',esc)+'" placeholder="z. B. Weizenmehl Type 550">'+
+ '<label for="starterEditStyle'+i+'">Führungsart</label>'+select('starterEditStyle'+i,STARTER_STYLES,starterStyle(x))+
+ '<label for="starterEditType'+i+'">Hauptbasis</label>'+select('starterEditType'+i,STARTER_TYPES,starterBase(x))+
+ '<label for="starterEditFlour'+i+'">Mehlbasis oder Mischung</label><input id="starterEditFlour'+i+'" maxlength="140" value="'+textValue(x.flourName||'',esc)+'" placeholder="z. B. Weizen 60 %, Roggen 40 %">'+
  '<label for="starterEditHydration'+i+'">Hydration (%)</label><input id="starterEditHydration'+i+'" type="number" min="20" max="250" value="'+textValue(x.hydration??100,esc)+'">'+
  '<button data-act="starterUpdate:'+i+'">Änderungen speichern</button><button class="starter-delete" data-act="starterDelete:'+i+'">Starter löschen</button></details></article>';
  }).join('')+'</div>';
