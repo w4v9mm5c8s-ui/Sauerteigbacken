@@ -8,17 +8,17 @@ const read=p=>readFileSync(new URL('../'+p,import.meta.url));
 
 test('recipe categories use dedicated AI example photography',()=>{
  const cases=[
-  ['Sauerteig-Laugenbrezeln','photo-brezeln.png'],
-  ['Sauerteig-Baguettes','photo-baguette.png'],
-  ['Sauerteig-Bagels','photo-bagels.png'],
-  ['Rosmarin-Sauerteig-Focaccia','photo-focaccia.png'],
-  ['Sauerteig-Pizzateig','photo-pizza.png'],
-  ['Sauerteig-Zimtschnecken','photo-zimtschnecken.png']
+  ['Sauerteig-Laugenbrezeln','starter-sauerteig-brezeln.webp'],
+  ['Sauerteig-Baguettes','starter-baguette.webp'],
+  ['Sauerteig-Bagels','starter-bagels.webp'],
+  ['Rosmarin-Sauerteig-Focaccia','starter-focaccia.webp'],
+  ['Sauerteig-Pizzateig','starter-pizza.webp'],
+  ['Sauerteig-Zimtschnecken','starter-zimtschnecken.webp']
  ];
  for(const [title,asset] of cases){
   assert.equal(recipePhotoPath({title,category:'Brot'}),'/design/'+asset);
   const bytes=read('design/'+asset);
-  assert.equal(bytes.subarray(0,8).toString('hex'),'89504e470d0a1a0a');
+  assert.equal(bytes.toString('ascii',8,12),'WEBP');
   assert.ok(bytes.length>10000);
   for(const source of ['server.mjs','sw.js'])assert.match(read(source).toString(),new RegExp('design/'+asset.replaceAll('.','\\.')));
  }

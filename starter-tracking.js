@@ -9,7 +9,7 @@ const textValue=(x,esc)=>esc(String(x??''));
 export function personalStartersPreview(items,esc=x=>String(x)){
  const list=safeRows(items);
  return '<section class="personal-starters"><div class="personal-starters-head"><span><span class="studio-overline">PERSÖNLICHER BEREICH</span><h2>Meine Starter</h2></span><button data-act="starters">Alle anzeigen →</button></div>'+
- (list.length?'<div class="personal-starters-preview">'+list.slice(0,3).map(st=>'<button data-act="starters" class="personal-starter-preview"><img src="/design/tile-import.png" alt="" loading="lazy"><span><strong>'+textValue(st.name||'Starter',esc)+'</strong><small>'+textValue(st.type||'Weizen',esc)+' · '+textValue(st.hydration??100,esc)+' % Hydration · '+textValue(st.ratio||'1:2:2',esc)+'</small></span><span aria-hidden="true">›</span></button>').join('')+'</div>':
+ (list.length?'<div class="personal-starters-preview">'+list.slice(0,3).map(st=>'<button data-act="starters" class="personal-starter-preview"><img src="/design/menu-jar.svg" alt="" loading="lazy"><span><strong>'+textValue(st.name||'Starter',esc)+'</strong><small>'+textValue(st.type||'Weizen',esc)+' · '+textValue(st.hydration??100,esc)+' % Hydration · '+textValue(st.ratio||'1:2:2',esc)+'</small></span><span aria-hidden="true">›</span></button>').join('')+'</div>':
  '<p>Du hast noch keinen eigenen Starter angelegt.</p>')+
  '<button class="personal-starters-open" data-act="starters">'+(list.length?'Starter verwalten':'Ersten Starter anlegen')+'</button></section>';
 }
@@ -21,7 +21,7 @@ export function starterListView(items,esc=x=>String(x)){
  const logs=Array.isArray(x.logs)?x.logs:[],last=logs.at(-1),forecast=last?starterForecast(logs,last.ratio||x.ratio||'1:2:2',Number(last.temperature||22)):null;
  const name=textValue(x.name||'Starter',esc),type=textValue(x.type||'Weizen',esc),flour=x.flourName?textValue(x.flourName,esc):'Mehltyp nicht hinterlegt';
  const select=(id,values,chosen)=>'<select id="'+id+'">'+values.map(v=>'<option '+(v===chosen?'selected':'')+'>'+v+'</option>').join('')+'</select>';
- return '<article class="starter-profile"><div class="starter-profile-top"><img src="/design/tile-import.png" alt="" loading="lazy"><div><h3>'+name+' ('+type+')</h3><p>'+flour+' · '+textValue(x.hydration??100,esc)+' % Hydration · '+textValue(x.ratio||'1:2:2',esc)+'</p><small>'+logs.length+' Fütterungen protokolliert</small></div></div>'+
+ return '<article class="starter-profile"><div class="starter-profile-top"><img src="/design/menu-jar.svg" alt="" loading="lazy"><div><h3>'+name+' ('+type+')</h3><p>'+flour+' · '+textValue(x.hydration??100,esc)+' % Hydration · '+textValue(x.ratio||'1:2:2',esc)+'</p><small>'+logs.length+' Fütterungen protokolliert</small></div></div>'+
  '<div class="starter-profile-forecast"><strong>'+(forecast?'Persönliche Reifeprognose: '+forecast.hours+' h':'Reifeprognose aus eigenen Messungen noch offen')+'</strong><small>'+(forecast?'Aus '+forecast.count+' vergleichbaren Messungen':'Mindestens drei vergleichbare Messungen nötig; der Reifezustand geht vor')+'</small></div>'+
  '<details class="starter-profile-details"><summary>Fütterung berechnen und protokollieren</summary><button data-act="feed:'+i+'">Fütterungsmenge berechnen</button>'+
  '<label for="starterLogRatio'+i+'">Fütterungsverhältnis</label>'+select('starterLogRatio'+i,['1:1:1','1:2:2','1:3:3','1:5:5','1:10:10'],x.ratio||'1:2:2')+

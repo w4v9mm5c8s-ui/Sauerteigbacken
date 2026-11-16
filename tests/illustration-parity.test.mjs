@@ -11,14 +11,14 @@ test('supplementary illustrations remain self-contained vectors',()=>{
 test('vector motifs are cached and served alongside the new PNG artwork',()=>{
  const server=read('server.mjs'),sw=read('sw.js');
  for(const asset of svgNames){assert.ok(server.includes("'/"+asset+"'"));assert.ok(sw.includes("'/"+asset+"'"))}
- for(const asset of ['/design/hero-aquarell.png','/design/photo-helles.png','/theme-editorial.css']){assert.ok(server.includes("'"+asset+"'"));assert.ok(sw.includes("'"+asset+"'"))}
+ for(const asset of ['/design/buddy-hero.webp','/design/photo-helles.png','/theme-editorial.css']){assert.ok(server.includes("'"+asset+"'"));assert.ok(sw.includes("'"+asset+"'"))}
 });
 test('the signed-out home provides grouped actions without displaying fake history',()=>{
  const html=homeView({signed:false,active:null,history:[],parked:[]});
  assert.equal((html.match(/class="studio-directory-row"/g)||[]).length,9);
- assert.match(html,/design\/tile-statistik\.png/);
- assert.match(html,/design\/tile-favoriten\.png/);
- assert.match(html,/design\/hero-aquarell\.png/);
+ assert.match(html,/design\/menu-chart\.svg/);
+ assert.match(html,/design\/menu-heart\.svg/);
+ assert.match(html,/design\/buddy-hero\.webp/);
  assert.doesNotMatch(html,/studio-history/);
 });
 test('baking navigation uses semantic rows with accessible action buttons',()=>{
@@ -29,7 +29,7 @@ test('baking navigation uses semantic rows with accessible action buttons',()=>{
 });
 test('illustrated data modules remain linked',()=>{
  assert.match(read('stats.js'),/art-chart\.svg/);
- assert.match(read('own-recipes.js'),/design\/tile-recipes\.png/);
+ assert.match(read('own-recipes.js'),/design\/menu-book\.svg/);
  assert.match(read('community-ui.js'),/art-basket\.svg/);
  assert.match(read('app.js'),/art-heart\.svg/);
  assert.match(read('pantry.js'),/art-wheat\.svg/);

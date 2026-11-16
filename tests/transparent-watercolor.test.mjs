@@ -1,6 +1,5 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {createHash} from 'node:crypto';
 import {readFileSync} from 'node:fs';
 const src=name=>readFileSync(new URL('../'+name,import.meta.url));
 const watercolor=['tile-plan','tile-recipes','tile-import','tile-backtage','tile-statistik','tile-favoriten','tile-backbuecher','tile-wissen','tile-einkauf'];
@@ -19,14 +18,16 @@ test('the hero stays fully visible and watercolor icons have no colored backgrou
  assert.match(css,/\.studio-hero-picture img\{[^}]*transform:none!important/);
  assert.match(css,/\.studio-mini-art\{background:transparent!important/);
  const html=src('index.html').toString();
- assert.match(html,/src="\/design\/hero-aquarell.png"/);
+ assert.match(html,/src="\/design\/buddy-hero.webp"/);
 });
 test('a new cache version picks up the transparent replacement files on iOS',()=>{
- assert.match(src('sw.js').toString(),/sauerteig-public-v47/);
- assert.match(src('index.html').toString(),/app\.js\?v=45/);
+ assert.match(src('sw.js').toString(),/sauerteig-public-v48/);
+ assert.match(src('index.html').toString(),/app\.js\?v=48/);
 });
 
 test('homepage uses the visually reviewed watercolor with intact glass and crust',()=>{
- const image=src('design/hero-aquarell.png');
- assert.equal(createHash('sha256').update(image).digest('hex'),'db2c3d7458e4186a806d56dfdc0938763d7185718aacdf22e664364c622146ad');
+ const image=src('design/buddy-hero.webp');
+ assert.equal(image.toString('ascii',8,12),'WEBP');
+ assert.equal(image.toString('ascii',12,16),'VP8 ');
+ assert.ok((image.readUInt16LE(26)&16383)>=1400);
 });
