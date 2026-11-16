@@ -18,27 +18,27 @@ test('every design graphic is an actual local PNG with valid dimensions',()=>{
   assert.ok(sw.includes("'"+path+"'"),name+' offline cache');
  }
  assert.match(server,/\.png':'image\/png'/);
- assert.match(sw,/sauerteig-public-v47/);
+ assert.match(sw,/sauerteig-public-v48/);
 });
 test('the immediately visible and dynamic home display identical PNG illustrations',()=>{
  const html=read('index.html'),live=homeView({signed:false,history:[],parked:[],active:null,recipes:[]});
  assert.match(html,/href="\/theme-reference\.css"/);
- assert.match(html,/src="\/design\/hero-aquarell\.png"/);
- assert.match(live,/src="\/design\/hero-aquarell\.png"/);
- for(const name of ['tile-recipes','tile-import','tile-backtage','tile-statistik','tile-favoriten','tile-backbuecher','tile-wissen']){
-  assert.ok(html.includes('/design/'+name+'.png'),name+' first paint');
-  assert.ok(live.includes('/design/'+name+'.png'),name+' dynamic paint');
+ assert.match(html,/src="\/design\/buddy-hero\.webp"/);
+ assert.match(live,/src="\/design\/buddy-hero\.webp"/);
+ for(const name of ['menu-book','menu-upload','menu-calendar','menu-chart','menu-heart','menu-library','menu-help','menu-users','menu-basket']){
+  assert.ok(html.includes('/design/'+name+'.svg'),name+' first paint');
+  assert.ok(live.includes('/design/'+name+'.svg'),name+' dynamic paint');
  }
  assert.equal((html.match(/class="studio-directory-row"/g)||[]).length,9);
  assert.equal((live.match(/class="studio-directory-row"/g)||[]).length,9);
  assert.doesNotMatch(live,/Zuletzt gebacken/);
 });
 test('recipe photography varies by bread style and never invents personal photos',()=>{
- assert.equal(recipePhotoPath({title:'Roggenvollkorn-Kastenbrot'}),'/design/photo-kasten.png');
- assert.equal(recipePhotoPath({title:'Weizen-Landbrot'}),'/design/photo-helles.png');
- assert.equal(recipePhotoPath({title:'Bauernmischbrot'}),'/design/photo-bauernbrot.png');
- assert.equal(recipePhotoPath({title:'Sonnenblumenkernbrot'}),'/design/photo-vollkorn.png');
- assert.equal(recipePhotoPath({title:'Sauerteig-Laugenbrezeln'}),'/design/photo-brezeln.png');
+ assert.equal(recipePhotoPath({title:'Roggenvollkorn-Kastenbrot'}),'/design/starter-roggenvollkorn-kasten.webp');
+ assert.equal(recipePhotoPath({title:'Weizen-Landbrot'}),'/design/starter-weizen-landbrot.webp');
+ assert.equal(recipePhotoPath({title:'Bauernmischbrot'}),'/design/starter-bauernbrot-70-30.webp');
+ assert.equal(recipePhotoPath({title:'Sonnenblumenkernbrot'}),'/design/starter-dinkel-saaten.webp');
+ assert.equal(recipePhotoPath({title:'Sauerteig-Laugenbrezeln'}),'/design/starter-sauerteig-brezeln.webp');
 });
 test('mobile app retains accessible buttons and manual ingredient grouping',()=>{
  const app=read('app.js'),css=read('theme-reference.css');

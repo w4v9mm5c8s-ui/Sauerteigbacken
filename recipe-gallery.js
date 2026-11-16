@@ -1,20 +1,60 @@
 import {icon} from './icons.js';
+const catalogPhotos = new Map([
+  ["starter-weizen-landbrot", "Helles Weizen-Landbrot"],
+  ["starter-weizenvollkorn", "Saftiges Weizenvollkornbrot"],
+  ["starter-bauernbrot-70-30", "Bauernmischbrot 70/30"],
+  ["starter-roggenmisch-60-40", "Kräftiges Roggenmischbrot 60/40"],
+  ["starter-roggenvollkorn-kasten", "Roggenvollkorn-Kastenbrot"],
+  ["starter-dinkel-hell", "Mildes Dinkelbrot"],
+  ["starter-dinkel-saaten", "Dinkelvollkorn-Saatenbrot"],
+  ["starter-kartoffel-weizen", "Kartoffel-Weizenbrot"],
+  ["starter-walnuss", "Walnuss-Sauerteigbrot"],
+  ["starter-kuerbiskern", "Kürbiskernbrot"],
+  ["starter-hafer-kasten", "Haferflocken-Kastenbrot"],
+  ["starter-emmer-weizen", "Emmer-Weizen-Laib"],
+  ["starter-baguette", "Sauerteig-Baguettes"],
+  ["starter-ciabatta", "Luftiges Sauerteig-Ciabatta"],
+  ["starter-focaccia", "Rosmarin-Sauerteig-Focaccia"],
+  ["starter-pizza", "Sauerteig-Pizzateig"],
+  ["starter-weizensemmeln", "Knusprige Sauerteig-Semmeln"],
+  ["starter-roggenbroetchen", "Rustikale Roggenbrötchen"],
+  ["starter-dinkelseelen", "Schwäbische Dinkelseelen mit Sauerteig"],
+  ["starter-saatensemmeln", "Kernige Sauerteig-Saatensemmeln"],
+  ["starter-vinschgauer", "Vinschgauer Paarlen"],
+  ["starter-bagels", "Sauerteig-Bagels"],
+  ["starter-natronstangen", "Sauerteig-Laugenstangen"],
+  ["starter-toastbrot", "Weiches Sauerteig-Toastbrot"],
+  ["starter-zimtschnecken", "Sauerteig-Zimtschnecken"],
+  ["starter-sauerteig-brezeln", "Sauerteig-Laugenbrezeln"],
+  ["pdf-weizen550", "Weizenbrot Type 550"],
+  ["pdf-ruch-altbrot", "Ruchbrot mit Weizenprotein und Altbrot"],
+  ["pdf-roggen1150", "Roggenbrot Type 1150"],
+  ["pdf-manitoba-walnuss", "Manitoba-Brot mit Walnussfüllung"],
+  ["pdf-dinkel-koerner", "Dinkelbrot mit Körnern"],
+  ["pdf-proteinbrot", "Proteinbrot"],
+  ["pdf-airfryer", "Weizenbrot aus dem Airfryer"],
+  ["pdf-joghurt", "Sauerteig-Joghurtbrötchen"],
+  ["pdf-toast", "Sauerteig-Toastbrot"],
+]);
+const photoByTitle = new Map([...catalogPhotos].map(([id,title]) => [title.toLocaleLowerCase("de-DE"), id]));
 export function recipePhotoPath(r){
+ const id = catalogPhotos.has(r?.id) ? r.id : photoByTitle.get(String(r?.title || "").toLocaleLowerCase("de-DE"));
+ if (id) return "/design/" + id + ".webp";
  const title=String(r?.title||'').toLocaleLowerCase('de-DE');
  const category=String(r?.category||'').toLocaleLowerCase('de-DE');
- if(/brezel|laugen/.test(title))return '/design/photo-brezeln.png';
- if(/bagel/.test(title))return '/design/photo-bagels.png';
- if(/baguette/.test(title))return '/design/photo-baguette.png';
- if(/focaccia/.test(title))return '/design/photo-focaccia.png';
- if(/pizza/.test(title))return '/design/photo-pizza.png';
- if(/zimtschneck/.test(title))return '/design/photo-zimtschnecken.png';
- if(/kasten|toast/.test(title))return '/design/photo-kasten.png';
- if(/vollkorn|saat|kern|nuss|leinsamen|mohn|sonnenblum/.test(title))return '/design/photo-vollkorn.png';
- if(/roggen|bauern|misch|vinschgauer/.test(title))return '/design/photo-bauernbrot.png';
- if(/ciabatta|baguette|semmel|bröt|seele|kleingebäck/.test(title+' '+category))return '/design/photo-rustikal.png';
- if(/pizza|focaccia|zimtschneck/.test(title))return '/design/photo-helles.png';
- if(/weizen|hell|dinkel/.test(title))return '/design/photo-helles.png';
- return '/design/photo-landbrot.png';
+ if(/brezel|laugen/.test(title))return '/design/starter-sauerteig-brezeln.webp';
+ if(/bagel/.test(title))return '/design/starter-bagels.webp';
+ if(/baguette/.test(title))return '/design/starter-baguette.webp';
+ if(/focaccia/.test(title))return '/design/starter-focaccia.webp';
+ if(/pizza/.test(title))return '/design/starter-pizza.webp';
+ if(/zimtschneck/.test(title))return '/design/starter-zimtschnecken.webp';
+ if(/kasten|toast/.test(title))return '/design/starter-toastbrot.webp';
+ if(/vollkorn|saat|kern|nuss|leinsamen|mohn|sonnenblum/.test(title))return '/design/starter-dinkel-saaten.webp';
+ if(/roggen|bauern|misch|vinschgauer/.test(title))return '/design/starter-bauernbrot-70-30.webp';
+ if(/ciabatta|baguette|semmel|bröt|seele|kleingebäck/.test(title+' '+category))return '/design/starter-weizensemmeln.webp';
+ if(/pizza|focaccia|zimtschneck/.test(title))return '/design/starter-weizen-landbrot.webp';
+ if(/weizen|hell|dinkel/.test(title))return '/design/starter-weizen-landbrot.webp';
+ return '/design/starter-weizen-landbrot.webp';
 }
 function artwork(r){return recipePhotoPath(r)}
 

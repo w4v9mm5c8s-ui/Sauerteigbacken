@@ -47,5 +47,5 @@ test('no infinite PWA update reload and PDF originals accessible from recipe lib
  assert.match(app,/sauerteig-sw-upgrade-v45/);
  assert.doesNotMatch(app,/sessionStorage\.setItem\('sauerteig-sw-upgrade-v26'/);
  assert.match(app,/data-act="pdfRecipes"/);
- assert.match(read('sw.js'),/sauerteig-public-v47/);
+ assert.match(read('sw.js'),/sauerteig-public-v48/);
 });

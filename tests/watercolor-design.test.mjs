@@ -22,12 +22,12 @@ test('new visual assets are in public allowlist and offline cache',()=>{
 });
 test('home and learning screens use the watercolor motifs matching the approved design',()=>{
  const home=read('home.js'),app=read('app.js'),knowledge=read('knowledge.js'),gallery=read('recipe-gallery.js');
- assert.ok(home.includes('/design/hero-aquarell.png'));
- assert.ok(home.includes('/design/tile-recipes.png'));
+ assert.ok(home.includes('/design/buddy-hero.webp'));
+ assert.ok(home.includes('/design/menu-book.svg'));
  assert.ok(knowledge.includes('src="/art-books.svg"'));
  assert.ok(app.includes('src="/art-starter.svg"'));
  assert.ok(app.includes('src="/art-buddy.svg"'));
- assert.ok(gallery.includes('/design/photo-brezeln.png'));
+ assert.ok(gallery.includes('/design/starter-sauerteig-brezeln.webp'));
 });
 
 test('new theme is loaded after legacy stylesheet and supports iPhone safe area',()=>{

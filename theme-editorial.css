@@ -326,3 +326,10 @@ body[data-page="account"] main>.back-button{display:none}
 #planCard[data-mode="simple"] details:has(> #finish) > details {display:none}
 
 #planCard[data-mode="simple"] details:not(.missing-values):has(> #planDoughHyd) > :not(summary,#planDoughHyd,label[for="planDoughHyd"],#waterAmount,label[for="waterAmount"],small,[data-act="resetPlanWater"]){display:none}
+
+.studio-mini-art img{width:68%;height:68%}
+.studio-photo-item img{height:auto;aspect-ratio:3/2}
+@media(min-width:680px){
+ .studio-photo-rail{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));overflow:visible}
+ .studio-photo-item{width:100%;max-width:none}
+}
