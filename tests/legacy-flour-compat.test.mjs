@@ -42,10 +42,10 @@ test('soaker input rejects an unsoaked selected seed instead of reporting a fake
   soakers:[{name:'Sonnenblumenkerne',grams:25,ratio:0}]
  }),/Wasseraufnahme/);
 });
-test('no infinite PWA update reload and PDF originals accessible from recipe library',()=>{
+test('no infinite PWA update reload and recipe library omits the PDF banner',()=>{
  const app=read('app.js');
  assert.match(app,/sauerteig-sw-upgrade-v46/);
  assert.doesNotMatch(app,/sessionStorage\.setItem\('sauerteig-sw-upgrade-v26'/);
- assert.match(app,/data-act="pdfRecipes"/);
+ assert.doesNotMatch(app,/PDF-Originalrezepte ansehen/);
  assert.match(read('sw.js'),/sauerteig-public-v50/);
 });
