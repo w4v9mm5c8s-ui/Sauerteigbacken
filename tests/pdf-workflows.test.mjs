@@ -86,3 +86,12 @@ test('a flour amount from recipe detail overrides weekly portions and is shared 
  assert.equal(r.starter.grams,192);
  assert.match(r.steps[0],/528 g/);
 });
+import {suggestedLoaves} from '../planning-ui.js';
+test('laibanzahl follows the recipe and splits the dough from the three-person weekly plan',()=>{
+ const input={people:3,daily:155,loss:12,flour:0};
+ assert.equal(suggestedLoaves(recipe,input),4);
+ assert.equal(suggestedLoaves(recipe,{...input,people:1}),1);
+ assert.equal(suggestedLoaves(recipe,{...input,flour:2000}),4);
+ const plan=readRenderedForm({planMode:'simple',loaves:4,weekPeople:3,weekDaily:155});
+ assert.match(plan.recipe.shapeDetail,/4 gleich große Stücke von je etwa 925 g/);
+});

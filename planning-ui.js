@@ -13,6 +13,16 @@ export function weeklyBread(people,daily,loaves){
  const total=people*7*daily;
  return {total,perLoaf:total/loaves};
 }
+export function suggestedLoaves(recipe,{people,daily,loss,flour}){
+ const recipeWeight=doughWeight(recipe);
+ if(!(recipeWeight>0))return null;
+ const recipeFlour=recipe.flours.reduce((sum,f)=>sum+f.grams,0);
+ const portions=Number(recipe.yieldCount)||1;
+ const weekly=weeklyBread(people,daily,1);
+ const scale=flour>0?flour/recipeFlour:weekly&&loss>=0&&loss<=30?weekly.total/(1-loss/100)/recipeWeight:0;
+ if(!(scale>0)||!Number.isFinite(scale))return null;
+ return Math.max(1,Math.min(24,Math.round(scale*portions)));
+}
 export function planningView(r,esc,now,flourTable=[],starters=[],choice){
  if(!r)return '<section class="card">Bitte zuerst ein Rezept auswählen.</section>';
  const local=now.toISOString();
@@ -22,7 +32,7 @@ export function planningView(r,esc,now,flourTable=[],starters=[],choice){
  return '<section id="planCard" class="card"><h2>'+esc(r.title)+'</h2><label for="planMode">Ansicht</label><select id="planMode"><option value="simple">Anfängermodus</option><option value="full">Alle Einstellungen</option></select>'+(r.sourceNote?'<p>'+esc(r.sourceNote)+'</p>':'')+recipeResearchView(r,esc)+'<details open><summary>Was brauche ich zu Hause?</summary><p>'+kitchenBasics+'</p>'+ovenSelect(r,'equipment',choice,esc)+'<label for="basketShape">Worin soll der geformte Laib gehen?</label><select id="basketShape"><option value="none">Schüssel mit bemehltem Geschirrtuch</option><option value="round">Rundes Gärkörbchen</option><option value="oval">Ovales Gärkörbchen</option></select><div id="basketHint" class="muted small"></div></details><details open><summary>Brotmenge</summary>'+
  field('Name deines Backtags','bakeName',r.title,'maxlength="120"')+
   '<div class="beginner-only"><input type="hidden" id="recipeFlourTotal" value=""><div id="fixedFlour" hidden><strong id="fixedFlourAmount"></strong> <button type="button" data-act="weeklyInstead">Nach Personen berechnen</button></div><div id="weekFields">'+field('Für wie viele Personen soll das Brot eine Woche reichen?','weekPeople',1,'type="number" min="1" max="50"')+field('Brot pro Person und Tag (g)','weekDaily',155,'type="number" min="1" max="1000"')+'<p class="muted small">Rund 155 g pro Tag als Richtwert für Brot und Brötchen. Die deutsche Verzehrsstudie ermittelte 133 g bei Frauen und 178 g bei Männern (2005–2007). <a href="https://www.mri.bund.de/fileadmin/MRI/Institute/EV/NVSII_Abschlussbericht_Teil_2.pdf" target="_blank" rel="noopener">Quelle</a></p></div></div>'+
- field('Wie viele Brote möchtest du aus der Teigmenge backen?' ,'loaves',1,'type="number" min="1" max="24"')+
+ field('Wie viele Brote möchtest du backen?' ,'loaves',1,'type="number" min="1" max="24"')+
  field('Mehlmenge je Brot (g)','flourPerLoaf',Math.round(flour),'type="number" min="50" max="10000"')+field('Gewünschtes fertiges Brotgewicht je Brot (g, optional)','finishedWeight','','type="number" min="100" max="10000"')+field('Angenommener Backverlust (%)','bakeLoss',12,'type="number" min="0" max="30" step="0.5"')+
  '<p class="muted small">Das fertige Brot wiegt nach dem Backen weniger als der rohe Teig. Die genaue Differenz hängt vom Rezept ab.</p></details>'+
  '<details open><summary>2. Mehl und Zutaten</summary><div id="simpleIngredients" class="beginner-only" aria-live="polite"></div>'+
@@ -86,7 +96,7 @@ export function readPlanningForm(r,get,ingredientsOnly=false){
  const weekly=useWeek?weeklyBread(n('weekPeople'),n('weekDaily'),loaves):null;
  if(useWeek&&!weekly)throw Error('Bitte Personen, Tagesmenge und Brotanzahl prüfen.');
  const original=flours.reduce((a,f)=>a+f.grams,0),targetWeight=weekly?weekly.perLoaf:optional('finishedWeight'),loss=n('bakeLoss');
- if(targetWeight!==null&&(!Number.isFinite(targetWeight)||targetWeight<100||targetWeight>10000))throw Error(useWeek?'Die Aufteilung ergibt weniger als 100 g oder mehr als 10 kg pro Brot. Bitte die Brotanzahl anpassen.':'Zielgewicht zwischen 100 und 10000 g eingeben.');
+ if(targetWeight!==null&&(!Number.isFinite(targetWeight)||targetWeight<(useWeek?1:100)||targetWeight>10000))throw Error(useWeek?'Die Aufteilung ergibt weniger als 1 g oder mehr als 10 kg pro Brot. Bitte die Brotanzahl anpassen.':'Zielgewicht zwischen 100 und 10000 g eingeben.');
  if(!Number.isFinite(loss)||loss<0||loss>30)throw Error('Bitte einen Backverlust zwischen 0 und 30 % wählen');
  const altbrot=n('altbrot'),soakerAmount=n('soakerAmount'),soakerWater=n('soakerWater'),brewFlour=n('brewFlour'),brewWater=n('brewWater');
  if([altbrot,soakerAmount,soakerWater,brewFlour,brewWater].some(x=>!Number.isFinite(x)||x<0))throw Error('Bitte Quell-/Brühstückmengen prüfen.');
@@ -106,6 +116,10 @@ export function readPlanningForm(r,get,ingredientsOnly=false){
  if(!Number.isFinite(factor)||factor<=0)throw Error('Die Zielmenge lässt sich nicht berechnen.');
  const ingredients={...r,potOptional:potRecipe(r),steps:recipeSteps(r,val('equipment'),val('basketShape'),factor),coldBulkHours:r.requiresColdBulk?n('coldBulkHours'):null,bake:r.bake.length?r.bake:[{temp:n('recipeBakeTemp'),min:n('recipeBakeMinutes')}],flours:flours.map(f=>({...f,grams:Math.round(f.grams*factor*10)/10})),water:Math.round(balance.mainWater*factor*10)/10,salt:Math.round(n('saltAmount')*factor*10)/10,starter:{...r.starter,type:val('starterType'),hydration:starterHydration,grams:Math.round(n('starterAmount')*factor*10)/10},extras:[...(inheritedWater?[{name:'Rezept-Quellwasser',grams:inheritedWater*factor,role:'teig'}]:[]),...(r.extras||[]).map(x=>({...x,grams:Math.round(x.grams*factor*10)/10})), ...(altbrot?[{name:'Altbrot',grams:altbrot*factor,role:'teig'},{name:'Altbrot-Quellwasser',grams:balance.altbrotWater*factor,role:'teig'}]:[]), ...(soakerAmount?[{name:soakerKind,grams:soakerAmount*factor,role:'teig'},{name:'Quellwasser',grams:soakerWater*factor,role:'teig'}]:[]), ...(brewFlour?[{name:'Brühwasser',grams:brewWater*factor,role:'teig'}]:[])],altbrot:altbrot?{grams:altbrot*factor,water:balance.altbrotWater*factor,hours:12}:null,soaker:soakerAmount?{hours:n('soakerHours'),water:soakerWater*factor,grams:soakerAmount*factor,name:soakerKind}:r.soaker?{...r.soaker,hours:n('recipeSoakerHours'),water:inheritedWater*factor,items:inheritedSeeds.map(x=>({...x,grams:x.grams*factor}))}:null,additionalSoaker:soakerAmount&&r.soaker?{...r.soaker,hours:n('recipeSoakerHours'),water:inheritedWater*factor,items:inheritedSeeds.map(x=>({...x,grams:x.grams*factor}))}:null,brew:brewFlour?{method:val('brewMethod')||'scald',flour:brewFlour*factor,water:brewWater*factor,coolMinutes:n('brewCoolMinutes')}:null,waterBalance:{...balance,...Object.fromEntries(['flourMass','totalRecipeWater','mainWater','soakerWater','altbrotWater','brewWater','starterWater','starterFlour','doughMass','reserve'].map(key=>[key,Math.round(balance[key]*factor*10)/10]))},stock:[n('stockHours'),n('stockHours')],proof:[n('proofHours'),n('proofHours')]};
  if(n('starterHydration')<20||n('starterHydration')>250)throw Error('Starter-Hydration muss zwischen 20 und 250 % liegen');if([ingredients.water,ingredients.salt,ingredients.starter.grams].some(x=>!Number.isFinite(x)||x<0))throw Error('Bitte die Zutatenmengen prüfen');
+ if(loaves>1&&(r.category==='Brot'||/Laib|Kastenbrot/i.test(r.yieldLabel||''))){
+  const grams=Math.round(rawTotal*factor/loaves);
+  ingredients.shapeDetail='Teile den Teig in '+loaves+' gleich große Stücke von je etwa '+grams+' g. '+(r.shapeDetail||'Forme jedes Stück nach Rezept.');
+ }
  if(ingredientsOnly)return ingredients;
  if(!(n('stockHours')>0)||!(n('proofHours')>0))throw Error('Bitte Stock- und Stückgare aus deiner Erfahrung ergänzen.');
  if(r.requiresColdBulk&&!(n('coldBulkHours')>=1&&n('coldBulkHours')<=48))throw Error('Bitte Dauer der kalten Stockgare angeben.');
