@@ -47,7 +47,7 @@ const box=s=>'<section class="card">'+s+'</section>';
 const signInGate=message=>box('<h2>Anmeldung erforderlich</h2><p>'+escape(message)+'</p>'+button('Zum Konto und Anmelden','account'));
 
 const note=t=>{const x=$('#toast');x.textContent=t;x.style.display='block';setTimeout(()=>x.style.display='none',4000)};
-async function request(url,method='GET',data,retry=true){const owner=user?.id;const r=await fetch(url,{method,headers:{'Content-Type':'application/json',...(token?{Authorization:'Bearer '+token}:{})},...(data?{body:JSON.stringify(data)}:{})});const j=await r.json().catch(()=>({}));if(user?.id!==owner)throw Error('Das Konto wurde gewechselt. Bitte erneut versuchen.');if(r.status===401&&retry&&refreshToken){await renewSession();return request(url,method,data,false)}if(!r.ok)throw Error(j.error||j.error_description||j.msg||'Fehler');return j}
+async function request(url,method='GET',data,retry=true){const owner=user?.id;const r=await fetch(url,{method,headers:{'Content-Type':'application/json',...(token?{Authorization:'Bearer '+token}:{})},...(data?{body:JSON.stringify(data)}:{}),signal:AbortSignal.timeout(20000)});const j=await r.json().catch(()=>({}));if(user?.id!==owner)throw Error('Das Konto wurde gewechselt. Bitte erneut versuchen.');if(r.status===401&&retry&&refreshToken){await renewSession();return request(url,method,data,false)}if(!r.ok)throw Error(j.error||j.error_description||j.msg||'Fehler');return j}
 const AUTH_SESSION_KEY='sauerteig-session';
 function saveAuthSession(){const saved=JSON.stringify({token,refreshToken,user});sessionStorage.setItem(AUTH_SESSION_KEY,saved);localStorage.setItem(AUTH_SESSION_KEY,saved)}
 function clearAuthSession(){sessionStorage.removeItem(AUTH_SESSION_KEY);localStorage.removeItem(AUTH_SESSION_KEY);sessionStorage.removeItem('sauerteig-recovery-pending')}
@@ -230,11 +230,34 @@ async function offerSourdoughFirstPush(){
  finally{sourdoughPushWelcomeBusy=false;}
 }
 const activeKey=()=>user?.id?'sourdough-active-'+user.id:'sourdough-active-guest';
-const getActive=()=>{try{return JSON.parse(localStorage.getItem(activeKey())||'null')||(user?local().activeBake:null)}catch{return user?local().activeBake:null}};
-const setActive=v=>{if(v)localStorage.setItem(activeKey(),JSON.stringify(v));else localStorage.removeItem(activeKey());if(user){const d=local();d.activeBake=v;save(d)}};
+const safeBakeRecord=value=>{
+ if(!value||typeof value!=='object'||Array.isArray(value)||!Array.isArray(value.steps)||!value.steps.length)return null;
+ const steps=value.steps.filter(step=>step&&typeof step==='object'&&typeof step.title==='string');
+ if(!steps.length)return null;
+ const index=Math.max(0,Math.min(steps.length-1,Number.isInteger(value.index)?value.index:0));
+ return {...value,steps,index};
+};
+const getActive=()=>{
+ try{
+  const stored=safeBakeRecord(JSON.parse(localStorage.getItem(activeKey())||'null'));
+  return stored||(user?safeBakeRecord(local().activeBake):null);
+ }catch{return user?safeBakeRecord(local().activeBake):null}
+};
+const setActive=v=>{const safe=safeBakeRecord(v);if(safe)localStorage.setItem(activeKey(),JSON.stringify(safe));else localStorage.removeItem(activeKey());if(user){const d=local();d.activeBake=safe;save(d)}};
 let screenWakeLock=null;
 const timerKey=()=>{const b=getActive();return b?activeKey()+'-timer-'+(b.id||b.title)+'-'+b.index:null};function updateTimer(){const el=document.getElementById('timerDisplay'),key=timerKey();if(!el||!key)return;const end=Number(localStorage.getItem(key)||0);if(!end){const paused=Number(localStorage.getItem(key+'-paused')||0);el.textContent=paused?'Pausiert: '+Math.ceil(paused/60)+' Min. verbleibend':'Kein Timer aktiv';return}const left=Math.max(0,Math.ceil((end-Date.now())/1000));el.textContent=left?Math.floor(left/60)+' Min. '+String(left%60).padStart(2,'0')+' Sek. verbleibend':'Timer abgelaufen';if(!left){localStorage.removeItem(key);if('Notification' in window&&Notification.permission==='granted'){try{new Notification('Sauerteig Buddy',{body:'Dein Timer ist abgelaufen.'})}catch{}}}}setInterval(updateTimer,1000);
-const parkedKey=()=>activeKey()+'-parallel';const getParked=()=>{try{return JSON.parse(localStorage.getItem(parkedKey())||'null')||(user?local().parallelBakes:[])||[]}catch{return user?local().parallelBakes||[]:[]}};const setParked=v=>{localStorage.setItem(parkedKey(),JSON.stringify(v));if(user){const d=local();d.parallelBakes=v;save(d)}};
+const parkedKey=()=>activeKey()+'-parallel';
+const getParked=()=>{
+ try{
+  const stored=JSON.parse(localStorage.getItem(parkedKey())||'null');
+  const source=Array.isArray(stored)?stored:(user?local().parallelBakes:[]);
+  return (Array.isArray(source)?source:[]).map(safeBakeRecord).filter(Boolean);
+ }catch{
+  const source=user?local().parallelBakes:[];
+  return (Array.isArray(source)?source:[]).map(safeBakeRecord).filter(Boolean);
+ }
+};
+const setParked=v=>{const safe=(Array.isArray(v)?v:[]).map(safeBakeRecord).filter(Boolean);localStorage.setItem(parkedKey(),JSON.stringify(safe));if(user){const d=local();d.parallelBakes=safe;save(d)}};
 let billingStatus={enabled:false,plus:false,status:'unavailable'};
 async function refreshBilling(){
  const owner=user?.id;

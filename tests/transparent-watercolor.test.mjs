@@ -22,7 +22,7 @@ test('the hero stays fully visible and watercolor icons have no colored backgrou
 });
 test('a new cache version picks up the transparent replacement files on iOS',()=>{
  assert.match(src('sw.js').toString(),/sauerteig-public-v51/);
- assert.match(src('index.html').toString(),/app\.js\?v=49/);
+ assert.match(src('index.html').toString(),/app\.js\?v=50/);
 });
 
 test('homepage uses the visually reviewed watercolor with intact glass and crust',()=>{

@@ -9,3 +9,11 @@ test('all app module imports and artwork are in public allowlist',()=>{
  const assets=['/art-loaf.svg','/art-starter.svg','/art-tools.svg','/flour-table.json','/knowledge-data.json','/resources.json','/source-conflicts.json'];
  for(const path of [...imports,...assets])assert.ok(server.includes("'"+path+"'"),'Missing static asset '+path);
 });
+test('initial image preload uses the real asset MIME and browser smoke targets current UI',()=>{
+ const index=readFileSync(new URL('../index.html',import.meta.url),'utf8');
+ assert.match(index,/buddy-original\.webp" as="image" type="image\/webp"/);
+ assert.doesNotMatch(index,/buddy-original\.webp" as="image" type="image\/png"/);
+ const smoke=readFileSync(new URL('./browser-smoke.mjs',import.meta.url),'utf8');
+ assert.match(smoke,/\.studio-hero/);
+ assert.doesNotMatch(smoke,/\.home-masthead/);
+});

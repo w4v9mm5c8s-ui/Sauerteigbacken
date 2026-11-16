@@ -8,9 +8,9 @@ const mime={'.html':'text/html; charset=utf-8','.js':'text/javascript; charset=u
 const json=(res,status,body)=>{res.writeHead(status,{'Content-Type':'application/json; charset=utf-8','Cache-Control':'no-store'});res.end(JSON.stringify(body))};
 const quotas=new Map();
 function limit(key,max=25){const hour=Math.floor(Date.now()/3600000),id=hour+':'+key,n=(quotas.get(id)||0)+1;quotas.set(id,n);if(quotas.size>10000)quotas.clear();return n<=max}
-async function body(req,max=2200000){let size=0,parts=[];for await(const c of req){size+=c.length;if(size>max)throw Error('Zu große Anfrage');parts.push(c)}return JSON.parse(Buffer.concat(parts).toString('utf8'))}
-async function who(req){const token=/^Bearer ([^\s]+)$/.exec(req.headers.authorization||'')?.[1];if(!token||!process.env.SUPABASE_URL||!process.env.SUPABASE_PUBLISHABLE_KEY)return null;const r=await fetch(process.env.SUPABASE_URL+'/auth/v1/user',{headers:{apikey:process.env.SUPABASE_PUBLISHABLE_KEY,Authorization:'Bearer '+token}});return r.ok?{user:await r.json(),token}:null}
-async function db(method,path,identity,data){const r=await fetch(process.env.SUPABASE_URL+'/rest/v1/'+path,{method,headers:{apikey:process.env.SUPABASE_PUBLISHABLE_KEY,Authorization:'Bearer '+identity.token,'Content-Type':'application/json',Prefer:'resolution=merge-duplicates,return=representation'},...(data?{body:JSON.stringify(data)}:{})});if(!r.ok)throw Error('Speichern derzeit nicht möglich');return r.json()}
+async function body(req,max=2200000){let size=0,parts=[];for await(const c of req){size+=c.length;if(size>max)throw Error('Zu große Anfrage');parts.push(c)}try{return JSON.parse(Buffer.concat(parts).toString('utf8'))}catch{throw Error('Ungültiges Anfrageformat')}}
+async function who(req){const token=/^Bearer ([^\s]+)$/.exec(req.headers.authorization||'')?.[1];if(!token||!process.env.SUPABASE_URL||!process.env.SUPABASE_PUBLISHABLE_KEY)return null;const r=await fetch(process.env.SUPABASE_URL+'/auth/v1/user',{headers:{apikey:process.env.SUPABASE_PUBLISHABLE_KEY,Authorization:'Bearer '+token},signal:AbortSignal.timeout(10000)});return r.ok?{user:await r.json(),token}:null}
+async function db(method,path,identity,data){const r=await fetch(process.env.SUPABASE_URL+'/rest/v1/'+path,{method,headers:{apikey:process.env.SUPABASE_PUBLISHABLE_KEY,Authorization:'Bearer '+identity.token,'Content-Type':'application/json',Prefer:'resolution=merge-duplicates,return=representation'},...(data?{body:JSON.stringify(data)}:{}),signal:AbortSignal.timeout(10000)});if(!r.ok)throw Error('Speichern derzeit nicht möglich');return r.json()}
 async function consumeAiDaily(userId,plus){
  if(process.env.AI_DAILY_QUOTA_ENABLED!=='true')return true;
  if(!process.env.SUPABASE_SERVICE_ROLE_KEY||!process.env.SUPABASE_URL)return false;
@@ -50,13 +50,13 @@ if(url.pathname==='/api/community/author'&&req.method==='GET'){
  const recipe=url.searchParams.get('recipe')||'',page=Number(url.searchParams.get('page')||0);
  if(!/^[a-f0-9]{8}(?:-[a-f0-9]{4}){3}-[a-f0-9]{12}$/i.test(recipe)||!Number.isSafeInteger(page)||page<0||page>10000)return json(res,400,{error:'Ungültiges Profil'});
  const base=process.env.SUPABASE_URL+'/rest/v1/community_recipes?',headers={apikey:process.env.SUPABASE_PUBLISHABLE_KEY};
- const get=async params=>{const r=await fetch(base+new URLSearchParams({status:'eq.published',...params}),{headers});if(!r.ok)throw Error('Profil nicht erreichbar');return r.json()};
+ const get=async params=>{const r=await fetch(base+new URLSearchParams({status:'eq.published',...params}),{headers,signal:AbortSignal.timeout(10000)});if(!r.ok)throw Error('Profil nicht erreichbar');return r.json()};
  const [row]=await get({id:'eq.'+recipe,select:'author_id,author_display_name',limit:'1'});
  if(!row?.author_id)return json(res,404,{error:'Profil nicht gefunden'});
  const recipes=await get({author_id:'eq.'+row.author_id,author_display_name:row.author_display_name==null?'is.null':'eq.'+row.author_display_name,select:'id,title,ingredients,instructions,created_at,flour_type,difficulty,author_display_name',order:'created_at.desc,id.asc',limit:'21',offset:String(page*20)});
  return json(res,200,{name:row.author_display_name||'Bäcker:in',recipes:recipes.slice(0,20),more:recipes.length>20});
 }
-if(url.pathname==='/api/community'&&req.method==='GET'){if(!process.env.SUPABASE_URL)return json(res,200,{recipes:[]});const r=await fetch(process.env.SUPABASE_URL+'/rest/v1/community_recipes?status=eq.published&select=id,title,ingredients,instructions,created_at,author_display_name,flour_type,bread_type,hydration,difficulty,starter_type,bake_method,total_hours&limit=100',{headers:{apikey:process.env.SUPABASE_PUBLISHABLE_KEY}});return json(res,r.ok?200:502,r.ok?{recipes:await r.json()}:{error:'Community nicht erreichbar'})}
+if(url.pathname==='/api/community'&&req.method==='GET'){if(!process.env.SUPABASE_URL)return json(res,200,{recipes:[]});try{const r=await fetch(process.env.SUPABASE_URL+'/rest/v1/community_recipes?status=eq.published&select=id,title,ingredients,instructions,created_at,author_display_name,flour_type,bread_type,hydration,difficulty,starter_type,bake_method,total_hours&limit=100',{headers:{apikey:process.env.SUPABASE_PUBLISHABLE_KEY},signal:AbortSignal.timeout(10000)});return json(res,r.ok?200:502,r.ok?{recipes:await r.json()}:{error:'Community nicht erreichbar'})}catch{return json(res,502,{error:'Community nicht erreichbar'})}}
 if(url.pathname==='/api/billing/plans'&&req.method==='GET'){
  try{return json(res,200,await publicBillingPlans())}catch{return json(res,200,{enabled:false,plans:[]})}
 }
@@ -119,7 +119,11 @@ if(!publicFiles.has(pathname))return json(res,404,{error:'Nicht gefunden'});
 const file=resolve(root,'.'+pathname);if(!file.startsWith(root+sep))return json(res,403,{error:'Zugriff verweigert'});
 try{if(!(await stat(file)).isFile())throw Error();const data=await readFile(file);const freshness=['/index.html','/sw.js'].includes(pathname)?'no-store':/\.(?:js|css|webmanifest)$/.test(pathname)?'no-cache, must-revalidate':'public, max-age=180';res.writeHead(200,{'Content-Type':mime[extname(file)]||'application/octet-stream','Cache-Control':freshness});res.end(req.method==='HEAD'?undefined:data)}catch{return json(res,404,{error:'Nicht gefunden'})}
 }
-http.createServer((req,res)=>Promise.resolve(handle(req,res)).catch(e=>json(res,500,{error:e.message==='Zu große Anfrage'?e.message:'Serverfehler'}))).listen(port,'0.0.0.0');
+http.createServer((req,res)=>Promise.resolve(handle(req,res)).catch(e=>{
+ const message=String(e?.message||'');
+ const status=message==='Zu große Anfrage'?413:message==='Ungültiges Anfrageformat'?400:500;
+ json(res,status,{error:status===500?'Serverfehler':message});
+})).listen(port,'0.0.0.0');
 
 if(process.env.OPENAI_API_KEY){setTimeout(async()=>{try{const r=await fetch('https://api.openai.com/v1/models/'+encodeURIComponent(process.env.OPENAI_MODEL||'gpt-5-mini'),{headers:{Authorization:'Bearer '+process.env.OPENAI_API_KEY},signal:AbortSignal.timeout(10000)});console.log('AI credential check HTTP',r.status===200?'200 OK':r.status)}catch{console.log('AI credential check unavailable')}},3000)}else{console.log('AI credential not configured')}
 

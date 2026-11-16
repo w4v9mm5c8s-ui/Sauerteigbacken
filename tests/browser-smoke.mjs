@@ -1,22 +1,25 @@
-import {chromium} from 'playwright';
+/* Optional end-to-end smoke test. Install Playwright before running this file. */
+let chromium;
+try{({chromium}=await import('playwright'))}catch{console.error('Browser smoke test requires Playwright: npm install --no-save playwright');process.exit(2)}
 import {mkdir} from 'node:fs/promises';
 const browser=await chromium.launch({headless:true,args:['--no-sandbox']});
-let failures=[];
+const failures=[];
 await mkdir('screenshots',{recursive:true});
 for(const viewport of [{width:375,height:812},{width:390,height:844},{width:430,height:932}]){
  const context=await browser.newContext({viewport,isMobile:true,hasTouch:true,deviceScaleFactor:2});
- const page=await context.newPage();page.on('pageerror',e=>failures.push(viewport.width+' JavaScript: '+e.message));
+ const page=await context.newPage();
+ page.on('pageerror',e=>failures.push(viewport.width+' JavaScript: '+e.message));
  await page.goto('http://127.0.0.1:3000',{waitUntil:'networkidle'});
- await page.waitForSelector('.home-masthead');
- if(!await page.locator('.home-masthead').isVisible())failures.push('Homepage hero missing '+viewport.width);
- const heroImage=await page.locator('.home-artwork img').evaluate(img=>({loaded:img.complete&&img.naturalWidth>0,width:img.getBoundingClientRect().width})).catch(()=>({loaded:false,width:0}));
+ await page.waitForSelector('.studio-hero');
+ if(!await page.locator('.studio-hero').isVisible())failures.push('Homepage hero missing '+viewport.width);
+ const heroImage=await page.locator('.studio-hero-picture img').evaluate(img=>({loaded:img.complete&&img.naturalWidth>0,width:img.getBoundingClientRect().width})).catch(()=>({loaded:false,width:0}));
  if(!heroImage.loaded||heroImage.width<60)failures.push('Watercolor hero not loaded '+viewport.width);
  if(!await page.locator('nav [data-tab="hub"] .ui-icon').isVisible())failures.push('Bottom nav SVG missing '+viewport.width);
  await page.locator('[data-tab="hub"]').click();
  await page.getByRole('button',{name:/Rezeptbibliothek/}).first().click();
- if(!await page.locator('.recipe-banner img').evaluate(img=>img.complete&&img.naturalWidth>0).catch(()=>false))failures.push('Recipe watercolor missing '+viewport.width);
+ if(!await page.locator('.recipe-detail-photo, .recipe-gallery-picture img').first().evaluate(img=>img.complete&&img.naturalWidth>0).catch(()=>false))failures.push('Recipe watercolor missing '+viewport.width);
  await page.locator('[data-act^="recipe:"]').first().click();
- await page.getByRole('button',{name:/Dieses Rezept backen/}).click();
+ if(await page.getByRole('button',{name:/Dieses Rezept backen/}).count())await page.getByRole('button',{name:/Dieses Rezept backen/}).click();
  for(const id of ['roomTemp','flourTemp','starterTemp','proofMode','loaves','flourPerLoaf','finish'])if(!await page.locator('#'+id).count())failures.push(id+' missing '+viewport.width);
  const size=await page.evaluate(()=>({scroll:document.documentElement.scrollWidth,client:document.documentElement.clientWidth}));
  if(size.scroll>size.client+2)failures.push('Horizontal overflow '+viewport.width+' '+JSON.stringify(size));

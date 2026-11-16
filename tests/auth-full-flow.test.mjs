@@ -83,5 +83,5 @@ test('server exposes Auth module and caches public code, not private tokens',()=
  assert.match(sw,/sauerteig-public-v51/);
  assert.match(sw,/url\.pathname\.startsWith\('\/api\/'\)/);
  const html=read('index.html');
- assert.match(html,/\/app\.js\?v=49/);
+ assert.match(html,/\/app\.js\?v=50/);
 });
