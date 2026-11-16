@@ -81,14 +81,15 @@ export function calculateStarterFeed({oldStarter,oldHydration,ratio='1:2:2'}={})
  const [a,b,c]=parts;const addedFlour=mass*b/a,addedWater=mass*c/a,oldFlour=mass*100/(100+hydration),oldWater=mass-oldFlour;
  return {oldStarter:mass,addedFlour:round(addedFlour),addedWater:round(addedWater),total:round(mass+addedFlour+addedWater),newHydration:round(100*(oldWater+addedWater)/(oldFlour+addedFlour)),note:'Werte setzen die tatsächliche alte Hydration voraus; unbekannte Hydration nicht raten.'};
 }
-export function waterBalance({flours=[],totalWater=0,starter=0,starterHydration=100,soakers=[],altbrot=0,altbrotRatio=3,brewFlour=0,brewWater=0,extras=[]}={}){
+export function waterBalance({flours=[],totalWater=0,starter=0,starterHydration=100,soakers=[],altbrot=0,altbrotRatio=3,brewFlour=0,brewWater=0,brewMethod='scald',extras=[]}={}){
  const {total:flourMass}=listFlours(flours);
  const water=required(totalWater,'Gesamtwasser',0,30000),starterMass=required(starter,'Starter',0,10000),hyd=required(starterHydration,'Starter-Hydration',20,250),alt=required(altbrot,'Altbrot',0,10000);
  const altRatio=required(altbrotRatio,'Altbrot-Verhältnis',2,3);if(![2,3].includes(altRatio))throw Error('Altbrot-Verhältnis nur 2 oder 3 gemäß PDF-Konflikt.');
  const bw=required(brewWater,'Brühstückwasser',0,20000),bf=required(brewFlour,'Brühstückmehl',0,20000);
  if(bf>flourMass)throw Error('Brühstückmehl darf die vorhandene Mehlmenge nicht überschreiten.');
- if(bf>0&&(bf/flourMass<.05||bf/flourMass>.2))throw Error('Brühstück laut PDF mit 5–20 % des Mehlgewichts anlegen.');
- if(bf>0&&(bw/bf<1||bw/bf>2))throw Error('Brühstück-Wasser gemäß PDF zwischen 100 und 200 % wählen.');
+ if(brewMethod!=='cook'&&bf>0&&(bf/flourMass<.05||bf/flourMass>.2))throw Error('Brühstück laut PDF mit 5–20 % des Mehlgewichts anlegen.');
+ if(bf>0&&bw<=0)throw Error('Für die Vorstufe Wasser ergänzen.');
+ if(brewMethod!=='cook'&&bf>0&&(bw/bf<1||bw/bf>2))throw Error('Brühstück-Wasser gemäß PDF zwischen 100 und 200 % wählen.');
  if(bf===0&&bw>0)throw Error('Brühstückwasser ohne Brühstückmehl nicht möglich.');
  let seeded=0,seedMass=0;
  for(const s of soakers){const mass=required(s.grams,'Quellstückmenge',0,10000);const ratio=s.ratio===undefined||s.ratio===null?seedWaterRatio(s.name):Number(s.ratio);

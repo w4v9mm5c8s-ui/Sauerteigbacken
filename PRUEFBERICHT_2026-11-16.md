@@ -15,3 +15,11 @@ Ausgangsstand 597bcaf. Geprüft wurden der veröffentlichte Dienst und die aktue
 | KI, Fotos und Zahlung | Tests für Fotozugriff, Kontowechsel, Gesprächsspeicherung und Zahlungslogik bestanden. Für den Fotovergleich liegt ein früherer Live-Test mit Testkonto und synthetischen Bildern vor. | Keine fachliche Bewertung echter Teigfotos, keine Live-Zahlung. |
 
 Weiterhin fehlen unter anderem öffentliche Autor:innenprofile, ein Abgleich einzelner Datensätze bei Cloud-Konflikten, im eigenen Rezept speicherbare Koch- und Brühstücke, ein mit Messdaten kalibrierter Wassertemperaturrechner und die dynamische Neuplanung aller Phasen. Zusätzlich offen sind der unabhängige Faktencheck aller FAQ und Quellen sowie die Geräte-, E-Mail- und Zahlungsabnahme. Details siehe [PDF-Abgleich](PDF_ACCEPTANCE_CURRENT.md).
+
+### Nachprüfung am selben Tag
+
+- Eigene Rezepte speichern Koch-/Brühstück mit Gesamtmengen und Abkühlzeit bis in den Backplan. Der Wasserrechner übernimmt optional fünf Temperaturmessungen eines Vergleichsbacktags (empirischer Knetfaktor).
+- Öffentliche Backprofile zeigen freigegebene Rezepte desselben Kontos unter demselben Anzeigenamen. Moderationsentscheidungen gelten nur für noch offene Einreichungen.
+- Bei Cloud-Konflikten können eindeutig zuordenbare Listenpositionen einzeln gewählt werden, einschließlich bewusster Löschungen. Bei mehrdeutigen Altdaten bleibt die Bereichsauswahl.
+- Zusätzliche Arbeitsfenster für Bagels, Pizza und Focaccia, Formanweisung für Zimtschnecken. Pizza erhält Kaltreife und anschließende warme Temperierzeit. Weitere Phasengrenzen lösen die verbleibende Zeitverschiebung aus. Frei verknüpfbare Abhängigkeiten für beliebige eigene Rezepte sind weiter offen.
+- Sechs Wissenskarten haben externe Quellen zu konkreten Aussagen erhalten. Der unabhängige Gesamtcheck aller 97 Einträge und der physische Geräte- und Backversuch stehen weiter aus.

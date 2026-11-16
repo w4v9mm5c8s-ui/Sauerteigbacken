@@ -75,7 +75,9 @@
       "Salz liegt typischerweise bei ca. 2 % der Mehlmenge.",
       "Altbrot wird mit 5 % auf die Mehlmenge gerechnet.",
       "Dadurch lässt sich jedes Rezept beliebig skalieren, ohne das Verhältnis zu verändern."
-    ]
+    ],
+    "referenceLabel": "Bäckerprozent berechnen",
+    "referenceUrl": "https://www.kingarthurbaking.com/pro/reference/bakers-percentage"
   },
   {
     "slug": "hydration",
@@ -85,10 +87,12 @@
     "body": [
       "Hydration = Wasser ÷ Mehl in Prozent. Beispiel der Quelle: 500 g Mehl + 330 g Wasser = 66 % Hydration.",
       "Orientierung aus der Quelle: 60–65 % fest, 65–70 % Standard, 70–80 % weich.",
-      "Jedes Mehl hat eine eigene sinnvolle Hydration: Weizen 00 liegt bei 58 %, Roggenvollkorn bei 100 %.",
-      "Mehr Hydration heißt offenere Krume, aber auch weicherer, schwerer zu handhabender Teig.",
+      "Die Zahlen der Mehltabelle sind Startwerte. Die geeignete Wassermenge hängt auch vom konkreten Mehl und vom gewünschten Teig ab.",
+      "Im Planer zählen Mehl und Wasser aus dem Starter mit. Beispiel: 500 g Mehl, 330 g Wasser und 100 g Starter aus gleichen Teilen Mehl und Wasser ergeben rund 69,1 %.",
       "Quellstückwasser gehört immer zur Gesamtwassermenge."
-    ]
+    ],
+    "referenceLabel": "Wasseranteil berechnen",
+    "referenceUrl": "https://www.kingarthurbaking.com/blog/2023/01/11/bread-hydration"
   },
   {
     "slug": "begriffe-asg",
@@ -167,7 +171,9 @@
     "body": [
       "Reif: deutlich gewachsen, viele Bläschen, Oberfläche leicht gewölbt – Weizen oft am höchsten Punkt.",
       "Über Peak: fällt ein, Oberfläche flach oder eingesunken, Geruch spitzer, saurer oder alkoholisch, Struktur schwächer oder flüssiger."
-    ]
+    ],
+    "referenceLabel": "Reifezeichen erkennen",
+    "referenceUrl": "https://www.kingarthurbaking.com/learn/guides/sourdough/create"
   },
   {
     "slug": "starter-weizen-roggen",
@@ -189,7 +195,9 @@
       "Nur Mehl und Wasser mischen, Autolyse ca. 30–60 Min.",
       "Danach ASG und Salz dazu und gut verkneten.",
       "Autolyse lohnt sich laut Quelle besonders bei Weizen und Dinkel."
-    ]
+    ],
+    "referenceLabel": "Autolyse erklärt",
+    "referenceUrl": "https://www.kingarthurbaking.com/learn/guides/sourdough/glossary"
   },
   {
     "slug": "kneten",
@@ -485,18 +493,23 @@
     "category": "Starter",
     "summary": "Weniger Triebkraft, aber Aroma.",
     "body": [
+      "Bei sichtbarem Schimmel den gesamten Ansatz entsorgen und das Gefäß gründlich reinigen. Alkoholisch riechende Flüssigkeit kann beim Lagern entstehen.",
       "Einsetzbar in Rezepten, bei denen maximale Triebkraft nicht entscheidend ist, z. B. Pfannkuchen, Waffeln, Cracker.",
       "Überschuss reduzierst du durch kleinere Fütterungsmengen."
-    ]
+    ],
+    "referenceLabel": "Colorado State University · Hinweise zu Schimmel",
+    "referenceUrl": "https://cmg.extension.colostate.edu/wp-content/uploads/sites/39/2020/FoodSafety/FacebookSupport/2020-03-sourdough-fact-sheet.pdf"
   },
   {
     "slug": "asg-urlaub",
     "title": "Anstellgut im Urlaub",
     "category": "Starter",
-    "summary": "Normale Urlaubszeiten: füttern, in den Kühlschrank, danach 1–2× auffrischen.",
+    "summary": "Nach der Kühlschrankpause wieder füttern, bis der Starter zuverlässig aufgeht und Bläschen bildet.",
     "body": [
       "Für eine längere Pause ein Backup anlegen – die Quelle bevorzugt Trocknen gegenüber Einfrieren."
-    ]
+    ],
+    "referenceLabel": "Starter nach einer Pause auffrischen",
+    "referenceUrl": "https://www.kingarthurbaking.com/learn/guides/sourdough/faq"
   },
   {
     "slug": "asg-trocknen-einfrieren",
