@@ -62,13 +62,13 @@ export function recipeCards(recipes,escape=x=>String(x),action='recipe',favorite
  const savedIds=Array.isArray(favorites)?favorites:[];
  return recipes.map(r=>{
   const id=escape(r.id),saved=savedIds.includes(r.id);
-  const actionButton='<button type="button" class="recipe-gallery-main" data-act="'+action+':'+id+'"><span class="recipe-gallery-picture"><img src="'+recipePhotoPath(r)+'" alt="KI-generiertes Beispielbild" loading="lazy" decoding="async"></span><span class="recipe-gallery-content"><strong>'+escape(r.title)+'</strong><small>'+escape(r.category||'Sauerteig')+' · '+escape(r.yieldLabel||'Rezept')+'</small></span>'+(action==='recipe'?'':'<span class="recipe-gallery-arrow">'+icon('arrow',19)+'</span>')+'</button>';
+  const actionButton='<button type="button" class="recipe-gallery-main" data-act="'+action+':'+id+'">'+(r.originalUrl?'':'<span class="recipe-gallery-picture"><img src="'+recipePhotoPath(r)+'" alt="KI-generiertes Beispielbild" loading="lazy" decoding="async"></span>')+'<span class="recipe-gallery-content"><strong>'+escape(r.title)+'</strong><small>'+escape(r.category||'Sauerteig')+' · '+escape(r.yieldLabel||'Rezept')+'</small></span>'+(action==='recipe'?'':'<span class="recipe-gallery-arrow">'+icon('arrow',19)+'</span>')+'</button>';
   const favorite=action==='recipe'?'<button type="button" class="recipe-gallery-fav '+(saved?'is-favorite':'')+'" data-act="favorite:'+id+'" aria-label="'+(saved?'Aus Favoriten entfernen':'Zu Favoriten hinzufügen')+'" aria-pressed="'+saved+'">'+icon('heart',20)+'</button>':'';
   return '<article class="recipe-gallery-item">'+actionButton+favorite+'</article>';
  }).join('')||'<p class="muted">Keine passenden Rezepte.</p>';
 }
 
-export function recipePicker(recipes,escape=x=>String(x)){return '<section class="card"><h2>Was möchtest du backen?</h2><p class="muted">Wähle ein Rezept. Die Zutaten und die nächsten Schritte findest du dort.</p><label for="pickRecipeSearch">Rezept suchen</label><input id="pickRecipeSearch" placeholder="Brot, Brötchen, Brezeln …"><div id="pickRecipeResults" class="recipe-gallery">'+recipeCards(recipes,escape,'selectForPlan')+'</div></section>'}
+export function recipePicker(recipes,escape=x=>String(x)){return '<section class="card"><h2>Was möchtest du backen?</h2><label for="pickRecipeSearch">Rezept suchen</label><input id="pickRecipeSearch" placeholder="Brot, Brötchen, Brezeln …"><div id="pickRecipeResults" class="recipe-gallery">'+recipeCards(recipes,escape,'selectForPlan')+'</div></section>'}
 
 export function filterRecipeLibrary(recipes,query='',category=''){
  const q=String(query||'').trim().toLocaleLowerCase('de-DE');

@@ -8,16 +8,22 @@ export function planFlourRow(f,i,table=[],esc=x=>String(x)){
  return '<div class="plan-flour-row" data-plan-flour-row><label for="flourPreset'+i+'">Mehl aus der Tabelle</label><select class="plan-flour-preset" id="flourPreset'+i+'">'+options+'</select><div class="cols"><div><label for="flourName'+i+'">Mehlsorte</label><input class="plan-flour-name" id="flourName'+i+'" maxlength="90" value="'+esc(flourName)+'"></div><div><label for="flourAmount'+i+'">Menge (g)</label><input class="plan-flour-grams" id="flourAmount'+i+'" type="number" min="0" max="20000" step="0.1" value="'+esc(f.grams??0)+'"></div></div><button type="button" class="plan-flour-remove" data-act="planFlourRemove">Mehl entfernen</button></div>';
 }
 const num=(v,f=0)=>Number.isFinite(Number(v))?Number(v):f;
+export function weeklyBread(people,daily,loaves){
+ if(!Number.isInteger(people)||people<1||people>50||!Number.isFinite(daily)||daily<=0||daily>1000||!Number.isInteger(loaves)||loaves<1||loaves>24)return null;
+ const total=people*7*daily;
+ return {total,perLoaf:total/loaves};
+}
 export function planningView(r,esc,now,flourTable=[],starters=[],choice){
  if(!r)return '<section class="card">Bitte zuerst ein Rezept auswählen.</section>';
  const date=new Date(now.getTime()+2*86400000),pad=n=>String(n).padStart(2,'0'),local=date.getFullYear()+'-'+pad(date.getMonth()+1)+'-'+pad(date.getDate())+'T'+pad(date.getHours())+':'+pad(date.getMinutes());
  const field=(label,id,value,opts='')=>'<label for="'+id+'">'+label+'</label><input id="'+id+'" '+opts+' value="'+esc(value??'')+'">';
  const mean=values=>values?.[0]==null?'':(values[0]+values[1])/2;
  const flour=r.flours.reduce((a,f)=>a+f.grams,0),total=doughWeight(r);
- return '<section id="planCard" class="card"><h2>'+esc(r.title)+'</h2><label for="planMode">Ansicht</label><select id="planMode"><option value="simple">Anfängermodus</option><option value="full">Alle Einstellungen</option></select><p class="beginner-only">Wähle die Anzahl der Brote und wann dein Brot aus dem Ofen kommen soll. Die Zutaten und Ruhezeiten sind aus dem Rezept übernommen.</p>'+(r.sourceNote?'<p>'+esc(r.sourceNote)+'</p>':'')+recipeResearchView(r,esc)+'<p class="muted">Du kannst die vorgeschlagenen Mengen und Zeiten anpassen.</p><details open><summary>Was brauche ich zu Hause?</summary><p>'+kitchenBasics+'</p>'+ovenSelect(r,'equipment',choice,esc)+'<label for="basketShape">Worin soll der geformte Laib gehen?</label><select id="basketShape"><option value="none">Schüssel mit bemehltem Geschirrtuch</option><option value="round">Rundes Gärkörbchen</option><option value="oval">Ovales Gärkörbchen</option></select><div id="basketHint" class="muted small"></div></details><details open><summary>Brotmenge</summary>'+
+ return '<section id="planCard" class="card"><h2>'+esc(r.title)+'</h2><label for="planMode">Ansicht</label><select id="planMode"><option value="simple">Anfängermodus</option><option value="full">Alle Einstellungen</option></select><p class="beginner-only">Gib an, für wie viele Personen du backst. Wir rechnen die Zutaten für eine Woche aus.</p>'+(r.sourceNote?'<p>'+esc(r.sourceNote)+'</p>':'')+recipeResearchView(r,esc)+'<p class="muted">Du kannst die vorgeschlagenen Mengen und Zeiten anpassen.</p><details open><summary>Was brauche ich zu Hause?</summary><p>'+kitchenBasics+'</p>'+ovenSelect(r,'equipment',choice,esc)+'<label for="basketShape">Worin soll der geformte Laib gehen?</label><select id="basketShape"><option value="none">Schüssel mit bemehltem Geschirrtuch</option><option value="round">Rundes Gärkörbchen</option><option value="oval">Ovales Gärkörbchen</option></select><div id="basketHint" class="muted small"></div></details><details open><summary>Brotmenge</summary>'+
  field('Name deines Backtags','bakeName',r.title,'maxlength="120"')+
- field('Anzahl fertige Brote','loaves',1,'type="number" min="1" max="24"')+
- field('Mehlmenge je Brot (g)','flourPerLoaf',Math.round(flour),'type="number" min="50" max="10000"')+field('Gewünschtes fertiges Brotgewicht je Brot (g, optional)','finishedWeight','','type="number" min="100" max="10000"')+field('Angenommener Backverlust (%)','bakeLoss',12,'type="number" min="0" max="30" step="0.5"')+
+  '<div class="beginner-only">'+field('Für wie viele Personen soll das Brot eine Woche reichen?','weekPeople',1,'type="number" min="1" max="50"')+field('Brot pro Person und Tag (g)','weekDaily',100,'type="number" min="1" max="1000"')+'<p class="muted small">100 g sind als Beispiel voreingestellt. Passe die Menge an euren Verbrauch an.</p></div>'+
+ field('Wie viele Brote möchtest du aus der Teigmenge backen?' ,'loaves',1,'type="number" min="1" max="24"')+
+ '<output id="weekSummary" class="beginner-only" aria-live="polite"></output>'+field('Mehlmenge je Brot (g)','flourPerLoaf',Math.round(flour),'type="number" min="50" max="10000"')+field('Gewünschtes fertiges Brotgewicht je Brot (g, optional)','finishedWeight','','type="number" min="100" max="10000"')+field('Angenommener Backverlust (%)','bakeLoss',12,'type="number" min="0" max="30" step="0.5"')+
  '<p class="muted small">Das fertige Brot wiegt nach dem Backen weniger als der rohe Teig. Die genaue Differenz hängt vom Rezept ab.</p></details>'+
  '<details open><summary>2. Mehl und Zutaten</summary>'+
  '<div id="planFlours">'+r.flours.map((f,i)=>planFlourRow(f,i,flourTable,esc)).join('')+'</div>'+
@@ -74,8 +80,11 @@ export function readPlanningForm(r,get){
  let flours=flourSection&&typeof flourSection.querySelectorAll==='function'?[...flourSection.querySelectorAll('[data-plan-flour-row]')].map(row=>({name:(row.querySelector('.plan-flour-name')?.value||'').trim(),grams:Number(row.querySelector('.plan-flour-grams')?.value)})):r.flours.map((f,i)=>({name:val('flourName'+i).trim(),grams:n('flourAmount'+i)}));
  flours=flours.map(x=>({...x,name:canonicalFlourName(x.name)}));
  if(flours.some(x=>!x.name||x.grams<0||!Number.isFinite(x.grams))||!flours.some(x=>x.grams>0))throw Error('Bitte die Mehlmengen prüfen');
- const original=flours.reduce((a,f)=>a+f.grams,0),targetWeight=optional('finishedWeight'),loss=n('bakeLoss');
- if(targetWeight!==null&&(!Number.isFinite(targetWeight)||targetWeight<100||targetWeight>10000))throw Error('Zielgewicht zwischen 100 und 10000 g eingeben.');
+ const useWeek=val('planMode')==='simple'&&Boolean(get('weekPeople'));
+ const weekly=useWeek?weeklyBread(n('weekPeople'),n('weekDaily'),loaves):null;
+ if(useWeek&&!weekly)throw Error('Bitte Personen, Tagesmenge und Brotanzahl prüfen.');
+ const original=flours.reduce((a,f)=>a+f.grams,0),targetWeight=weekly?weekly.perLoaf:optional('finishedWeight'),loss=n('bakeLoss');
+ if(targetWeight!==null&&(!Number.isFinite(targetWeight)||targetWeight<100||targetWeight>10000))throw Error(useWeek?'Die Aufteilung ergibt weniger als 100 g oder mehr als 10 kg pro Brot. Bitte die Brotanzahl anpassen.':'Zielgewicht zwischen 100 und 10000 g eingeben.');
  if(!Number.isFinite(loss)||loss<0||loss>30)throw Error('Bitte einen Backverlust zwischen 0 und 30 % wählen');
  const altbrot=n('altbrot'),soakerAmount=n('soakerAmount'),soakerWater=n('soakerWater'),brewFlour=n('brewFlour'),brewWater=n('brewWater');
  if([altbrot,soakerAmount,soakerWater,brewFlour,brewWater].some(x=>!Number.isFinite(x)||x<0))throw Error('Bitte Quell-/Brühstückmengen prüfen.');

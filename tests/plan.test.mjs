@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {makePlan} from '../planner.js';
 const recipes=JSON.parse(readFileSync(new URL('../recipes.json',import.meta.url),'utf8'));
-test('26 recipes and instructions available',()=>{assert.equal(recipes.length,26);assert.ok(recipes.every(r=>r.steps.length>=3&&r.flours.length))});
+test('56 recipes and instructions available',()=>{assert.equal(recipes.length,56);assert.ok(recipes.every(r=>r.steps.length>=3&&r.flours.length))});
 test('Laugen recipes warn about protective equipment',()=>{for(const r of recipes.filter(r=>/Laugen/.test(r.title)))assert.match(r.steps.join(' '),/Schutzbrille/)});
 test('planner creates separate preheat and baking steps',()=>{const p=makePlan(recipes[0],new Date(Date.now()+5*86400000),'22:00','07:00',true);assert.ok(p);assert.ok(p.steps.some(s=>s.title==='Ofen vorheizen'));assert.ok(p.steps.some(s=>s.title==='Backphase starten'))});
 test('planner never schedules active work during sleep',()=>{const p=makePlan(recipes[0],new Date(Date.now()+5*86400000),'22:00','07:00',true);assert.ok(p);for(const s of p.steps.filter(x=>x.active)){const h=new Date(s.at).getHours();assert.ok(h>=7&&h<22,s.title+' '+h)}});
@@ -22,4 +22,14 @@ test('pizza has cold maturation followed by warm tempering before topping',()=>{
  const cold=p.steps.find(s=>s.title==='Kühlschrankgare'),warm=p.steps.find(s=>s.title==='Pizzakugeln temperieren'),top=p.steps.find(s=>s.title==='Pizza ausziehen und belegen');
  assert.equal(cold.at+cold.minutes*60000,warm.at);
  assert.equal(warm.at+warm.minutes*60000,top.at);
+});
+import {weeklyBread} from '../planning-ui.js';
+test('weekly bread can be divided without increasing the ingredients',()=>{
+ assert.deepEqual(weeklyBread(2,100,2),{total:1400,perLoaf:700});
+ assert.deepEqual(weeklyBread(2,100,4),{total:1400,perLoaf:350});
+});
+test('30 distinct source recipes have ingredients, starter and a reader rating',()=>{
+ const added=recipes.filter(r=>r.originalUrl);
+ assert.equal(new Set(added.map(r=>r.originalUrl)).size,30);
+ assert.ok(added.every(r=>r.starter.grams>0&&r.readerVotes>0&&r.readerRating>0&&r.flours.every(f=>f.grams>0)));
 });

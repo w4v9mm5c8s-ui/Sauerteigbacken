@@ -352,3 +352,6 @@ body[data-page="start"] .studio-primary{min-height:60px!important;padding:9px 13
 
 .studio-inspiration > .studio-head-link{display:block;margin:4px 2px 0 auto;min-height:44px!important}
 .studio-buddy-row button small{white-space:normal;line-height:1.4}
+
+#planCard[data-mode="simple"] :is(#flourPerLoaf,label[for="flourPerLoaf"]){display:none}
+#weekSummary{margin:8px 0;color:var(--studio-ink)}

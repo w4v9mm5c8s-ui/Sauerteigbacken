@@ -3,14 +3,15 @@ import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {createHash} from 'node:crypto';
 import {pdfPlanRecipes} from '../pdf-recipe-plans.js';
-import {recipePhotoPath} from '../recipe-gallery.js';
+import {recipeCards,recipePhotoPath} from '../recipe-gallery.js';
 const read = path => readFileSync(new URL('..' + path, import.meta.url));
-test('each catalog recipe has a distinct, high-resolution offline photo', () => {
+test('each illustrated catalog recipe has a distinct, high-resolution offline photo', () => {
  const recipes = [...JSON.parse(read('/recipes.json')), ...pdfPlanRecipes()];
  const hashes = new Set();
  const server = read('/server.mjs').toString();
  const worker = read('/sw.js').toString();
  for (const recipe of recipes) {
+  if(recipe.originalUrl){assert.doesNotMatch(recipeCards([recipe]),/<img/);continue;}
   const path = recipePhotoPath(recipe);
   const image = read(path);
   assert.equal(image.toString('ascii', 8, 16), 'WEBPVP8 ', path);
@@ -18,5 +19,5 @@ test('each catalog recipe has a distinct, high-resolution offline photo', () => 
   assert.ok(server.includes("'" + path + "'") && worker.includes("'" + path + "'"), path);
   hashes.add(createHash('sha256').update(image).digest('hex'));
  }
- assert.equal(hashes.size, recipes.length);
+ assert.equal(hashes.size, recipes.filter(r=>!r.originalUrl).length);
 });
