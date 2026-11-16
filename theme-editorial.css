@@ -322,10 +322,10 @@ body[data-page="account"] main>.back-button{display:none}
 #planCard[data-mode="simple"] .advanced-group,
 #planCard[data-mode="simple"] :is(label[for="bakeName"],#bakeName,label[for="finishedWeight"],#finishedWeight,label[for="bakeLoss"],#bakeLoss,label[for="earliestStart"],#earliestStart,[data-act="saveRecipeProfile"]),
 #planCard[data-mode="simple"] details:has(> #bakeLoss) > .small,
-#planCard[data-mode="simple"] details:not(.missing-values):has(> #starterHours) > :not(summary,label:has(#starterReady)),
+#planCard[data-mode="simple"] details:not(.missing-values):has(> #starterHours) > :not(summary,.starter-choice),
 #planCard[data-mode="simple"] details:has(> #finish) > details {display:none}
 
-#planCard[data-mode="simple"] details:not(.missing-values):has(> #planDoughHyd) > :not(summary,#planDoughHyd,label[for="planDoughHyd"],#waterAmount,label[for="waterAmount"],small,[data-act="resetPlanWater"]){display:none}
+#planCard[data-mode="simple"] details:not(.missing-values):has(> #planDoughHyd) > :not(summary,#simpleIngredients){display:none}
 
 .studio-mini-art img{width:68%;height:68%}
 .studio-photo-item img{height:auto;aspect-ratio:3/2}
