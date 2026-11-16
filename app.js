@@ -112,6 +112,8 @@ async function submitAuthForm(){
    if(result.access_token&&result.refresh_token){
     await acceptAuthSession(result);authMode='login';tab='account';authRecovery=false;authNotice='Konto erstellt und angemeldet.';
     await syncOnLogin();await refreshBilling()
+   }else if(Array.isArray(result.user?.identities)&&result.user.identities.length===0){
+    authMode='login';authError='';authNotice='Für diese E-Mail besteht bereits ein bestätigtes Konto. Bitte melde dich an.'
    }else{
     authMode='pendingSignup';tab='account';authNotice='Die Bestätigungsmail wurde angefordert. Prüfe auch den Spamordner.'
    }

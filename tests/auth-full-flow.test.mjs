@@ -72,6 +72,11 @@ test('confirmation can be resent without creating another account',()=>{
  assert.match(app,/processAuthReturn\(\)/);
  assert.match(app,/clearAuthSession\(\)/);
 });
+test('repeated signup of an existing account returns to login instead of waiting for a new mail',()=>{
+ const app=read('app.js');
+ assert.match(app,/result\.user\?\.identities/);
+ assert.match(app,/bereits ein bestätigtes Konto/);
+});
 test('server exposes Auth module and caches public code, not private tokens',()=>{
  for(const path of ['server.mjs','sw.js'])assert.match(read(path),/'\/auth-ui\.js'/);
  const sw=read('sw.js');
