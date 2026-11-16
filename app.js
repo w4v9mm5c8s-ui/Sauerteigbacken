@@ -183,7 +183,43 @@ async function processAuthReturn(){
  return true;
 }
 function localDateInput(d){const pad=n=>String(n).padStart(2,'0');return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate())+'T'+pad(d.getHours())+':'+pad(d.getMinutes())}
-function render(){document.body.dataset.page=tab;document.querySelectorAll('[data-icon]').forEach(e=>{e.innerHTML=icon(e.dataset.icon,24)});const activeNav=['start','hub','buddy','account'].includes(tab)?tab:['shopping','pantry','starters','onboarding','billing'].includes(tab)?'account':'hub';document.querySelectorAll('nav button').forEach(b=>{const active=b.dataset.tab===activeNav;b.classList.toggle('active',active);if(active)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current')});$('#pageTitle').textContent=({start:'Start',recipes:current?.title||'Rezepte',plan:'Dein Backplan',buddy:'KI Buddy',account:'Ich',billing:'Sauerteig Plus',shopping:'Einkaufsliste',starters:'Meine Starter',community:'Community-Backbuch',hub:'Womit legen wir los?',bakingDays:'Meine Backtage',recipeSelect:'Rezept auswählen',bakeChoice:'Jetzt backen',recipeBuilder:'Eigenes Rezept berechnen',onboarding:'Einrichtung',calculator:'Rechner',pdfTools:'PDF-Backwissen & Rechner',pdfRecipes:'Rezepte aus der PDF',knowledge:'Wissen',favorites:'Favoriten',historical:'Historische Rezepte',resources:'Weiterführende Quellen',conflicts:'Quellenkonflikte',problem:'Problem lösen',stats:'Meine Backstatistik',import:'Rezept importieren',history:'Meine Brote',pantry:'Meine Mehle & Vorrat',inventory:'Vorrat abgleichen',cloudConflict:'Cloud-Konflikt lösen',moderation:'Community prüfen',own:'Meine Rezepte',backtag:'Dein Backtag'})[tab]||'Backen mit Sauerteig';$('#main').innerHTML=(tab==='start'?'':'<button class="back-button" data-act="back">'+icon('arrow-left',18)+' Zurück</button>')+pages[tab]();if(tab==='recipes'&&$('#scale'))$('#scale').value=String(scale);if(tab==='backtag'){updateTimer();loadStepPhoto()}if(tab==='recipeBuilder'){restoreBlendDraft();refreshBlendPreview()}if(tab==='plan'){const profile=user?local().recipeProfiles?.[current?.id]:null;if(profile?.flours?.length)$('#planFlours').innerHTML=profile.flours.map((f,i)=>planFlourRow(f,i,flourTable,escape)).join('');for(const [id,v] of Object.entries(profile?.values||{})){const el=document.getElementById(id);if(el){if(el.type==='checkbox')el.checked=!!v;else el.value=v}}try{const draft=JSON.parse(sessionStorage.getItem('sauerteig-plan-draft-'+(current?.id||'new'))||'{}');for(const [id,v] of Object.entries(draft)){const el=document.getElementById(id);if(el){if(el.type==='checkbox')el.checked=!!v;else el.value=v}}}catch{} applyPlanMode();updateWaterTemperature();syncPlanHydration();updatePdfPlanningHints()} }
+function render(){document.body.dataset.page=tab;document.querySelectorAll('[data-icon]').forEach(e=>{e.innerHTML=icon(e.dataset.icon,24)});const activeNav=['start','hub','buddy','account'].includes(tab)?tab:['shopping','pantry','starters','onboarding','billing'].includes(tab)?'account':'hub';document.querySelectorAll('nav button').forEach(b=>{const active=b.dataset.tab===activeNav;b.classList.toggle('active',active);if(active)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current')});$('#pageTitle').textContent=({start:'Start',recipes:current?.title||'Rezepte',plan:'Dein Backplan',buddy:'KI Buddy',account:'Ich',billing:'Sauerteig Plus',shopping:'Einkaufsliste',starters:'Meine Starter',community:'Community-Backbuch',hub:'Womit legen wir los?',bakingDays:'Meine Backtage',recipeSelect:'Rezept auswählen',bakeChoice:'Jetzt backen',recipeBuilder:'Eigenes Rezept berechnen',onboarding:'Einrichtung',calculator:'Rechner',pdfTools:'PDF-Backwissen & Rechner',pdfRecipes:'Rezepte aus der PDF',knowledge:'Wissen',favorites:'Favoriten',historical:'Historische Rezepte',resources:'Weiterführende Quellen',conflicts:'Quellenkonflikte',problem:'Problem lösen',stats:'Meine Backstatistik',import:'Rezept importieren',history:'Meine Brote',pantry:'Meine Mehle & Vorrat',inventory:'Vorrat abgleichen',cloudConflict:'Cloud-Konflikt lösen',moderation:'Community prüfen',own:'Meine Rezepte',backtag:'Dein Backtag'})[tab]||'Backen mit Sauerteig';$('#main').innerHTML=(tab==='start'?'':'<button class="back-button" data-act="back">'+icon('arrow-left',18)+' Zurück</button>')+pages[tab]();if(tab==='recipes'&&$('#scale'))$('#scale').value=String(scale);if(tab==='backtag'){updateTimer();loadStepPhoto()}if(tab==='recipeBuilder'){restoreBlendDraft();refreshBlendPreview()}if(tab==='plan'){const profile=user?local().recipeProfiles?.[current?.id]:null;if(profile?.flours?.length)$('#planFlours').innerHTML=profile.flours.map((f,i)=>planFlourRow(f,i,flourTable,escape)).join('');for(const [id,v] of Object.entries(profile?.values||{})){const el=document.getElementById(id);if(el){if(el.type==='checkbox')el.checked=!!v;else el.value=v}}try{const draft=JSON.parse(sessionStorage.getItem('sauerteig-plan-draft-'+(current?.id||'new'))||'{}');for(const [id,v] of Object.entries(draft)){const el=document.getElementById(id);if(el){if(el.type==='checkbox')el.checked=!!v;else el.value=v}}}catch{} applyPlanMode();updateWaterTemperature();syncPlanHydration();updatePdfPlanningHints()}
+ // Already-approved notifications make new baking reminders the default;
+ // previously saved recipe preferences still take priority.
+ if(user&&localStorage.getItem('sourdough-push-device-'+user.id) &&
+    document.getElementById('planReminders'))document.getElementById('planReminders').checked=true;
+ queueMicrotask(()=>offerSourdoughFirstPush());
+}
+let sourdoughPushWelcomeBusy=false;
+async function offerSourdoughFirstPush(){
+ if(sourdoughPushWelcomeBusy||!user?.id||!token||authRecovery||tab==='onboarding'||
+    !cfg.supabaseUrl||!cfg.supabaseKey||!window.isSecureContext||
+    !('serviceWorker' in navigator)||!('PushManager' in window)||
+    !('Notification' in window)||Notification.permission==='denied')return;
+ const installed=Boolean(window.matchMedia?.('(display-mode: standalone)').matches||
+                         navigator.standalone===true);
+ if(!installed)return;
+ const id=user.id,key='sourdough-push-first-offer-v1:'+id;
+ if(localStorage.getItem(key)||document.querySelector('#sourdough-first-push'))return;
+ sourdoughPushWelcomeBusy=true;
+ try{
+  const reg=await navigator.serviceWorker.getRegistration('/');
+  const already=await reg?.pushManager?.getSubscription();
+  if(!reg||already||user?.id!==id||localStorage.getItem(key))return;
+  const main=document.getElementById('main');
+  if(!main)return;
+  localStorage.setItem(key,'shown');
+  main.insertAdjacentHTML('afterbegin',
+    '<section class="card" id="sourdough-first-push" aria-label="Push-Einrichtung">'+
+    '<h2>Push-Erinnerungen aktivieren</h2>'+
+    '<p>Du kannst Hinweise für Backschritte, Starter und Timer direkt auf dein Handy erhalten. '+
+    'Alle verfügbaren Arten sind dafür vorausgewählt, sobald du Push erlaubst.</p>'+
+    '<p class="muted small">Die Erlaubnis erteilst du einmalig selbst. Ohne deine Freigabe bleibt Push aus.</p>'+
+    '<div class="row wrap"><button class="primary" data-act="pushWelcomeEnable">Jetzt Push erlauben</button>'+
+    '<button data-act="pushWelcomeLater">Später</button></div></section>');
+ }catch(err){console.warn('Push setup:',err)}
+ finally{sourdoughPushWelcomeBusy=false;}
+}
 const activeKey=()=>user?.id?'sourdough-active-'+user.id:'sourdough-active-guest';
 const getActive=()=>{try{return JSON.parse(localStorage.getItem(activeKey())||'null')||(user?local().activeBake:null)}catch{return user?local().activeBake:null}};
 const setActive=v=>{if(v)localStorage.setItem(activeKey(),JSON.stringify(v));else localStorage.removeItem(activeKey());if(user){const d=local();d.activeBake=v;save(d)}};
@@ -399,6 +435,14 @@ if(a.startsWith('timerPreset:')){const value=Number(a.slice(12));if($('#timerMin
 if(a==='timerPause'){await cancelPush(cfg,token,user?.id,timerKey());const key=timerKey(),end=Number(localStorage.getItem(key)||0);if(end){localStorage.setItem(key+'-paused',String(Math.max(1,Math.ceil((end-Date.now())/1000))));localStorage.removeItem(key)}updateTimer();return}
 if(a==='timerResume'){const key=timerKey(),seconds=Number(localStorage.getItem(key+'-paused')||0);if(seconds){const end=Date.now()+seconds*1000;await schedulePush(cfg,token,user?.id,key,end);localStorage.setItem(key,String(end));localStorage.removeItem(key+'-paused')}updateTimer();return}
 if(a==='keepAwake'){if(!('wakeLock' in navigator))throw Error('Display-Wachhalten wird auf diesem Gerät nicht unterstützt');if(screenWakeLock){await screenWakeLock.release();screenWakeLock=null;note('Display-Wachhalten beendet')}else{screenWakeLock=await navigator.wakeLock.request('screen');note('Display bleibt nach Möglichkeit aktiv')}return}
+if(a==='pushWelcomeEnable'){
+  // iOS requires permission to be requested inside this direct click.
+  await enablePush(cfg,token,user?.id);
+  document.getElementById('sourdough-first-push')?.remove();
+  note('Push auf diesem Gerät aktiviert. Back-Erinnerungen sind vorausgewählt.');
+  return;
+}
+if(a==='pushWelcomeLater'){document.getElementById('sourdough-first-push')?.remove();return}
 if(a==='timerNotify'){await enablePush(cfg,token,user?.id);note('Push aktiviert. Erinnerungen können auch bei geschlossener App eintreffen; Zustellung kann sich verzögern.');return}
 if(a==='pushDisable'){await disablePush(cfg,token,user?.id);note('Push deaktiviert und Erinnerungen gelöscht.');return}
 if(a==='timerStart'){const n=Number($('#timerMinutes')?.value);if(!Number.isInteger(n)||n<1||n>1440)throw Error('Bitte 1 bis 1440 Minuten wählen');const end=Date.now()+n*60000;await schedulePush(cfg,token,user?.id,timerKey(),end);localStorage.setItem(timerKey(),String(end));localStorage.removeItem(timerKey()+'-paused');updateTimer();return}
