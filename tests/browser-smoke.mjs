@@ -16,7 +16,7 @@ for(const viewport of [{width:375,height:812},{width:390,height:844},{width:430,
  await page.getByRole('button',{name:/Rezeptbibliothek/}).first().click();
  if(!await page.locator('.recipe-banner img').evaluate(img=>img.complete&&img.naturalWidth>0).catch(()=>false))failures.push('Recipe watercolor missing '+viewport.width);
  await page.locator('[data-act^="recipe:"]').first().click();
- await page.getByRole('button',{name:/Backtag planen/}).click();
+ await page.getByRole('button',{name:/Dieses Rezept backen/}).click();
  for(const id of ['roomTemp','flourTemp','starterTemp','proofMode','loaves','flourPerLoaf','finish'])if(!await page.locator('#'+id).count())failures.push(id+' missing '+viewport.width);
  const size=await page.evaluate(()=>({scroll:document.documentElement.scrollWidth,client:document.documentElement.clientWidth}));
  if(size.scroll>size.client+2)failures.push('Horizontal overflow '+viewport.width+' '+JSON.stringify(size));
