@@ -6,6 +6,7 @@ export function starterForecast(logs,ratio,temp){
 
 const safeRows=items=>Array.isArray(items)?items:[];
 const textValue=(x,esc)=>esc(String(x??''));
+export const STARTER_TYPES=['Weizen','Roggen','Dinkel','Emmer','Einkorn','Kamut / Khorasan','Hafer','Gerste','Buchweizen','Reis','Mais','Hirse','Mischstarter','Sonstiger Starter'];
 export function personalStartersPreview(items,esc=x=>String(x)){
  const list=safeRows(items);
  return '<section class="personal-starters"><div class="personal-starters-head"><span><span class="studio-overline">PERSÖNLICHER BEREICH</span><h2>Meine Starter</h2></span><button data-act="starters">Alle anzeigen →</button></div>'+
@@ -20,7 +21,7 @@ export function starterListView(items,esc=x=>String(x)){
  return '<div class="starter-collection">'+list.map((x,i)=>{
  const logs=Array.isArray(x.logs)?x.logs:[],last=logs.at(-1),forecast=last?starterForecast(logs,last.ratio||x.ratio||'1:2:2',Number(last.temperature||22)):null;
  const name=textValue(x.name||'Starter',esc),type=textValue(x.type||'Weizen',esc),flour=x.flourName?textValue(x.flourName,esc):'Mehltyp nicht hinterlegt';
- const select=(id,values,chosen)=>'<select id="'+id+'">'+values.map(v=>'<option '+(v===chosen?'selected':'')+'>'+v+'</option>').join('')+'</select>';
+ const select=(id,values,chosen)=>{const options=[...new Set([...values,chosen].filter(Boolean))];return '<select id="'+id+'">'+options.map(v=>'<option value="'+textValue(v,esc)+'" '+(v===chosen?'selected':'')+'>'+textValue(v,esc)+'</option>').join('')+'</select>'};
  return '<article class="starter-profile"><div class="starter-profile-top"><img src="/design/menu-jar.svg" alt="" loading="lazy"><div><h3>'+name+' ('+type+')</h3><p>'+flour+' · '+textValue(x.hydration??100,esc)+' % Hydration · '+textValue(x.ratio||'1:2:2',esc)+'</p><small>'+logs.length+' Fütterungen protokolliert</small></div></div>'+
  '<div class="starter-profile-forecast"><strong>'+(forecast?'Persönliche Reifeprognose: '+forecast.hours+' h':'Reifeprognose aus eigenen Messungen noch offen')+'</strong><small>'+(forecast?'Aus '+forecast.count+' vergleichbaren Messungen':'Mindestens drei vergleichbare Messungen nötig; der Reifezustand geht vor')+'</small></div>'+
  '<details class="starter-profile-details"><summary>Fütterung berechnen und protokollieren</summary><button data-act="feed:'+i+'">Fütterungsmenge berechnen</button>'+
@@ -32,7 +33,7 @@ export function starterListView(items,esc=x=>String(x)){
  '<details class="starter-profile-details"><summary>Erinnerungen</summary><label for="starterReminderFirst'+i+'">Erste Fütterungserinnerung in Stunden</label><input id="starterReminderFirst'+i+'" type="number" min="0.1" step="0.1" value="24"><label for="starterReminderHours'+i+'">Danach alle Stunden</label><input id="starterReminderHours'+i+'" type="number" min="1" max="8760" value="'+(x.reminderHours||24)+'"><button data-act="starterReminder:'+i+'">Fütterungserinnerung speichern</button><label for="starterPeakHours'+i+'">Reife in Stunden prüfen</label><input id="starterPeakHours'+i+'" type="number" min="0.1" max="72" step="0.1" value="'+(forecast?.hours||'')+'"><button data-act="starterPeak:'+i+'">Reife-Erinnerung speichern</button><button data-act="reminders">Erinnerungen verwalten</button></details>'+
  '<details class="starter-profile-details"><summary>Starter bearbeiten</summary>'+
  '<label for="starterEditName'+i+'">Name</label><input id="starterEditName'+i+'" value="'+name+'" maxlength="90">'+
- '<label for="starterEditType'+i+'">Starterart</label>'+select('starterEditType'+i,['Weizen','Roggen','Dinkel'],x.type||'Weizen')+
+ '<label for="starterEditType'+i+'">Starterart</label>'+select('starterEditType'+i,STARTER_TYPES,x.type||'Weizen')+
  '<label for="starterEditFlour'+i+'">Verwendetes Mehl (optional)</label><input id="starterEditFlour'+i+'" maxlength="90" value="'+textValue(x.flourName||'',esc)+'" placeholder="z. B. Weizenmehl Type 550">'+
  '<label for="starterEditHydration'+i+'">Hydration (%)</label><input id="starterEditHydration'+i+'" type="number" min="20" max="250" value="'+textValue(x.hydration??100,esc)+'">'+
  '<button data-act="starterUpdate:'+i+'">Änderungen speichern</button><button class="starter-delete" data-act="starterDelete:'+i+'">Starter löschen</button></details></article>';

@@ -77,6 +77,7 @@ function directory(signed){
   ).join('')+'</div></div>').join('')+'</section>';
 }
 const buddy="<section class=\"studio-buddy-row\"><button data-act=\"buddy\"><span aria-hidden=\"true\" class=\"studio-buddy-mark\">✦</span><span><strong>KI Buddy</strong><small>Dein Backchat im Plus-Abo. Frag zum Beispiel: „Warum geht mein Teig nicht auf?“</small></span><span aria-hidden=\"true\" class=\"studio-chevron\">›</span></button></section>";
+const accountPromo="<section class=\"studio-account-promo\" aria-labelledby=\"accountPromoTitle\"><span class=\"studio-overline\">MEIN SAUERTEIG-BEREICH</span><h2 id=\"accountPromoTitle\">Mit Konto wird mehr möglich.</h2><p>Speichere deine Starter, Rezepte und Backvorgänge und greife auf deine Daten von überall zu.</p><ul><li>eigene Starter und Rezepte verwalten</li><li>Backpläne, Erinnerungen und Backhistorie speichern</li><li>Favoriten, Einkaufsliste und Vorrat synchronisieren</li></ul><button class=\"studio-primary\" data-act=\"signup\"><span class=\"studio-primary-copy\"><strong>Kostenloses Konto anlegen</strong><small>In wenigen Schritten startklar.</small></span><span class=\"studio-chevron\" aria-hidden=\"true\">›</span></button><button class=\"studio-text-link\" data-act=\"login\">Schon ein Konto? Einloggen <span aria-hidden=\"true\">→</span></button></section>";
 const fmtDate=h=>{const value=h?.finishedAt||h?.date;if(!value)return '';const d=new Date(value);return Number.isNaN(+d)?String(value):d.toLocaleDateString('de-DE',{day:'2-digit',month:'short'})};
 const starLabel=n=>Number.isFinite(Number(n))&&Number(n)>0?'★'.repeat(Math.min(5,Math.round(Number(n)))):'';
 export function homeView({signed=false,active=null,parked=[],history=[],favorites=[],recipes=[],escape=x=>String(x)}={}){
@@ -89,7 +90,7 @@ export function homeView({signed=false,active=null,parked=[],history=[],favorite
   return '<button class="studio-active-row" data-act="'+action+'"><span class="studio-active-dot" aria-hidden="true"></span><span><strong>'+escape(bake?.title||'Backtag')+'</strong><small>'+escape(nextStep?.title||'Zum Backtag')+(when?' · '+escape(when):'')+'</small></span><span class="studio-chevron" aria-hidden="true">›</span></button>';
  }).join('')+'</div></section>':'';
  const recent=signed&&Array.isArray(history)&&history.length?'<section class="studio-history"><div class="studio-section-head"><h2>Zuletzt gebacken</h2><button class="studio-head-link" data-act="history">Alle anzeigen →</button></div><div class="studio-photo-rail">'+history.slice(-3).reverse().map(h=>'<button class="studio-photo-item" data-act="history"><img src="'+recipePhotoPath(h)+'" alt="KI-generiertes Beispielbild, kein persönliches Backfoto" loading="lazy" decoding="async"><span>'+escape(h?.title||'Backtag')+'</span><small>'+escape(fmtDate(h))+' '+starLabel(h?.rating)+'</small></button>').join('')+'</div></section>':'';
- return hero+(signed?quickstart:'')+(signed?next:'')+inspiration+recent+directory(signed)+buddy;
+ return hero+(signed?quickstart:'')+(signed?next:'')+inspiration+recent+(signed?'':accountPromo)+directory(signed)+buddy;
 }
 
 export function upcomingBakeTasks(active=null,parked=[]){
