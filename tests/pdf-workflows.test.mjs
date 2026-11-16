@@ -16,7 +16,7 @@ function readRenderedForm(overrides={},source=recipe){
  const html=planningView(source,String,new Date(),table),fields={};
  for(const match of html.matchAll(/<input\b[^>]*>/g)){const id=match[0].match(/id="([^"]+)"/)?.[1],value=match[0].match(/value="([^"]*)"/)?.[1]||'';if(id)fields[id]={value,checked:match[0].includes(' checked')};}
  for(const match of html.matchAll(/<select\b[^>]*id="([^"]+)"[^>]*>([\s\S]*?)<\/select>/g)){const options=[...match[2].matchAll(/<option([^>]*)>([^<]*)<\/option>/g)];const option=options.find(x=>x[1].includes('selected'))||options[0];fields[match[1]]={value:option?.[1].match(/value="([^"]*)"/)?.[1]??option?.[2]??''};}
- for(const [id,value] of Object.entries(overrides))fields[id]={value:String(value)};
+ for(const [id,value] of Object.entries({planMode:"full",...overrides}))fields[id]={value:String(value)};
  return readPlanningForm(source,id=>fields[id]);
 }
 test('rendered planner scales complete water balance and schedules brew preparation',()=>{
@@ -63,4 +63,12 @@ test('catalog flours resolve to the PDF table and original seed soakers survive 
 
 test('missing starter observations cannot silently turn into a nine hour forecast',()=>{
  assert.throws(()=>makePlan(recipe,new Date('2030-01-10T20:00'),'00:00','00:00',false),/Keine passende Starterprognose/);
+});
+
+test('weekly portions scale the rendered recipe including baking loss',()=>{
+ const input={planMode:'simple',weekPeople:2,weekDaily:100,bakeLoss:12};
+ const a=readRenderedForm({...input,loaves:1}).recipe,b=readRenderedForm({...input,loaves:2}).recipe;
+ assert.deepEqual(a.flours,b.flours);
+ assert.equal(a.water,b.water);
+ assert.ok(Math.abs(doughWeight(b)*0.88-1400)<1);
 });

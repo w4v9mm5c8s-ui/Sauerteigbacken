@@ -34,6 +34,9 @@ export function completePdfRecipe(r){
  return complete;
 }
 export function recipeResearchView(r,esc){
+ if(/^https:\/\/pantrymama\.com\/[a-z0-9-]+\/$/.test(r.originalUrl||'')){
+  return '<p class="muted">'+esc(r.sourceNote)+' <a href="'+esc(r.originalUrl)+'" target="_blank" rel="noopener noreferrer">Originalrezept bei The Pantry Mama</a> · '+Number(r.readerRating).toLocaleString('de-DE')+' von 5 ('+Number(r.readerVotes)+' Bewertungen zum Recherchezeitpunkt).</p>';
+ }
  if(!r.research)return '';
  return '<details><summary>Quellen und ergänzte Richtwerte</summary><p>'+esc(r.research.status)+' · '+esc(r.research.date)+'</p><p>Die Originalangaben bleiben in der PDF-Rezeptansicht erhalten. Ergänzungen sind veränderbare Startwerte, keine Garantie für deine Mehle oder deinen Starter.</p><ul>'+r.research.sources.map(s=>'<li><a href="'+esc(s.url)+'" target="_blank" rel="noopener noreferrer">'+esc(s.label)+'</a></li>').join('')+'</ul></details>';
 }

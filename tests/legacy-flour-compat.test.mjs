@@ -7,8 +7,8 @@ import {estimateFermentation,waterBalance} from '../pdf-baking.js';
 import {planFlourRow,planningView} from '../planning-ui.js';
 const read=p=>readFileSync(new URL('../'+p,import.meta.url),'utf8');
 const table=JSON.parse(read('flour-table.json')),recipes=JSON.parse(read('recipes.json'));
-test('all 26 built-in recipes map legacy ingredient codes to an actual PDF flour row',()=>{
- assert.equal(recipes.length,26);
+test('all 56 built-in recipes map legacy ingredient codes to an actual PDF flour row',()=>{
+ assert.equal(recipes.length,56);
  for(const r of recipes)for(const flour of r.flours){
   assert.ok(table.some(x=>x.name===canonicalFlourName(flour.name)),r.title+': '+flour.name);
  }
