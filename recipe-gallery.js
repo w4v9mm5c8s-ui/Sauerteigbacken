@@ -28,7 +28,7 @@ export function recipeCards(recipes,escape=x=>String(x),action='recipe',favorite
  }).join('')||'<p class="muted">Keine passenden Rezepte.</p>';
 }
 
-export function recipePicker(recipes,escape=x=>String(x)){return '<section class="card"><span class="hero-kicker">NEUER BACKTAG</span><h2>Was möchtest du backen?</h2><p class="muted">Wähle zuerst ein Rezept. Danach legst du Menge und Backzeit fest.</p><label for="pickRecipeSearch">Rezept suchen</label><input id="pickRecipeSearch" placeholder="Brot, Brötchen, Brezeln …"><div id="pickRecipeResults" class="recipe-gallery">'+recipeCards(recipes,escape,'selectForPlan')+'</div></section>'}
+export function recipePicker(recipes,escape=x=>String(x)){return '<section class="card"><h2>Was möchtest du backen?</h2><p class="muted">Wähle ein Rezept. Die Zutaten und die nächsten Schritte findest du dort.</p><label for="pickRecipeSearch">Rezept suchen</label><input id="pickRecipeSearch" placeholder="Brot, Brötchen, Brezeln …"><div id="pickRecipeResults" class="recipe-gallery">'+recipeCards(recipes,escape,'selectForPlan')+'</div></section>'}
 
 export function filterRecipeLibrary(recipes,query='',category=''){
  const q=String(query||'').trim().toLocaleLowerCase('de-DE');

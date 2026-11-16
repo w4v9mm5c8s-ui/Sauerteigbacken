@@ -41,7 +41,7 @@ test('reject unknown flours and negative, empty or impossible quantities',()=>{
 test('bake choice explicitly distinguishes a planned bake from an original recipe',()=>{
  const html=bakeChoiceView();
  assert.match(html,/data-act="planFromRecipe"/);
- assert.match(html,/Backtag planen/);
+ assert.match(html,/Rezept auswählen/);
  assert.match(html,/data-act="newRecipe"/);
  assert.match(html,/Eigenes Rezept berechnen oder erstellen/);
 });
