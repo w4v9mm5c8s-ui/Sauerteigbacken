@@ -12,12 +12,12 @@
   {
     "id": "kerntemperatur",
     "title": "Kerntemperatur 96–97 °C vs. 97 °C",
-    "handling": "Historischer Wert bleibt im historischen Datensatz; Standardablauf bleibt 97 °C."
+    "handling": "Im Standardprogramm sind 97 °C vorgesehen."
   },
   {
     "id": "roggen-997-hydration",
     "title": "Roggen 997: 68 % verworfen",
-    "handling": "Spätere Version ist eigener historischer Datensatz; die frühere wird nicht als gültig angeboten."
+    "handling": "Verwende für Roggenmehl Type 997 die Wassermenge deines gewählten Rezepts."
   },
   {
     "id": "falt-intervalle",
@@ -46,8 +46,8 @@
   },
   {
     "id": "ruch-hydration",
-    "title": "Ruchmehl: 75 % Tabelle vs. historische Ruchbrote",
-    "handling": "Tabelle bleibt 75 %; historische Rezepte behalten ihre exakten Mengen. Kein 68-%-Ruchwert wird erfunden."
+    "title": "Wassermenge für Ruchmehl",
+    "handling": "Der Rechner schlägt 75 g Wasser je 100 g Ruchmehl vor. Einzelne Rezepte können davon abweichen."
   },
   {
     "id": "ruch-68-roggenstarter",

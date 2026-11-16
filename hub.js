@@ -15,7 +15,6 @@ const groups=[
   ['Rechner & Helfer','Hydration, Mengen und Zeiten','calculator','calculator'],
   ['Backrechner für Sauerteig','Starter füttern, Gehzeit schätzen und Wassermengen berechnen','pdfTools','calculator'],
   ['Community-Backbuch','Rezepte aus der Community','community','users'],
-  ['Rezeptarchiv','Frühere Rezeptversionen mit Zutaten und Notizen','historical','book'],
   ['Sauerteig Plus','KI Buddy, Funktionen und Abomodelle','billing','heart']
  ]}
 ];
