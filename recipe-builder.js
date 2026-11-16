@@ -5,7 +5,7 @@ export function bakeChoiceView(){
  return '<section class="bake-choice-head"><span class="studio-overline">JETZT BACKEN</span><h2>Wie möchtest du starten?</h2><p>Such dir ein Rezept aus oder erstelle dein eigenes.</p></section>'+
  '<div class="bake-choice-list">'+
  '<button class="bake-choice-option" data-act="planFromRecipe"><img src="/design/starter-weizen-landbrot.webp" alt="Sauerteigbrot" loading="lazy"><span><strong>Rezept auswählen</strong><small>Ein Rezept aus der Sammlung backen</small></span><span class="studio-chevron" aria-hidden="true">›</span></button>'+
- '<button class="bake-choice-option" data-act="newRecipe"><img src="/design/menu-calculator.svg" alt="" loading="lazy"><span><strong>Eigenes Rezept berechnen oder erstellen</strong><small>Mehle und Mengen eingeben – Wasser, Starter und Salz vorschlagen lassen</small></span><span class="studio-chevron" aria-hidden="true">›</span></button>'+
+ '<button class="bake-choice-option" data-act="newRecipe"><img src="/design/menu-calculator.svg" alt="" loading="lazy"><span><strong>Starte mit deinem eigenen Rezept.</strong><small>Mehle und Mengen eingeben – Wasser, Starter und Salz vorschlagen lassen</small></span><span class="studio-chevron" aria-hidden="true">›</span></button>'+
  '</div><button class="bake-choice-history" data-act="bakingDays">Meine laufenden Backtage ansehen →</button>';
 }
 

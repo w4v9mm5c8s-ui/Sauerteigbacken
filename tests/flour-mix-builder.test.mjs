@@ -43,7 +43,7 @@ test('bake choice explicitly distinguishes a planned bake from an original recip
  assert.match(html,/data-act="planFromRecipe"/);
  assert.match(html,/Rezept auswählen/);
  assert.match(html,/data-act="newRecipe"/);
- assert.match(html,/Eigenes Rezept berechnen oder erstellen/);
+ assert.match(html,/Starte mit deinem eigenen Rezept./);
 });
 test('recipe builder offers multiple selectable flour rows and automatic ingredient values',()=>{
  const html=recipeBuilderView(table,x=>String(x),[{name:'Wilma',type:'Weizen',hydration:100}]);

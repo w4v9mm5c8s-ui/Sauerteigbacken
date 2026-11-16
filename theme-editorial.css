@@ -349,3 +349,6 @@ body[data-page="start"] .studio-primary{min-height:60px!important;padding:9px 13
 .stock-line{display:grid;grid-template-columns:1fr auto;gap:3px 12px;align-items:baseline;padding:11px 14px;border-radius:13px;margin:4px 0;background:var(--studio-white);border:1px solid var(--studio-line);color:var(--studio-ink);font:500 .95rem/1.35 'Outfit',system-ui,sans-serif}
 .stock-line strong{overflow-wrap:anywhere}.stock-line b{font-variant-numeric:tabular-nums}.stock-line small{color:var(--studio-rose-dark);grid-column:1/-1}
 .stock-actions{display:flex;flex-wrap:wrap;gap:4px}.stock-actions button{font-size:.8rem;padding:6px 9px;min-height:40px}.stock-entry{margin-bottom:13px}
+
+.studio-inspiration > .studio-head-link{display:block;margin:4px 2px 0 auto;min-height:44px!important}
+.studio-buddy-row button small{white-space:normal;line-height:1.4}
