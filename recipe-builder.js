@@ -22,8 +22,8 @@ export function recipeBuilderView(rows,esc=x=>String(x),starters=[]){
  '<section class="card blend-form"><div class="blend-section-head"><h3>Deine Mehlmischung</h3><small>Mehlanteile frei kombinieren</small></div>'+
  '<div id="blendRows">'+(initial?flourBlendRow(rows,esc,initial.name,500,0):'<p>Mehltabelle ist noch nicht verfügbar.</p>')+'</div>'+
  '<button class="blend-add" type="button" data-act="blendAdd">+ Weiteres Mehl hinzufügen</button>'+
- '<div class="blend-options"><label for="blendSaltPct">Salz (% der Mehlmenge)</label><input id="blendSaltPct" type="number" value="2" min="0" max="10" step="0.1" inputmode="decimal">'+
- '<label for="blendHydration">Hydration des Starters (%)</label><input id="blendHydration" type="number" value="100" min="20" max="250" step="5" inputmode="decimal"></div>'+
+ '<label for="blendDoughHyd">Wasseranteil im Teig (Hydration in %)</label><input id="blendDoughHyd" type="number" min="0.1" step="0.1" value="'+(prediction?.effectiveHydration??'')+'"><small>Aus deiner Mehlmischung berechnet, einschließlich Starter.</small><details><summary>Starter und Salz anpassen</summary><div class="blend-options"><label for="blendSaltPct">Salz (% der Mehlmenge)</label><input id="blendSaltPct" type="number" value="2" min="0" max="10" step="0.1" inputmode="decimal">'+
+ '<label for="blendHydration">Wasser im Starter (% seines Mehlgewichts)</label><input id="blendHydration" type="number" value="100" min="20" max="250" step="0.1" inputmode="decimal"></div></details>'+
  (options?'<label for="blendSavedStarter">Deinen eigenen Starter übernehmen (optional)</label><select id="blendSavedStarter"><option value="">Keinen gespeicherten Starter auswählen</option>'+options+'</select>':'<p class="muted small">Deine Starter verwaltest du unter „Ich“ → „Meine Starter“.</p>')+
  '<label class="blend-automation"><input id="blendAuto" type="checkbox" checked> Wasser, Starter und Salz automatisch vorschlagen</label>'+
  '<div class="blend-quantities"><label for="blendWater">Wasser (g)<input id="blendWater" type="number" min="0" max="30000" step="0.1" inputmode="decimal" value="'+(prediction?.water??'')+'"></label>'+

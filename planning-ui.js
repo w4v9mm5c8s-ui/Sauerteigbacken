@@ -13,7 +13,7 @@ export function planningView(r,esc,now,flourTable=[],starters=[]){
  const field=(label,id,value,opts='')=>'<label for="'+id+'">'+label+'</label><input id="'+id+'" '+opts+' value="'+esc(value??'')+'">';
  const mean=values=>values?.[0]==null?'':(values[0]+values[1])/2;
  const flour=r.flours.reduce((a,f)=>a+f.grams,0),total=doughWeight(r);
- return '<section class="card"><h2>'+esc(r.title)+'</h2>'+(r.sourceNote?'<p>'+esc(r.sourceNote)+'</p>':'')+recipeResearchView(r,esc)+'<p class="muted">Du kannst die vorgeschlagenen Mengen und Zeiten anpassen.</p><details open><summary>1. Gebäck und Menge</summary>'+
+ return '<section id="planCard" class="card"><h2>'+esc(r.title)+'</h2><label for="planMode">Ansicht</label><select id="planMode"><option value="simple">Anfängermodus</option><option value="full">Alle Einstellungen</option></select><p class="beginner-only">Wähle die Anzahl der Brote und wann dein Brot aus dem Ofen kommen soll. Die Zutaten und Ruhezeiten sind aus dem Rezept übernommen.</p>'+(r.sourceNote?'<p>'+esc(r.sourceNote)+'</p>':'')+recipeResearchView(r,esc)+'<p class="muted">Du kannst die vorgeschlagenen Mengen und Zeiten anpassen.</p><details open><summary>Brotmenge</summary>'+
  field('Name deines Backtags','bakeName',r.title,'maxlength="120"')+
  field('Anzahl fertige Brote','loaves',1,'type="number" min="1" max="24"')+
  field('Mehlmenge je Brot (g)','flourPerLoaf',Math.round(flour),'type="number" min="50" max="10000"')+field('Gewünschtes fertiges Brotgewicht je Brot (g, optional)','finishedWeight','','type="number" min="100" max="10000"')+field('Angenommener Backverlust (%)','bakeLoss',12,'type="number" min="0" max="30" step="0.5"')+
@@ -21,16 +21,17 @@ export function planningView(r,esc,now,flourTable=[],starters=[]){
  '<details open><summary>2. Mehl und Zutaten</summary>'+
  '<div id="planFlours">'+r.flours.map((f,i)=>planFlourRow(f,i,flourTable,esc)).join('')+'</div>'+
  '<button type="button" class="plan-flour-add" data-act="planFlourAdd">+ Weiteres Mehl hinzufügen</button>'+
- '<label class="plan-ingredients-automatic"><input id="planAutoIngredients" type="checkbox" '+(r.source==='PDF'?'':'checked')+'> Bei Änderungen der Mehle Wasser, Starter und Salz nach Mehltabelle berechnen</label>'+
+ '<label class="plan-ingredients-automatic"><input id="planAutoIngredients" type="checkbox" checked> Bei Änderungen der Mehle Wasser, Starter und Salz nach Mehltabelle berechnen</label>'+
  
+ field('Wasseranteil im Teig (Hydration in %)','planDoughHyd','','type="number" step="0.1" min="0.1"')+'<small>Wasser je 100 g Mehl, einschließlich Wasser und Mehl im Starter. Andere Flüssigkeiten wie Milch sind hier nicht eingerechnet.</small><button type="button" data-act="resetPlanWater">Wasservorschlag übernehmen</button>'+
  field('Gesamtes Rezeptwasser inklusive Quell- und Brühwasser (g)','waterAmount',r.water,'type="number" min="0" max="30000"')+
  field('Salz (g)','saltAmount',r.salt,'type="number" min="0" max="1000"')+
  '<div id="doughPreview" class="success">Rezeptmenge: '+Math.round(total)+' g Teig</div></details>'+
- '<details><summary>3. Starter und Fütterung</summary>'+
+ '<details><summary>Sauerteigstarter vorbereiten</summary>'+
  field('Reifer Starter (g)','starterAmount',r.starter.grams,'type="number" min="0" max="10000"')+
  (starters.length?'<label for="starterProfile">Gespeicherten Starter aus „Ich“ auswählen</label><select id="starterProfile"><option value="">Ohne gespeicherten Starter</option>'+starters.map((st,i)=>'<option value="'+i+'">'+esc(st.name||'Starter')+' ('+esc(st.type||'Weizen')+')</option>').join('')+'</select>':'')+
  '<label>Starter oder Anstellgut</label><select id="starterType"><option '+(r.starter.type==='Weizen'?'selected':'')+'>Weizen</option><option '+(r.starter.type==='Roggen'?'selected':'')+'>Roggen</option><option>Dinkel</option></select>'+
- field('Hydration des Starters (%)','starterHydration',r.source==='PDF'?(r.starter.hydration??''):(r.starter.hydration||100),'type="number" min="20" max="250"')+
+ field('Wasser im Starter (% seines Mehlgewichts)','starterHydration',r.source==='PDF'?(r.starter.hydration??''):(r.starter.hydration||100),'type="number" min="20" max="250"')+
  '<label>Fütterungsverhältnis</label><select id="feedRatio"><option>1:2:2</option><option>1:1:1</option><option>1:3:3</option><option>1:5:5</option><option>1:10:10</option></select>'+
  '<label><input id="starterReady" type="checkbox" style="width:auto"> Starter ist bereits reif</label>'+
  field('Starter-Reifezeit in Stunden (optional)','starterHours','','type="number" min="1" max="72" step="0.5" placeholder="Aus PDF-Tabelle oder persönliche Erfahrung"')+'<div id="pdfStarterPeakHint" class="muted small"></div>'+
@@ -58,7 +59,7 @@ export function planningView(r,esc,now,flourTable=[],starters=[]){
  '<label>Ofenladungen</label><input id="ovenLoads" type="number" min="1" max="12" value="1"></details><details><summary>Altbrot und Quellstück</summary>'+field('Altbrot (g, optional)','altbrot',0,'type="number" min="0" max="1000"')+'<label>Quellwasser für Altbrot</label><select id="altbrotRatio"><option value="3">3 × Altbrot (Standard)</option><option value="2">2 × Altbrot (Einlagen-Tabelle)</option></select>'+'<label for="soakerKind">Saaten-/Schrotart für Quellstück</label><select id="soakerKind"><option value="">Keine Saat/kein Schrot</option>'+PDF_SOAKER_RATIOS.flatMap(group=>group.names.map(name=>'<option value="'+esc(name)+'">'+esc(name)+' ('+group.label+')</option>')).join('')+'</select>'+field('Zusätzliches Quellstück (g)','soakerAmount',0,'type="number" min="0" max="5000"')+field('Zusätzliches Quellwasser (g)','soakerWater',0,'type="number" min="0" max="5000"')+'<label class="pdf-reference-toggle"><input id="autoSoakerWater" type="checkbox" checked> Quellwasser automatisch nach PDF-Tabelle berechnen (50–200 %)</label>'+field('Quellzeit (Stunden)','soakerHours',12,'type="number" min="0.25" max="48" step="0.25"')+
  field('Mehl für Brühstück (g; Teil der Mehlmenge)','brewFlour',0,'type="number" min="0" max="5000"')+field('Wasser für Brühstück (g)','brewWater',0,'type="number" min="0" max="10000"')+
  '<label for="brewMethod">Vorstufe</label><select id="brewMethod"><option value="scald">Brühstück: übergießen</option><option value="cook">Kochstück: unter Rühren aufkochen</option></select>'+field('Brühstück-Abkühlzeit (Minuten; Temperatur anschließend prüfen)','brewCoolMinutes',60,'type="number" min="30" max="1440"')+
- '<div id="pdfWaterCheck" class="muted small" aria-live="polite">Quellwasser wird vom Gesamtwasser abgezogen.</div>'+'</details><details open><summary>6. Dein Zeitplan</summary>'+
+ '<div id="pdfWaterCheck" class="muted small" aria-live="polite">Quellwasser wird vom Gesamtwasser abgezogen.</div>'+'</details><details open><summary>Dein Zeitplan</summary>'+
  field('Fertig am','finish',local,'type="datetime-local"')+
  '<div class="cols"><div>'+field('Schlafen ab','sleepFrom','22:00','type="time"')+'</div><div>'+field('Aufstehen um','sleepTo','07:00','type="time"')+'</div></div>'+
  field('Frühestens beginnen ab (optional)','earliestStart','','type="datetime-local"')+

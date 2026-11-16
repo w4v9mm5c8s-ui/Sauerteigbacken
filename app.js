@@ -31,7 +31,7 @@ import {statsView,statsCsv} from './stats.js';
 import {icon} from './icons.js';
 import {pantryView} from './pantry.js';
 import {hubView} from './hub.js';
-import {calculatorView,calculateDough,calculateFeed} from './calculators.js';
+import {waterForDoughHydration,calculatorView,calculateDough,calculateFeed} from './calculators.js';
 import {knowledgeView,problemsView,setKnowledgeCards,knowledgeResults} from './knowledge.js';
 import {ownRecipesView,normalizeExtractedRecipe,restoreVersion} from './own-recipes.js';
 import {backtagView} from './backtag.js';
@@ -182,7 +182,7 @@ async function processAuthReturn(){
  return true;
 }
 function localDateInput(d){const pad=n=>String(n).padStart(2,'0');return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate())+'T'+pad(d.getHours())+':'+pad(d.getMinutes())}
-function render(){document.body.dataset.page=tab;document.querySelectorAll('[data-icon]').forEach(e=>{e.innerHTML=icon(e.dataset.icon,24)});const activeNav=['start','hub','buddy','account'].includes(tab)?tab:['shopping','pantry','starters','onboarding','billing'].includes(tab)?'account':'hub';document.querySelectorAll('nav button').forEach(b=>{const active=b.dataset.tab===activeNav;b.classList.toggle('active',active);if(active)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current')});$('#pageTitle').textContent=({start:'Start',recipes:current?.title||'Rezepte',plan:'Dein Backplan',buddy:'KI-Buddy',account:'Ich',billing:'Sauerteig Plus',shopping:'Einkaufsliste',starters:'Meine Starter',community:'Community-Backbuch',hub:'Womit legen wir los?',bakingDays:'Meine Backtage',recipeSelect:'Rezept auswählen',bakeChoice:'Jetzt backen',recipeBuilder:'Eigenes Rezept berechnen',onboarding:'Einrichtung',calculator:'Rechner',pdfTools:'PDF-Backwissen & Rechner',pdfRecipes:'Rezepte aus der PDF',knowledge:'Wissen',favorites:'Favoriten',historical:'Historische Rezepte',resources:'Weiterführende Quellen',conflicts:'Quellenkonflikte',problem:'Problem lösen',stats:'Meine Backstatistik',import:'Rezept importieren',history:'Meine Brote',pantry:'Meine Mehle & Vorrat',inventory:'Vorrat abgleichen',cloudConflict:'Cloud-Konflikt lösen',moderation:'Community prüfen',own:'Meine Rezepte',backtag:'Dein Backtag'})[tab]||'Backen mit Sauerteig';$('#main').innerHTML=(tab==='start'?'':'<button class="back-button" data-act="back">'+icon('arrow-left',18)+' Zurück</button>')+pages[tab]();if(tab==='backtag'){updateTimer();loadStepPhoto()}if(tab==='recipeBuilder'){restoreBlendDraft();refreshBlendPreview()}if(tab==='plan'){const profile=user?local().recipeProfiles?.[current?.id]:null;if(profile?.flours?.length)$('#planFlours').innerHTML=profile.flours.map((f,i)=>planFlourRow(f,i,flourTable,escape)).join('');for(const [id,v] of Object.entries(profile?.values||{})){const el=document.getElementById(id);if(el){if(el.type==='checkbox')el.checked=!!v;else el.value=v}}try{const draft=JSON.parse(sessionStorage.getItem('sauerteig-plan-draft-'+(current?.id||'new'))||'{}');for(const [id,v] of Object.entries(draft)){const el=document.getElementById(id);if(el){if(el.type==='checkbox')el.checked=!!v;else el.value=v}}}catch{} updatePdfPlanningHints()} }
+function render(){document.body.dataset.page=tab;document.querySelectorAll('[data-icon]').forEach(e=>{e.innerHTML=icon(e.dataset.icon,24)});const activeNav=['start','hub','buddy','account'].includes(tab)?tab:['shopping','pantry','starters','onboarding','billing'].includes(tab)?'account':'hub';document.querySelectorAll('nav button').forEach(b=>{const active=b.dataset.tab===activeNav;b.classList.toggle('active',active);if(active)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current')});$('#pageTitle').textContent=({start:'Start',recipes:current?.title||'Rezepte',plan:'Dein Backplan',buddy:'KI-Buddy',account:'Ich',billing:'Sauerteig Plus',shopping:'Einkaufsliste',starters:'Meine Starter',community:'Community-Backbuch',hub:'Womit legen wir los?',bakingDays:'Meine Backtage',recipeSelect:'Rezept auswählen',bakeChoice:'Jetzt backen',recipeBuilder:'Eigenes Rezept berechnen',onboarding:'Einrichtung',calculator:'Rechner',pdfTools:'PDF-Backwissen & Rechner',pdfRecipes:'Rezepte aus der PDF',knowledge:'Wissen',favorites:'Favoriten',historical:'Historische Rezepte',resources:'Weiterführende Quellen',conflicts:'Quellenkonflikte',problem:'Problem lösen',stats:'Meine Backstatistik',import:'Rezept importieren',history:'Meine Brote',pantry:'Meine Mehle & Vorrat',inventory:'Vorrat abgleichen',cloudConflict:'Cloud-Konflikt lösen',moderation:'Community prüfen',own:'Meine Rezepte',backtag:'Dein Backtag'})[tab]||'Backen mit Sauerteig';$('#main').innerHTML=(tab==='start'?'':'<button class="back-button" data-act="back">'+icon('arrow-left',18)+' Zurück</button>')+pages[tab]();if(tab==='backtag'){updateTimer();loadStepPhoto()}if(tab==='recipeBuilder'){restoreBlendDraft();refreshBlendPreview()}if(tab==='plan'){const profile=user?local().recipeProfiles?.[current?.id]:null;if(profile?.flours?.length)$('#planFlours').innerHTML=profile.flours.map((f,i)=>planFlourRow(f,i,flourTable,escape)).join('');for(const [id,v] of Object.entries(profile?.values||{})){const el=document.getElementById(id);if(el){if(el.type==='checkbox')el.checked=!!v;else el.value=v}}try{const draft=JSON.parse(sessionStorage.getItem('sauerteig-plan-draft-'+(current?.id||'new'))||'{}');for(const [id,v] of Object.entries(draft)){const el=document.getElementById(id);if(el){if(el.type==='checkbox')el.checked=!!v;else el.value=v}}}catch{} applyPlanMode();syncPlanHydration();updatePdfPlanningHints()} }
 const activeKey=()=>user?.id?'sourdough-active-'+user.id:'sourdough-active-guest';
 const getActive=()=>{try{return JSON.parse(localStorage.getItem(activeKey())||'null')||(user?local().activeBake:null)}catch{return user?local().activeBake:null}};
 const setActive=v=>{if(v)localStorage.setItem(activeKey(),JSON.stringify(v));else localStorage.removeItem(activeKey());if(user){const d=local();d.activeBake=v;save(d)}};
@@ -223,7 +223,7 @@ buddy:()=>user?box('<img class="buddy-watercolor" src="/art-buddy.svg" alt="" lo
 account:()=>user&&!authRecovery?(authNotice?'<p class="auth-feedback auth-notice" role="status">'+escape(authNotice)+'</p>':'')+personalStartersPreview(local().starters,escape)+box('<h2>Angemeldet</h2><p>'+escape(user.email)+'</p>'+'<div class="stack">'+button('Meine Mehle & Vorrat','pantry')+button('Einkaufsliste','shopping')+button('Wissen','knowledge')+button('Sauerteig Plus','billing')+button('Push aktivieren','timerNotify')+button('Push deaktivieren','pushDisable')+button('Push-Test in 1 Minute','pushTest')+button('Meine Erinnerungen','reminders')+'</div>'+button('Cloud-Konflikt vergleichen','compareCloud')+button('Konfliktsicherung exportieren','exportConflictBackup')+button('Cloud-Sicherung','push')+button('Cloud-Daten laden','pull')+button('Daten exportieren','exportData')+'<label for="backupFile">Datensicherung importieren</label><input id="backupFile" type="file" accept=".json,application/json">'+button('Datensicherung laden','importData')+button('Konto und Daten löschen','deleteAccount')+button('Abmelden','logout')):authView(authMode,{email:authEmail,error:authError,notice:authNotice},escape),
 shopping:()=>user?box('<div class="illustrated-section"><div><span class="hero-kicker">DEIN EINKAUF</span><h2>Einkaufsliste</h2></div><img src="/design/tile-einkauf.png" alt="" width="150" height="115" loading="lazy"></div><div class="shopping-add"><label for="shopNewName" class="sr-only">Zutat hinzufügen</label><input id="shopNewName" placeholder="Zutat hinzufügen …" maxlength="100"><label for="shopNewGrams" class="sr-only">Menge in Gramm</label><input id="shopNewGrams" type="number" min="1" step="1" placeholder="g" aria-label="Menge in Gramm" style="max-width:64px"><button data-act="addShoppingManual" aria-label="Zutat hinzufügen">+</button></div><div id="shop"></div>'+button('Liste teilen','share')):signInGate('Diese Funktion speichert persönliche Backdaten. Bitte melde dich an.'),
 starters:()=>user?box('<img class="section-watercolor" src="/art-starter.svg" alt="Aquarell eines Sauerteigglases"><h2>Meine Starter</h2><div id="starters"></div><label>Name</label><input id="starterName" placeholder="z. B. Wilma">'+'<label>Starterart</label><select id="newStarterType"><option>Weizen</option><option>Roggen</option><option>Dinkel</option></select><label>Verwendetes Mehl (optional)</label><input id="newStarterFlour" maxlength="90" placeholder="z. B. Weizenmehl Type 550"><label>Hydration (%)</label><input id="newStarterHydration" type="number" min="20" max="250" value="100"><label>Fütterungsverhältnis</label><select id="starterRatio"><option>1:2:2</option><option>1:1:1</option><option>1:3:3</option><option>1:5:5</option><option>1:10:10</option></select>'+button('Starter hinzufügen','addStarter')):signInGate('Diese Funktion speichert persönliche Backdaten. Bitte melde dich an.'),
-backtag:()=>backtagView(getActive(),escape,!!user)+(getParked().length?box('<h3>Weitere laufende Backtage</h3>'+getParked().map((b,i)=>'<button class="item" data-act="switchBake:'+i+'">'+escape(b.title)+' · Schritt '+(b.index+1)+' von '+b.steps.length+'</button>').join('')):''),
+backtag:()=>backtagView(getActive(),escape,!!user,localStorage.getItem('sourdough-plan-mode')!=='full')+(getParked().length?box('<h3>Weitere laufende Backtage</h3>'+getParked().map((b,i)=>'<button class="item" data-act="switchBake:'+i+'">'+escape(b.title)+' · Schritt '+(b.index+1)+' von '+b.steps.length+'</button>').join('')):''),
 own:()=>user?ownRecipesView(local().ownRecipes||[],escape,editingOwn):signInGate('Diese Funktion speichert persönliche Backdaten. Bitte melde dich an.'),
 moderation:()=>moderator?box('<h2>Rezeptfreigaben</h2><div id="pendingRecipes"></div>'):box('Kein Zugriff.'),
 community:()=>user?communityView(escape,local().communitySaved||[])+(moderator?button('Rezepte prüfen','moderation'):''):signInGate('Diese Funktion speichert persönliche Backdaten. Bitte melde dich an.')
@@ -315,6 +315,7 @@ if(a==='planFlourRemove'){
  row.remove();refreshPlanBlendPreview();return
 }
 if(a==='blendSave'||a==='blendPlan'){
+ if(!$('#blendDoughHyd').reportValidity())return;
  captureBlendDraft();
  const {raw,suggested}=readBlendRecipe(document,flourTable);
  const parsed=parseOwnRecipe(raw);parsed.starter.hydration=suggested.starterHydration;
@@ -326,9 +327,18 @@ if(a==='blendSave'||a==='blendPlan'){
  }
  current=parsed;planOrigin='recipeBuilder';tab='plan';render();window.scrollTo(0,0);return
 }
+if(a==='resetPlanWater'){
+ window.lastPlan=null;$('#planResult').replaceChildren();
+ const field=$('#planDoughHyd'),recipe=current||recipes[0];
+ const rows=[...document.querySelectorAll('[data-plan-flour-row]')].map(row=>({name:row.querySelector('.plan-flour-name').value,grams:Number(row.querySelector('.plan-flour-grams').value)}));
+ const original=rows.length===recipe.flours.length&&rows.every((r,i)=>canonicalFlourName(r.name)===canonicalFlourName(recipe.flours[i].name)&&r.grams===recipe.flours[i].grams);
+ const water=original?recipe.water:flourBlendSuggestion(flourTable,rows).water;
+ $('#waterAmount').value=water;field.dataset.manual='';field.setCustomValidity('');syncPlanHydration();updatePdfPlanningHints();return
+}
 if(a==='calculate'){
+ if(!$('#planDoughHyd').reportValidity())return;
  const data=readPlanningForm(current||recipes[0],id=>document.getElementById(id));
- const profile=local().starters?.[Number(document.getElementById('starterProfile')?.value)];data.options.starterObservations=profile?.logs||[];data.options.occupied=[getActive(),...getParked()].filter(Boolean).flatMap(b=>b.steps.slice(b.index||0).filter(s=>s.active).map(s=>({at:s.at,minutes:s.minutes||5})));
+ const profileValue=$('#starterProfile')?.value;const profile=profileValue?local().starters?.[Number(profileValue)]:null;data.options.starterObservations=profile?.logs||[];data.options.occupied=[getActive(),...getParked()].filter(Boolean).flatMap(b=>b.steps.slice(b.index||0).filter(s=>s.active).map(s=>({at:s.at,minutes:s.minutes||5})));
  const p=makePlan(data.recipe,data.finish,data.from,data.to,data.ready,data.preheat,data.awayFrom,data.awayTo,data.options);
  const out=$('#planResult');
  if(!p){out.innerHTML='<p class="warning">Unter diesen Vorgaben konnte innerhalb von 21 Tagen kein sicherer Zeitplan berechnet werden. Passe die Schlaf- oder Abwesenheitszeiten an oder wähle eine geeignete Kühlschrankgare.</p>';return}
@@ -471,13 +481,10 @@ document.addEventListener('change',e=>{if(e.target.dataset.log!==undefined){cons
 document.addEventListener('change',e=>{if(e.target.dataset.rating!==undefined){const d=local(),i=Number(e.target.dataset.rating);if(d.history[i]){d.history[i].rating=e.target.value?Number(e.target.value):null;save(d);note('Bewertung gespeichert')}}});
 document.addEventListener('change',e=>{
  const id=e.target.id;
- if(id==='starterProfile'&&e.target.value!==''){const st=local().starters?.[Number(e.target.value)];if(st){$('#starterType').value=st.type||'Weizen';$('#starterHydration').value=st.hydration||100;$('#feedRatio').value=st.ratio||'1:2:2';const temp=Number($('#roomTemp')?.value||22),f=starterForecast(st.logs||[],st.ratio||'1:2:2',temp);if(f){$('#starterHours').value=f.hours;note('Persönliche Reifezeit aus '+f.count+' Messungen übernommen')}else note('Noch keine verlässliche persönliche Reifeprognose vorhanden')}}
+ if(id==='planMode'){localStorage.setItem('sourdough-plan-mode',e.target.value);applyPlanMode();return}
+ if(id==='starterProfile'&&e.target.value!==''){const st=local().starters?.[Number(e.target.value)];if(st){$('#starterType').value=st.type||'Weizen';$('#starterHydration').value=st.hydration||100;$('#feedRatio').value=st.ratio||'1:2:2';const temp=Number($('#roomTemp')?.value||22),f=starterForecast(st.logs||[],st.ratio||'1:2:2',temp);if(f){$('#starterHours').value=f.hours;note('Persönliche Reifezeit aus '+f.count+' Messungen übernommen')}else note('Noch keine verlässliche persönliche Reifeprognose vorhanden');if($('#planDoughHyd').dataset.manual==='1')applyTargetHydration($('#planDoughHyd'),planFlourMass(),$('#starterAmount'),$('#starterHydration'),$('#waterAmount'));else syncPlanHydration();updatePdfPlanningHints()}}
  if(id==='roomTemp'){const flour=$('#flourTemp');if(flour&&(!flour.dataset.custom||flour.dataset.custom==='false'))flour.value=e.target.value}
  if(id==='flourTemp')e.target.dataset.custom='true';
- if(/^flourPreset\d+$/.test(id)){
- const i=Number(id.replace('flourPreset','')),name=e.target.value,row=flourTable.find(x=>x.name===name);
- if(row){$('#flourName'+i).value=row.name;const n=Number($('#flourAmount'+i).value),suggestion=flourSuggestion(flourTable,name,n);if(suggestion&&document.querySelectorAll('[id^="flourPreset"]').length===1){$('#waterAmount').value=suggestion.water;$('#starterAmount').value=suggestion.starter;$('#starterType').value=suggestion.starterType==='roggen'?'Roggen':'Weizen';note('Wasser und Starter aus der Mehltabelle vorgeschlagen')}}
- }
  if(['targetTemp','flourTemp','starterTemp'].includes(id)){
  const target=Number($('#targetTemp')?.value),flour=Number($('#flourTemp')?.value),starter=Number($('#starterTemp')?.value||$('#roomTemp')?.value);
  const value=waterTempSuggestion(target,flour,starter);
@@ -503,7 +510,7 @@ function restoreBlendDraft(){
  if($('#blendStarterType'))$('#blendStarterType').dataset.userSelected=saved.manualStarter?'1':'';
  if($('#blendRecipeDetails'))$('#blendRecipeDetails').open=saved.details;
 }
-function refreshBlendPreview(){
+function refreshBlendPreview(editingHydration=false){
  const el=$('#blendResult');if(!el)return;
  const auto=$('#blendAuto')?.checked;
  for(const id of ['blendWater','blendStarter','blendSalt']){const field=document.getElementById(id);if(field)field.readOnly=!!auto}
@@ -516,6 +523,7 @@ function refreshBlendPreview(){
    if($('#blendStarterType')?.dataset.userSelected!=='1')$('#blendStarterType').value=mixture.suggestedStarter.charAt(0).toUpperCase()+mixture.suggestedStarter.slice(1);
   }
   const water=Number($('#blendWater')?.value),starter=Number($('#blendStarter')?.value),salt=Number($('#blendSalt')?.value);
+  if(!editingHydration){$('#blendDoughHyd').value=calculateDough(mixture.flourTotal,water,salt,starter,mixture.starterHydration).hydration.toFixed(1);$('#blendDoughHyd').setCustomValidity('')}
   el.innerHTML=blendSummary(mixture,water,starter,salt);
  }catch(e){el.textContent=e.message||'Bitte Mehlmengen prüfen.'}
 }
@@ -555,6 +563,34 @@ function updatePdfPlanningHints(){
   const target=document.getElementById('pdfWaterCheck');if(target)target.textContent='Wasserbilanz: '+balance.mainWater+' g im Hauptteig, '+balance.reserve+' g für Vorstufen, insgesamt '+balance.totalRecipeWater+' g.';
  }catch(e){const target=document.getElementById('pdfWaterCheck');if(target)target.textContent=e.message||'Bitte Werte prüfen.'}
 }
+function applyPlanMode(){
+ const card=$('#planCard'),mode=$('#planMode');
+ if(!card||!mode)return;
+ mode.value=localStorage.getItem('sourdough-plan-mode')==='full'?'full':'simple';
+ card.dataset.mode=mode.value;
+ for(const group of card.querySelectorAll(':scope > details')){
+  const basic=group.querySelector('#loaves,#finish,#starterReady,#planDoughHyd');
+  const missing=[...group.querySelectorAll('#stockHours,#proofHours,#recipeBakeTemp,#recipeBakeMinutes,#starterHydration,#saltAmount,#coldBulkHours')].some(el=>el.value==='');
+  group.classList.toggle('advanced-group',!basic&&!missing);
+  if((basic||missing)&&mode.value==='simple')group.open=true;
+  group.classList.toggle('missing-values',missing);
+ }
+}
+function planFlourMass(){
+ return [...document.querySelectorAll('.plan-flour-grams')].reduce((sum,el)=>sum+Number(el.value),0);
+}
+function syncPlanHydration(){
+ const field=$('#planDoughHyd');
+ if(!field)return;
+ const flour=planFlourMass(),starter=Number($('#starterAmount').value),hyd=Number($('#starterHydration').value);
+ field.value=flour>0&&hyd>0&&starter>=0&&Number($('#waterAmount').value)>=0&&$('#waterAmount').value!==''?calculateDough(flour,Number($('#waterAmount').value),0,starter,hyd).hydration.toFixed(1):'';
+}
+function applyTargetHydration(field,flour,starter,hyd,water){
+ const grams=waterForDoughHydration(flour,Number(starter.value),Number(hyd.value),Number(field.value));
+ field.setCustomValidity(grams===null?'Bitte einen Wasseranteil wählen, der mit diesem Starter möglich ist.':'');
+ if(grams!==null)water.value=grams;
+ return grams!==null;
+}
 function refreshPlanBlendPreview(){
  const container=$('#planFlours'),preview=$('#doughPreview');
  if(!container||!preview)return;
@@ -573,10 +609,21 @@ function refreshPlanBlendPreview(){
    if($('#starterType'))$('#starterType').value=mixture.suggestedStarter.charAt(0).toUpperCase()+mixture.suggestedStarter.slice(1);
   }
   const water=Number($('#waterAmount')?.value),starter=Number($('#starterAmount')?.value),salt=Number($('#saltAmount')?.value);
-  preview.textContent='Mehl '+mixture.flourTotal+' g · Wasser '+water+' g · Starter '+starter+' g · Salz '+salt+' g · Teig ca. '+(Math.round((mixture.flourTotal+water+starter+salt)*10)/10)+' g. Mengen nach Mehltabelle; Gärzeiten bleiben rezeptabhängig.';
+  if($('#planDoughHyd')?.dataset.manual==='1')applyTargetHydration($('#planDoughHyd'),total,$('#starterAmount'),$('#starterHydration'),$('#waterAmount'));else syncPlanHydration();
+  preview.textContent='Mehl '+mixture.flourTotal+' g · Wasser '+$('#waterAmount').value+' g · Starter '+starter+' g · Salz '+salt+' g · Teig ca. '+(Math.round((mixture.flourTotal+water+starter+salt)*10)/10)+' g. Mengen nach Mehltabelle; Gärzeiten bleiben rezeptabhängig.';
  }catch(e){preview.textContent='Automatischer Vorschlag nicht möglich: '+(e.message||'Mehlsorten prüfen')+'. Mengen können manuell eingegeben werden.'}
 }
 document.addEventListener('input',e=>{
+ if(e.target.closest('#planCard')&&e.target.id!=='planMode'){window.lastPlan=null;$('#planResult').replaceChildren()}
+ if(e.target.id==='planDoughHyd'){e.target.dataset.manual='1';applyTargetHydration(e.target,planFlourMass(),$('#starterAmount'),$('#starterHydration'),$('#waterAmount'));updatePdfPlanningHints();return}
+ if(e.target.id==='waterAmount'){const field=$('#planDoughHyd');field.dataset.manual='';field.setCustomValidity('');$('#planAutoIngredients').checked=false;syncPlanHydration()}
+ if(['starterAmount','starterHydration'].includes(e.target.id)){if($('#planDoughHyd').dataset.manual==='1')applyTargetHydration($('#planDoughHyd'),planFlourMass(),$('#starterAmount'),$('#starterHydration'),$('#waterAmount'));else syncPlanHydration()}
+ if(e.target.id==='blendDoughHyd'){
+  $('#blendAuto').checked=false;
+  const flour=readBlendEntries(document).reduce((sum,x)=>sum+Number(x.grams),0);
+  applyTargetHydration(e.target,flour,$('#blendStarter'),$('#blendHydration'),$('#blendWater'));
+  refreshBlendPreview(true);captureBlendDraft();return
+ }
  if(e.target.closest('#blendRows')||['blendSaltPct','blendHydration','blendWater','blendStarter','blendSalt'].includes(e.target.id)){refreshBlendPreview();captureBlendDraft()}
  if(e.target.closest('#planFlours')&&e.target.classList.contains('plan-flour-grams')){refreshPlanBlendPreview();updatePdfPlanningHints()}
  if(e.target.id==='soakerWater'&&e.isTrusted&&document.getElementById('autoSoakerWater'))document.getElementById('autoSoakerWater').checked=false;
@@ -639,4 +686,4 @@ if(user&&!authRecovery){
 }
 render()}catch(e){console.warn('Sauerteig-Server aktuell nicht erreichbar:',e?.message||e);note('Serververbindung unterbrochen. Die Backstube bleibt geöffnet.')}})();
 
-if('serviceWorker' in navigator){window.addEventListener('load',async()=>{try{const reg=await navigator.serviceWorker.register('/sw.js',{updateViaCache:'none'});reg.update().catch(()=>{});navigator.serviceWorker.addEventListener('controllerchange',()=>{try{if(!authRecovery&&!sessionStorage.getItem('sauerteig-sw-upgrade-v43')){sessionStorage.setItem('sauerteig-sw-upgrade-v43','1');location.reload()}}catch{}})}catch(e){console.warn('Offline-Modus nicht verfügbar',e)}})}
+if('serviceWorker' in navigator){window.addEventListener('load',async()=>{try{const reg=await navigator.serviceWorker.register('/sw.js',{updateViaCache:'none'});reg.update().catch(()=>{});navigator.serviceWorker.addEventListener('controllerchange',()=>{try{if(!authRecovery&&!sessionStorage.getItem('sauerteig-sw-upgrade-v44')){sessionStorage.setItem('sauerteig-sw-upgrade-v44','1');location.reload()}}catch{}})}catch(e){console.warn('Offline-Modus nicht verfügbar',e)}})}

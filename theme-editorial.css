@@ -316,3 +316,13 @@ body[data-page="account"] main>.back-button{display:none}
 .pdf-recipe-library-link{display:flex;flex-direction:column;align-items:flex-start;gap:5px;margin:12px 0 17px;padding:11px 13px;border-radius:14px;background:#f8e8e2;border:1px solid #ebd4cb}
 .pdf-recipe-library-link button{border:0;box-shadow:none;background:transparent;color:#87545a;text-decoration:underline;text-underline-offset:3px;font:600 .84rem/1.3 'Outfit',system-ui,sans-serif;padding:4px 0}
 .pdf-recipe-library-link small{font:.74rem/1.35 'Outfit',system-ui,sans-serif;color:#795d56}
+
+#planCard .beginner-only {display:none}
+#planCard[data-mode="simple"] .beginner-only {display:block}
+#planCard[data-mode="simple"] .advanced-group,
+#planCard[data-mode="simple"] :is(label[for="bakeName"],#bakeName,label[for="finishedWeight"],#finishedWeight,label[for="bakeLoss"],#bakeLoss,label[for="earliestStart"],#earliestStart,[data-act="saveRecipeProfile"]),
+#planCard[data-mode="simple"] details:has(> #bakeLoss) > .small,
+#planCard[data-mode="simple"] details:not(.missing-values):has(> #starterHours) > :not(summary,label:has(#starterReady)),
+#planCard[data-mode="simple"] details:has(> #finish) > details {display:none}
+
+#planCard[data-mode="simple"] details:not(.missing-values):has(> #planDoughHyd) > :not(summary,#planDoughHyd,label[for="planDoughHyd"],#waterAmount,label[for="waterAmount"],small,[data-act="resetPlanWater"]){display:none}
