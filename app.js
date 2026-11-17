@@ -47,6 +47,7 @@ const box=s=>'<section class="card">'+s+'</section>';
 const signInGate=message=>box('<h2>Anmeldung erforderlich</h2><p>'+escape(message)+'</p>'+button('Zum Konto und Anmelden','account'));
 
 const note=t=>{const x=$('#toast');x.textContent=t;x.style.display='block';setTimeout(()=>x.style.display='none',4000)};
+const timeoutSignal=ms=>typeof AbortSignal!=='undefined'&&typeof AbortSignal.timeout==='function'?AbortSignal.timeout(ms):undefined;
 async function request(url,method='GET',data,retry=true){const owner=user?.id,signal=typeof AbortSignal!=='undefined'&&typeof AbortSignal.timeout==='function'?AbortSignal.timeout(20000):undefined;const r=await fetch(url,{method,headers:{'Content-Type':'application/json',...(token?{Authorization:'Bearer '+token}:{})},...(data?{body:JSON.stringify(data)}:{}),...(signal?{signal}:{})});const j=await r.json().catch(()=>({}));if(user?.id!==owner)throw Error('Das Konto wurde gewechselt. Bitte erneut versuchen.');if(r.status===401&&retry&&refreshToken){await renewSession();return request(url,method,data,false)}if(!r.ok)throw Error(j.error||j.error_description||j.msg||'Fehler');return j}
 const AUTH_SESSION_KEY='sauerteig-session';
 function saveAuthSession(){const saved=JSON.stringify({token,refreshToken,user});sessionStorage.setItem(AUTH_SESSION_KEY,saved);localStorage.setItem(AUTH_SESSION_KEY,saved)}
@@ -61,7 +62,7 @@ async function ensureAuthConfig(){
 async function auth(path,data){
  const config=await ensureAuthConfig(),u=config.supabaseUrl+'/auth/v1/'+path;
  let response;
- try{response=await fetch(u,{method:'POST',headers:{apikey:config.supabaseKey,'Content-Type':'application/json'},body:JSON.stringify(data),signal:AbortSignal.timeout(25000)})}
+ try{const signal=timeoutSignal(25000);response=await fetch(u,{method:'POST',headers:{apikey:config.supabaseKey,'Content-Type':'application/json'},body:JSON.stringify(data),...(signal?{signal}:{})})}
  catch(e){throw Error('Serververbindung unterbrochen: '+(e.message||'Netzwerkfehler'))}
  const result=await response.json().catch(()=>({}));
  if(!response.ok){const e=new Error(result.error_description||result.msg||result.message||'Authentifizierung fehlgeschlagen');e.code=result.code||result.error_code||result.error||'';throw e}
@@ -83,7 +84,7 @@ async function renewSession(){
 async function acceptAuthSession(result){
  if(!result?.access_token||!result?.refresh_token)throw Error('Bestätigungslink enthält keine gültige Sitzung.');
  const config=await ensureAuthConfig();
- const check=await fetch(config.supabaseUrl+'/auth/v1/user',{headers:{apikey:config.supabaseKey,Authorization:'Bearer '+result.access_token},signal:AbortSignal.timeout(20000)});
+ const signal=timeoutSignal(20000);const check=await fetch(config.supabaseUrl+'/auth/v1/user',{headers:{apikey:config.supabaseKey,Authorization:'Bearer '+result.access_token},...(signal?{signal}:{})});
  if(!check.ok)throw Error('Die Sitzung konnte nicht bestätigt werden.');
  const verifiedUser=await check.json();
  if(!verifiedUser?.id)throw Error('Die Benutzerinformationen konnten nicht geladen werden.');
@@ -127,9 +128,10 @@ async function submitAuthForm(){
   if(mode==='newPassword'){
    if(!authRecovery||!token)throw Error('Der Passwort-Link wurde noch nicht bestätigt oder ist abgelaufen.');
    const config=await ensureAuthConfig();
+   const signal=timeoutSignal(20000);
    const response=await fetch(config.supabaseUrl+'/auth/v1/user',{
     method:'PUT',headers:{apikey:config.supabaseKey,Authorization:'Bearer '+token,'Content-Type':'application/json'},
-    body:JSON.stringify({password}),signal:AbortSignal.timeout(20000)
+    body:JSON.stringify({password}),...(signal?{signal}:{})
    });
    const result=await response.json().catch(()=>({}));
    if(!response.ok){const error=new Error(result.msg||result.message||'Passwort konnte nicht geändert werden.');error.code=result.code||result.error;throw error}
@@ -909,7 +911,7 @@ async function loadApiConfig(){
  for(const delay of delays){
   if(delay)await new Promise(resolve=>setTimeout(resolve,delay));
   try{
-   const response=await fetch('/api/config',{cache:'no-store',signal:AbortSignal.timeout(8000)});
+   const signal=timeoutSignal(8000);const response=await fetch('/api/config',{cache:'no-store',...(signal?{signal}:{})});
    if(response.ok){const json=await response.json();if(json&&json.supabaseUrl&&json.supabaseKey)return json}
   }catch{}
  }
