@@ -47,5 +47,5 @@ test('no infinite PWA update reload and recipe library omits the PDF banner',()=
  assert.match(app,/sauerteig-sw-upgrade-v46/);
  assert.doesNotMatch(app,/sessionStorage\.setItem\('sauerteig-sw-upgrade-v26'/);
  assert.doesNotMatch(app,/PDF-Originalrezepte ansehen/);
- assert.match(read('sw.js'),/sauerteig-public-v51/);
+ assert.match(read('sw.js'),/sauerteig-public-v52/);
 });

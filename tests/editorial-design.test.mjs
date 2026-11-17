@@ -33,7 +33,7 @@ test('the app loads before public-data requests and keeps a manual recipe reload
 });
 test('the service worker version is atomically updated and prefers current HTML and modules',()=>{
  const sw=read('sw.js'),server=read('server.mjs');
- assert.match(sw,/sauerteig-public-v51/);
+ assert.match(sw,/sauerteig-public-v52/);
  assert.match(sw,/Promise\.race/);
  assert.match(sw,/isRealAsset/);
  assert.match(sw,/url\.pathname\.startsWith\('\/api\/'\)/);

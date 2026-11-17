@@ -21,7 +21,7 @@ test('the hero stays fully visible and watercolor icons have no colored backgrou
  assert.match(html,/src="\/design\/buddy-original.webp"/);
 });
 test('a new cache version picks up the transparent replacement files on iOS',()=>{
- assert.match(src('sw.js').toString(),/sauerteig-public-v51/);
+ assert.match(src('sw.js').toString(),/sauerteig-public-v52/);
  assert.match(src('index.html').toString(),/app\.js\?v=50/);
 });
 
