@@ -1,10 +1,11 @@
 import {canonicalFlourName} from './flour-table.js';
 export const ingredientKey=name=>canonicalFlourName(String(name||'').trim()).toLocaleLowerCase('de-DE').replace(/\s+/g,' ');
+const isWaterIngredient=name=>/^(?:wasser(?:\s|$)|quellwasser(?:\s|$)|brühwasser(?:\s|$)|rezept-quellwasser(?:\s|$))/i.test(String(name||'').trim());
 export function recipeNeeds(recipe,scale=1){
  if(!recipe||!Number.isFinite(scale)||scale<=0)throw Error('Bitte ein Rezept wählen');
  const rows=[...(recipe.flours||[]),...(recipe.extras||[]),...(recipe.soaker?.items||[]),...(recipe.additionalSoaker?.items||[]),{name:'Salz',grams:recipe.salt}];
  const result=new Map();
- for(const row of rows){if(/wasser/i.test(row.name))continue;if(row.grams==null)throw Error('Menge für '+row.name+' bitte zuerst ergänzen');const grams=Number(row.grams)*scale;if(!Number.isFinite(grams)||grams<0)throw Error('Ungültige Menge für '+row.name);if(!grams)continue;const key=ingredientKey(row.name),old=result.get(key);if(old)old.grams+=grams;else result.set(key,{name:canonicalFlourName(row.name),grams});}
+ for(const row of rows){if(isWaterIngredient(row.name))continue;if(row.grams==null)throw Error('Menge für '+row.name+' bitte zuerst ergänzen');const grams=Number(row.grams)*scale;if(!Number.isFinite(grams)||grams<0)throw Error('Ungültige Menge für '+row.name);if(!grams)continue;const key=ingredientKey(row.name),old=result.get(key);if(old)old.grams+=grams;else result.set(key,{name:canonicalFlourName(row.name),grams});}
  return [...result.values()].map(x=>({...x,grams:Math.round(x.grams*10)/10}));
 }
 export function inventoryBalance(needs,pantry){

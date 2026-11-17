@@ -5,6 +5,7 @@ import {PDF_LESSONS} from '../pdf-baking.js';
 import {scheduleBakeReminders} from '../push-client.js';
 const recipe={flours:[{name:'Weizenmehl Type 550',grams:500}],salt:10,extras:[{name:'Quellwasser',grams:90}],soaker:{items:[{name:'Leinsamen',grams:30}]}};
 test('inventory includes scaled seeds and salt but does not buy reserved water',()=>{assert.deepEqual(recipeNeeds(recipe,2).map(x=>x.grams),[1000,60,20]);});
+test('inventory keeps water-based ingredients such as malt instead of dropping them as water',()=>{assert.deepEqual(recipeNeeds({...recipe,extras:[{name:'Wassermalz',grams:12},{name:'Brühwasser',grams:40}]},1).map(x=>x.name),['Weizenmehl Type 550','Wassermalz','Leinsamen','Salz']);});
 test('missing recipe quantities cannot silently become zero in shopping',()=>{assert.throws(()=>recipeNeeds({...recipe,salt:null}),/Salz/)});
 test('consumption uses duplicate inventory rows in order without mutating input',()=>{const pantry=[{name:'Mehl',amount:50},{name:'Mehl',amount:100}];assert.deepEqual(consumeInventory([{name:'Mehl',grams:120}],pantry).map(x=>x.amount),[0,30]);assert.equal(pantry[0].amount,50);assert.throws(()=>consumeInventory([{name:'Mehl',grams:160}],pantry),/reicht/);});
 test('repeated shopping comparison does not repeatedly add the same shortage',()=>{const balance=inventoryBalance([{name:'Salz',grams:20}],[{name:'Salz',amount:5}]);const once=addMissingShopping([],balance);assert.deepEqual(addMissingShopping(once,balance),once);assert.equal(once[0].grams,15);});
