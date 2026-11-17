@@ -80,7 +80,7 @@ test('repeated signup of an existing account returns to login instead of waiting
 test('server exposes Auth module and caches public code, not private tokens',()=>{
  for(const path of ['server.mjs','sw.js'])assert.match(read(path),/'\/auth-ui\.js'/);
  const sw=read('sw.js');
- assert.match(sw,/sauerteig-public-v52/);
+ assert.match(sw,/sauerteig-public-v53-selected-brand/);
  assert.match(sw,/url\.pathname\.startsWith\('\/api\/'\)/);
  const html=read('index.html');
  assert.match(html,/\/app\.js\?v=50/);
