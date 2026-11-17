@@ -1,3 +1,4 @@
+import {toggleAuthPassword} from './password-visibility.js';
 import {ovenSelect,recipeSteps,plainTitle,potRecipe} from './beginner-baking.js';
 const recipeOvens=new Map();
 import {unfinishedWork,checkIngredient,incompletePhase,pendingPreparations} from './phase-checklist.js';
@@ -572,11 +573,7 @@ if(a.startsWith('authMode:')){
  authMode=a.slice('authMode:'.length);authError='';authNotice='';tab='account';render();return
 }
 if(a.startsWith('authToggle:')){
- const id=a.slice('authToggle:'.length);
- const input=document.getElementById(id),button=originElement?.closest('button');
- if(!input||!button)return;
- const visible=input.type==='password';input.type=visible?'text':'password';
- button.textContent=visible?'Verbergen':'Anzeigen';button.setAttribute('aria-label',visible?'Passwort verbergen':'Passwort anzeigen');button.setAttribute('aria-pressed',String(visible));
+ toggleAuthPassword(originElement,a.slice('authToggle:'.length));
  return
 }
 if(a==='authSubmit'){await submitAuthForm();return}

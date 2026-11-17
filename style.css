@@ -143,3 +143,6 @@ progress{accent-color:var(--rose)}
 .quality-bar{display:grid;grid-template-columns:85px 1fr 32px;gap:12px;align-items:center;margin:10px 0;font-size:.9rem}.quality-track{height:12px;border-radius:99px;background:#f2e1e5;overflow:hidden}.quality-track>div{height:100%;border-radius:99px;background:linear-gradient(90deg,#d9a1ae,#a9697b)}
 
 .weekday-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:10px 0 16px}.weekday-grid label{display:flex;align-items:center;justify-content:center;gap:5px;padding:9px 4px;border:1px solid var(--line,#e7d7d4);border-radius:12px;font-size:.85rem;background:var(--ivory,#fffaf5)}.weekday-grid input{width:auto;min-width:15px;accent-color:var(--rose,#a9667b)}@media(max-width:360px){.weekday-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+
+/* Password controls: avoid iOS focus zoom. */
+@media(max-width:700px){#authForm input{font-size:16px}}
