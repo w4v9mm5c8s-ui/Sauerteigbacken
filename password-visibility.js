@@ -15,7 +15,6 @@ export function setPasswordVisible(input, visible) {
     input.style.removeProperty('-webkit-text-security');
     input.style.removeProperty('input-security');
   }
-  // Invalidate a stale secure-text paint without changing the password.
   input.value = value;
   if (start !== null && end !== null) {
     try { input.setSelectionRange(start, end); } catch (_) {}
@@ -25,4 +24,14 @@ export function setPasswordVisible(input, visible) {
 }
 export function togglePasswordVisibility(input) {
   return setPasswordVisible(input, input?.type === 'password');
+}
+export function toggleAuthPassword(origin, targetId) {
+  const button=origin?.closest('button');
+  const input=button?.closest('.auth-password-wrap')?.querySelector('input');
+  if (!input || !button || input.id!==targetId || input.form!==button.form) return false;
+  const visible=togglePasswordVisibility(input);
+  button.textContent=visible?'Verbergen':'Anzeigen';
+  button.setAttribute('aria-label',visible?'Passwort verbergen':'Passwort anzeigen');
+  button.setAttribute('aria-pressed',String(visible));
+  return visible;
 }
